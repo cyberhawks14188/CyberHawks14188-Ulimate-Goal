@@ -61,6 +61,7 @@ public class Auto extends LinearOpMode {
     double Z_PM;
     double Z_IM;
     double Z_DM;
+    double pass;
     double X_PM;
     double X_IM;
     double X_DM;
@@ -86,7 +87,9 @@ public class Auto extends LinearOpMode {
     double loopcounter;
     double X_B2;
     int breakout;
+    double runtime;
     double Detected;
+    int Breakout;
     int bypass;
     int E1;
     int E2;
@@ -105,25 +108,23 @@ public class Auto extends LinearOpMode {
         robot.D_LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.D_RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // Wait for the game to start (driver presses PLAY)
-        /*initVuforia();
+        initVuforia();
         initTfod();
          if (tfod != null) {
                 tfod.activate();
         }
-        while(loopcounter <= 100 | Detected = 2){
+        while(){
               tfod.setZoom(3, 1.78);
             if (tfod != null) {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                       telemetry.addData("# Object Detected", updatedRecognitions.size());
-                      loopcounter = loopcounter + 1;
                       // step through the list of recognitions and display boundary info.
                       int i = 0;
                       for (Recognition recognition : updatedRecognitions) {
                         telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
                         telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                                 recognition.getLeft(), recognition.getTop());
-                        Detected = 2;
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                 recognition.getRight(), recognition.getBottom());
                       }
@@ -135,7 +136,7 @@ public class Auto extends LinearOpMode {
         if (tfod != null) {
             tfod.shutdown();
         }
-        */
+
         //Waits for start to be pressed
         waitForStart();
         //Set position robot will go to
@@ -144,8 +145,12 @@ public class Auto extends LinearOpMode {
         Z_setpoint = 0;
         Slow_Down_Distance = 1000;
         //Runs movement until 300 away
-        while (Distance_From >= 200){
+        while (Distance_From >= 200 & time >= pass){
             Movement();
+           runtime = getRuntime();
+            if (Distance_From <= 200){
+                pass = getRuntime() + 3;
+            }
 
         }
         stop_motors();
