@@ -33,7 +33,7 @@ public class RobotHardware{
         RB_M = hardwareMap.get(DcMotor.class, "RB_M");
         IN_M = hardwareMap.get(DcMotor.class, "IN_M");
         STG_M = hardwareMap.get(DcMotor.class, "STG_M");
-        SOT_M = hardwareMap.get(DcMotor.class, "SOT");
+        SOT_M = hardwareMap.get(DcMotor.class, "SOT_M");
 
 
         //servo = hardwareMap.get(Servo.class, "servo");
