@@ -18,6 +18,7 @@ public class RobotHardware{
     public DcMotor IN_M;
     public DcMotor STG_M;
     public DcMotor SOT_M;
+    public Servo SOT_S;
 
 
     //Create Hardware map
@@ -34,6 +35,7 @@ public class RobotHardware{
         IN_M = hardwareMap.get(DcMotor.class, "IN_M");
         STG_M = hardwareMap.get(DcMotor.class, "STG_M");
         SOT_M = hardwareMap.get(DcMotor.class, "SOT_M");
+        SOT_S = hardwareMap.get(Servo.class, "SOT_S");
 
 
         //servo = hardwareMap.get(Servo.class, "servo");
