@@ -41,17 +41,18 @@ public class Teleop extends LinearOpMode {
                 shooterPower = 0;
             }
             if (gamepad1.dpad_down) {
-                intakePower = 1;
+                stagerPower = -1;
             }
             if (gamepad1.dpad_right) {
-                intakePower = 0;
+                stagerPower = 0;
             }
             if (gamepad1.right_bumper) {
-                stagerPower = 1;
+                 stagerPower = -1;
             }
             if (gamepad1.right_trigger >= .05) {
                 stagerPower = 0;
             }
+            //stagerPower = gamepad2.right_stick_y;
             robot.SOT_M.setPower(shooterPower);
             robot.IN_M.setPower(intakePower);
             robot.STG_M.setPower(stagerPower);
