@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-//@Disabled
+@TeleOp
+
 
 public class Teleop extends LinearOpMode {
 
@@ -20,7 +21,7 @@ public class Teleop extends LinearOpMode {
 
         RobotHardware robot = new RobotHardware();
         robot.init(hardwareMap);
-
+        waitForStart();
 
         shooterPower = 0;
         while (opModeIsActive()) {
@@ -28,10 +29,10 @@ public class Teleop extends LinearOpMode {
             double y = gamepad1.left_stick_y;
             double z = gamepad1.right_stick_x;
 
-            robot.LF_M.setPower(y - (x - z));
-            robot.LB_M.setPower(y + (x + z));
-            robot.RF_M.setPower(y + (x - z));
-            robot.RB_M.setPower(y - (x + z));
+            robot.LF_M.setPower(y - (x + z));
+            robot.LB_M.setPower(y + (x - z));
+            robot.RF_M.setPower(-(y + (x + z)));
+            robot.RB_M.setPower(-(y - (x - z)));
 
             if (gamepad1.a) {
                 shooterPower = 1;
@@ -39,10 +40,10 @@ public class Teleop extends LinearOpMode {
             if (gamepad1.b) {
                 shooterPower = 0;
             }
-            if (gamepad1.left_bumper) {
+            if (gamepad1.dpad_down) {
                 intakePower = 1;
             }
-            if (gamepad1.left_trigger >= .05) {
+            if (gamepad1.dpad_right) {
                 intakePower = 0;
             }
             if (gamepad1.right_bumper) {
