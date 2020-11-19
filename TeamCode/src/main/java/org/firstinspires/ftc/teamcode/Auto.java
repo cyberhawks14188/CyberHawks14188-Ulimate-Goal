@@ -84,22 +84,16 @@ public class Auto extends LinearOpMode {
     double Y_A2;
     int Slow_Down_Distance;
     double Slow_Rate;
-    double loopcounter;
+
     double X_B2;
     int breakout;
     double runtime;
     double Detected;
-    int Breakout;
-    int bypass;
-    int E1;
-    int E2;
-    int E3;
-    int detection;
+
     double Intial_Speed_Setpoint;
     //Enters the program method
     public void runOpMode() {
         robot.init(hardwareMap);
-
         //Resets Encoders
         robot.LF_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
         robot.LB_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
@@ -147,7 +141,6 @@ public class Auto extends LinearOpMode {
         if (tfod != null) {
             tfod.shutdown();
         }
-
         //Waits for start to be pressed
         waitForStart();
         //Set position robot will go to
@@ -297,7 +290,6 @@ public class Auto extends LinearOpMode {
         Y_Last_Error = y_error;
         y = y_porportional + Y_Intergral + Y_Derivitive;
         //slope equation
-
        /* if(X_Final_Setpoint > 0 & Y_Final_Setpoint > 0){
            slope = Y_Final_Setpoint/X_Final_Setpoint;
         Y_setpoint = slope * E2;
@@ -334,7 +326,6 @@ public class Auto extends LinearOpMode {
         MotorEquation();
         telemetry();
     }
-
     public void MotorEquation() {
         //Make Equation
         LF_Distance = y+(x+z);
@@ -364,7 +355,6 @@ public class Auto extends LinearOpMode {
 
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
-
     /**
      * Initialize the TensorFlow Object Detection engine.
      */
