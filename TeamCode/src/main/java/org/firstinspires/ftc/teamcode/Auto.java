@@ -75,6 +75,9 @@ public class Auto extends LinearOpMode {
     double Y_setpoint;
     double LF_Distance;
     double LB_Distance;
+    int E1;
+    int E2;
+    int E3;
     double RF_Distance;
     double RB_Distance;
     double Speed_Setpoint;
@@ -110,7 +113,7 @@ public class Auto extends LinearOpMode {
         tfod.setZoom(1, 1.78);
         //recongniton.getLabel() = Single
         //recongniton.getLabel() = Quad
-        pass = getRuntime() + 6;
+        pass = getRuntime() + 60;
         while (getRuntime() <= pass) {
             tfod.setZoom(3, 1.78);
             if (tfod != null) {
@@ -153,7 +156,7 @@ public class Auto extends LinearOpMode {
             //Runs movement until 300 away
             while (Distance_From >= 300) {
                 Movement();
-                telemetry();
+
             }
             stop_motors();
         }
@@ -166,7 +169,7 @@ public class Auto extends LinearOpMode {
             //Runs movement until 300 away
             while (Distance_From>=300) {
                 Movement();
-                telemetry();
+
             }
             stop_motors();
         }
@@ -179,7 +182,7 @@ public class Auto extends LinearOpMode {
             //Runs movement until 300 away
             while (Distance_From>=300) {
                 Movement();
-                telemetry();
+
             }
             stop_motors();
         }
@@ -196,9 +199,9 @@ public class Auto extends LinearOpMode {
     }
     //Displays useful telementry onto DS phone
     public void telemetry(){
-        telemetry.addData("E1", robot.LF_M.getCurrentPosition() * -1);
-        telemetry.addData("E2", robot.LB_M.getCurrentPosition());
-        telemetry.addData("E3", robot.RF_M.getCurrentPosition());
+        telemetry.addData("E1", E1);
+        telemetry.addData("E2", E2);
+        telemetry.addData("E3", E3);
         telemetry.addData("Distance_From", Distance_From);
         telemetry.addData("Distance", Distance);
         telemetry.addData("Speed_Setpoint", Speed_Setpoint);
@@ -226,9 +229,9 @@ public class Auto extends LinearOpMode {
         Z_DM = 0;
 
         //Gets encoder Positions
-        int E1 = robot.LF_M.getCurrentPosition() * -1;
-        int E2 = robot.LB_M.getCurrentPosition();
-        int E3 = robot.RF_M.getCurrentPosition() * -1;
+         E1 = robot.LF_M.getCurrentPosition() * -1;
+         E2 = robot.LB_M.getCurrentPosition();
+         E3 = robot.RF_M.getCurrentPosition() * -1;
         //Sets encoders to 1 at begining to prevent null error
         if (E1 == 0){
             E1 = 1;
