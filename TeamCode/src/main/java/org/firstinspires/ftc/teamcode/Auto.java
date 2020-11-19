@@ -104,6 +104,7 @@ public class Auto extends LinearOpMode {
         robot.LF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Detected = 0;
 
         initVuforia();
         initTfod();
