@@ -15,6 +15,7 @@ public class Teleop extends LinearOpMode {
     double shooterPower;
     double intakePower;
     double stagerPower;
+    double shooterAngle = 0;
     @Override
     public void runOpMode() {
 
@@ -33,7 +34,7 @@ public class Teleop extends LinearOpMode {
             robot.LB_M.setPower(y + (x - z));
             robot.RF_M.setPower(-(y + (x + z)));
             robot.RB_M.setPower(-(y - (x - z)));
-
+            shooterAngle = shooterAngle + (.01 * (-gamepad2.left_stick_y));
             if (gamepad1.a) {
                 shooterPower = 1;
             }
@@ -41,21 +42,24 @@ public class Teleop extends LinearOpMode {
                 shooterPower = 0;
             }
             if (gamepad1.dpad_down) {
-                intakePower = 1;
+                stagerPower = -1;
             }
             if (gamepad1.dpad_right) {
-                intakePower = 0;
+                stagerPower = 0;
             }
             if (gamepad1.right_bumper) {
-                stagerPower = 1;
+                 stagerPower = -1;
             }
             if (gamepad1.right_trigger >= .05) {
                 stagerPower = 0;
             }
+            //stagerPower = gamepad2.right_stick_y;
             robot.SOT_M.setPower(shooterPower);
             robot.IN_M.setPower(intakePower);
             robot.STG_M.setPower(stagerPower);
-
+            robot.SOT_S.setPosition(shooterAngle);
+            telemetry.addData("Shooter Angle", shooterAngle);
+            telemetry.update();
 
         }
 
