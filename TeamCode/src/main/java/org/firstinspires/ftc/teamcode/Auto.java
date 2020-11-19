@@ -95,13 +95,13 @@ public class Auto extends LinearOpMode {
     public void runOpMode() {
         robot.init(hardwareMap);
         //Resets Encoders
-        robot.LF_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        robot.LB_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        robot.RF_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        robot.LF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.LB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.RF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.LF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // Wait for the game to start (driver presses PLAY)
+
         initVuforia();
         initTfod();
         if (tfod != null) {
@@ -110,7 +110,7 @@ public class Auto extends LinearOpMode {
         tfod.setZoom(1, 1.78);
         //recongniton.getLabel() = Single
         //recongniton.getLabel() = Quad
-        pass = getRuntime() + 3;
+        pass = getRuntime() + 6;
         while (getRuntime() <= pass) {
             tfod.setZoom(3, 1.78);
             if (tfod != null) {
@@ -145,55 +145,46 @@ public class Auto extends LinearOpMode {
         waitForStart();
         //Set position robot will go to
         if (Detected == 0) {
-            pass = 0;
+
             X_setpoint = 0;
             Y_setpoint = 3000;
             Z_setpoint = 0;
             Slow_Down_Distance = 1000;
             //Runs movement until 300 away
-            while (Distance_From >= 200 & time >= pass) {
+            while (Distance_From >= 300) {
                 Movement();
-                runtime = getRuntime();
-                if (Distance_From <= 200) {
-                    pass = getRuntime() + 3;
-                }
-
+                telemetry();
             }
             stop_motors();
         }
         if(Detected == 1){
-            pass = 0;
+
             X_setpoint = 0;
             Y_setpoint = 6000;
             Z_setpoint = 0;
             Slow_Down_Distance = 1000;
             //Runs movement until 300 away
-            while (Distance_From >= 200 & time >= pass) {
+            while (Distance_From>=300) {
                 Movement();
-                runtime = getRuntime();
-                if (Distance_From <= 200) {
-                    pass = getRuntime() + 3;
-                }
-
+                telemetry();
             }
             stop_motors();
         }
         if(Detected == 2){
-            pass = 0;
+
             X_setpoint = 0;
             Y_setpoint = 9000;
             Z_setpoint = 0;
             Slow_Down_Distance = 1000;
             //Runs movement until 300 away
-            while (Distance_From >= 200 & time >= pass) {
+            while (Distance_From>=300) {
                 Movement();
-                runtime = getRuntime();
-                if (Distance_From <= 200) {
-                    pass = getRuntime() + 3;
-                }
-
+                telemetry();
             }
             stop_motors();
+        }
+        while(opModeIsActive()){
+            telemetry();
         }
     }
     //Stops all drive motors
