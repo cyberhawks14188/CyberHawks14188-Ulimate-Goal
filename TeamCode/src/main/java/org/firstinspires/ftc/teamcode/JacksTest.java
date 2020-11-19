@@ -28,12 +28,9 @@ public class JacksTest extends LinearOpMode {
         double mPort0Speed = 0;
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-
-
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             mPort0Speed = (gamepad1.left_stick_y);
-
             if(gamepad1.a){
                robot.sPort0.setPosition(0);
             }else{

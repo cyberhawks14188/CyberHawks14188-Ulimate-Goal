@@ -84,17 +84,12 @@ public class Auto extends LinearOpMode {
     double Y_A2;
     int Slow_Down_Distance;
     double Slow_Rate;
-    double loopcounter;
+
     double X_B2;
     int breakout;
     double runtime;
     double Detected;
-    int Breakout;
-    int bypass;
-    int E1;
-    int E2;
-    int E3;
-    int detection;
+
     double Intial_Speed_Setpoint;
     //Enters the program method
     public void runOpMode() {
