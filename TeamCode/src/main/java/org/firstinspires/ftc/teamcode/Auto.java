@@ -214,6 +214,7 @@ public class Auto extends LinearOpMode {
         telemetry.addData("LB", Speed_Setpoint*(LB_Distance/Highest_Motor_Power));
         telemetry.addData("RF", Speed_Setpoint*(RF_Distance/Highest_Motor_Power));
         telemetry.addData("RB", Speed_Setpoint*(RB_Distance/Highest_Motor_Power));
+        telemetry.addData("Dectected", Detected);
         telemetry.update();
     }
     //Uses a PID to move robot to XYZ setpoints
