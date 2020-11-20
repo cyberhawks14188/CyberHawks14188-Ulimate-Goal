@@ -82,7 +82,7 @@ public class Auto extends LinearOpMode {
     double RB_Distance;
     double Speed_Setpoint;
     double Highest_Motor_Power;
-    double Distance_From;
+    double Distance_From ;
     int Y_Average;
     double Y_A2;
     int Slow_Down_Distance;
@@ -111,10 +111,9 @@ public class Auto extends LinearOpMode {
         if (tfod != null) {
             tfod.activate();
         }
-        tfod.setZoom(1, 1.78);
         //recongniton.getLabel() = Single
         //recongniton.getLabel() = Quad
-        pass = getRuntime() + 60;
+        pass = getRuntime() + 10;
         while (getRuntime() <= pass) {
             tfod.setZoom(3, 1.78);
             if (tfod != null) {
@@ -135,6 +134,7 @@ public class Auto extends LinearOpMode {
                         if (recognition.getLabel() == "Quad")
                             Detected = 2;
                     }
+                    telemetry();
                     telemetry.update();
                 }
             }
@@ -149,7 +149,8 @@ public class Auto extends LinearOpMode {
         waitForStart();
         //Set position robot will go to
         if (Detected == 0) {
-
+            Distance_From = 1000;
+            Speed_Setpoint = .5;
             X_setpoint = 0;
             Y_setpoint = 3000;
             Z_setpoint = 0;
@@ -157,12 +158,12 @@ public class Auto extends LinearOpMode {
             //Runs movement until 300 away
             while (Distance_From >= 300) {
                 Movement();
-
             }
             stop_motors();
         }
         if(Detected == 1){
-
+            Distance_From = 1000;
+            Speed_Setpoint = .5;
             X_setpoint = 0;
             Y_setpoint = 6000;
             Z_setpoint = 0;
@@ -175,7 +176,8 @@ public class Auto extends LinearOpMode {
             stop_motors();
         }
         if(Detected == 2){
-
+            Distance_From = 1000;
+            Speed_Setpoint = .5;
             X_setpoint = 0;
             Y_setpoint = 9000;
             Z_setpoint = 0;
@@ -233,7 +235,7 @@ public class Auto extends LinearOpMode {
         //Gets encoder Positions
          E1 = robot.LF_M.getCurrentPosition() * -1;
          E2 = robot.LB_M.getCurrentPosition();
-         E3 = robot.RF_M.getCurrentPosition() * -1;
+         E3 = robot.RF_M.getCurrentPosition();
         //Sets encoders to 1 at begining to prevent null error
         if (E1 == 0){
             E1 = 1;
