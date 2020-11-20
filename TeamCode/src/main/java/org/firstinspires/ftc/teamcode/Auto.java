@@ -228,12 +228,12 @@ public class Auto extends LinearOpMode {
         Y_PM = 1;
         Y_IM = 0;
         Y_DM = 0;
-        Z_PM = 1;
+        Z_PM = -1;
         Z_IM = 0;
         Z_DM = 0;
 
         //Gets encoder Positions
-         E1 = robot.LF_M.getCurrentPosition() * -1;
+         E1 = -robot.LF_M.getCurrentPosition();
          E2 = robot.LB_M.getCurrentPosition();
          E3 = robot.RF_M.getCurrentPosition();
         //Sets encoders to 1 at begining to prevent null error
