@@ -185,7 +185,6 @@ public class Auto extends LinearOpMode {
             //Runs movement until 300 away
             while (Distance_From>=300) {
                 Movement();
-
             }
             stop_motors();
         }
