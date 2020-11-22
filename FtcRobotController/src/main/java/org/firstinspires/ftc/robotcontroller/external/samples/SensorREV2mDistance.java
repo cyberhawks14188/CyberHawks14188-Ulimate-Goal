@@ -55,16 +55,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Disabled
 public class SensorREV2mDistance extends LinearOpMode {
 
-    private DistanceSensor sensorRange;
+    private DistanceSensor ensorRange;
 
     @Override
     public void runOpMode() {
         // you can use this as a regular DistanceSensor.
-        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+        ensorRange = hardwareMap.get(DistanceSensor.class, "ensor_range");
 
         // you can also cast this to a Rev2mDistanceSensor if you want to use added
         // methods associated with the Rev2mDistanceSensor class.
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRange;
+    //    Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)ensorRange;
 
         telemetry.addData(">>", "Press start to continue");
         telemetry.update();
@@ -72,15 +72,16 @@ public class SensorREV2mDistance extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()) {
             // generic DistanceSensor methods.
-            telemetry.addData("deviceName",sensorRange.getDeviceName() );
-            telemetry.addData("range", String.format("%.01f mm", sensorRange.getDistance(DistanceUnit.MM)));
-            telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
-            telemetry.addData("range", String.format("%.01f m", sensorRange.getDistance(DistanceUnit.METER)));
-            telemetry.addData("range", String.format("%.01f in", sensorRange.getDistance(DistanceUnit.INCH)));
+            String var = String.format("%.01f mm", ensorRange.getDistance(DistanceUnit.MM));
+            telemetry.addData("deviceName",ensorRange.getDeviceName() );
+            telemetry.addData("range", String.format("%.01f mm", ensorRange.getDistance(DistanceUnit.MM)));
+            telemetry.addData("range", String.format("%.01f cm", ensorRange.getDistance(DistanceUnit.CM)));
+            telemetry.addData("range", String.format("%.01f m", ensorRange.getDistance(DistanceUnit.METER)));
+            telemetry.addData("range", String.format("%.01f in", ensorRange.getDistance(DistanceUnit.INCH)));
 
             // Rev2mDistanceSensor specific methods.
-            telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
-            telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
+           // telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
+            //telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
 
             telemetry.update();
         }
