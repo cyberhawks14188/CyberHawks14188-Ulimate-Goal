@@ -104,11 +104,11 @@ public class Movement extends LinearOpMode {
             Distance_From = 1000;
             Speed_Setpoint = .5;
             X_setpoint = 0;
-            Y_setpoint = 3000;
+            Y_setpoint = 10000;
             Z_setpoint = 0;
             Slow_Down_Distance = 1000;
             //Runs movement until 300 away
-            while (Distance_From >= 300) {
+            while (opModeIsActive()) {
                 Movement();
             }
             stop_motors();
@@ -146,19 +146,19 @@ public class Movement extends LinearOpMode {
     //Uses a PID to move robot to XYZ setpoints
     public void Movement() {
         //Sets Multipliers
-        X_PM = 1;
+        X_PM = 5;
         X_IM = 0;
         X_DM = 0;
-        Y_PM = 1;
+        Y_PM = 5;
         Y_IM = 0;
         Y_DM = 0;
-        Z_PM = -1;
+        Z_PM = 5;
         Z_IM = 0;
         Z_DM = 0;
 
         //Gets encoder Positions
-         E1 = -robot.LF_M.getCurrentPosition();
-         E2 = robot.LB_M.getCurrentPosition();
+         E1 = robot.LF_M.getCurrentPosition();
+         E2 = -robot.LB_M.getCurrentPosition();
          E3 = robot.RF_M.getCurrentPosition();
         //Sets encoders to 1 at begining to prevent null error
         if (E1 == 0){
@@ -242,8 +242,8 @@ public class Movement extends LinearOpMode {
             Speed_Setpoint = Slow_Rate*Speed_Setpoint;
             //Prevents robot from going to slow during deacceleration
         }
-        if (Speed_Setpoint <=.265){
-            Speed_Setpoint = .265;
+        if (Speed_Setpoint <=.4){
+            Speed_Setpoint = .4;
         }
         MotorEquation();
         telemetry();

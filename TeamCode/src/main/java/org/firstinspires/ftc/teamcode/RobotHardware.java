@@ -62,6 +62,10 @@ public class RobotHardware{
         IN_M.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         STG_M.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         SOT_M.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        LF_M.setDirection(DcMotor.Direction.REVERSE);
+        LB_M.setDirection(DcMotor.Direction.REVERSE);
+
         LF_M.getCurrentPosition();
         LB_M.getCurrentPosition();
         RF_M.getCurrentPosition();
