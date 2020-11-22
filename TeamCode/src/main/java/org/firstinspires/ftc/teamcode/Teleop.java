@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp
 
@@ -16,6 +18,9 @@ public class Teleop extends LinearOpMode {
     double intakePower;
     double stagerPower;
     double shooterAngle = 0;
+    double Ring1Sensor;
+    double Ring1Switch;
+    double RingCounter = 0;
     @Override
     public void runOpMode() {
 
@@ -26,6 +31,7 @@ public class Teleop extends LinearOpMode {
 
         shooterPower = 0;
         while (opModeIsActive()) {
+            Ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
             double x = gamepad1.left_stick_x;
             double y = gamepad1.left_stick_y;
             double z = gamepad1.right_stick_x;
@@ -34,6 +40,13 @@ public class Teleop extends LinearOpMode {
             robot.LB_M.setPower(y + (x - z));
             robot.RF_M.setPower(-(y + (x + z)));
             robot.RB_M.setPower(-(y - (x - z)));
+
+            if(Ring1Sensor < 7){
+                Ring1Switch = 1;
+            }else if(Ring1Sensor >= 7 && Ring1Switch == 1){
+                RingCounter = RingCounter + 1;
+                Ring1Switch = 0;
+            }
             shooterAngle = shooterAngle + (.01 * (-gamepad2.left_stick_y));
             if (gamepad1.a) {
                 shooterPower = 1;
@@ -53,12 +66,16 @@ public class Teleop extends LinearOpMode {
             if (gamepad1.right_trigger >= .05) {
                 stagerPower = 0;
             }
-            //stagerPower = gamepad2.right_stick_y;
+
+
+
             robot.SOT_M.setPower(shooterPower);
             robot.IN_M.setPower(intakePower);
             robot.STG_M.setPower(stagerPower);
             robot.SOT_S.setPosition(shooterAngle);
+            telemetry.addData("Distance Sensor", Ring1Sensor);
             telemetry.addData("Shooter Angle", shooterAngle);
+            telemetry.addData("Ring Counter", RingCounter);
             telemetry.update();
 
         }
