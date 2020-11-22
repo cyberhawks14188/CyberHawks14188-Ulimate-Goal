@@ -94,7 +94,6 @@ public class Auto extends LinearOpMode {
     double Detected;
 
     double Intial_Speed_Setpoint;
-    //Enters the program method
     public void runOpMode() {
         robot.init(hardwareMap);
         //Resets Encoders
@@ -324,7 +323,7 @@ public class Auto extends LinearOpMode {
         telemetry();
     }
     public void MotorEquation() {
-        //Make Equation
+        //Motor equationo from the PID output
         LF_Distance = y+(x+z);
         LB_Distance = y-(x-z);
         RF_Distance = y-(x+z);
