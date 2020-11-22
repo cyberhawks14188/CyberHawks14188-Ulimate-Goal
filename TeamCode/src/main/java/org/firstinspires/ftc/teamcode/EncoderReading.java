@@ -22,7 +22,7 @@ public class EncoderReading extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
             telemetry.addData("E1", robot.LF_M.getCurrentPosition());
-            telemetry.addData("E1", robot.LB_M.getCurrentPosition());
+            telemetry.addData("E2", robot.LB_M.getCurrentPosition());
             telemetry.addData("E3", robot.RF_M.getCurrentPosition());
             telemetry.update();
         }

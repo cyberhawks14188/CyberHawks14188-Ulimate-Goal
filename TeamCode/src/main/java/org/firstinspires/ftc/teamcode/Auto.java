@@ -226,7 +226,7 @@ public class Auto extends LinearOpMode {
         Y_PM = 1;
         Y_IM = 0;
         Y_DM = 0;
-        Z_PM = -1;
+        Z_PM = 1;
         Z_IM = 0;
         Z_DM = 0;
 
@@ -323,7 +323,7 @@ public class Auto extends LinearOpMode {
         telemetry();
     }
     public void MotorEquation() {
-        //Motor equationo from the PID output
+        //Motor equation from the PID output
         LF_Distance = y+(x+z);
         LB_Distance = y-(x-z);
         RF_Distance = y-(x+z);
