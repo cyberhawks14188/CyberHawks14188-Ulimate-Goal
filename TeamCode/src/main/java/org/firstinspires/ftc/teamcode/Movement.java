@@ -96,6 +96,7 @@ public class Movement extends LinearOpMode {
         robot.LF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Detected = 0;
 
         //Waits for start to be pressed
         waitForStart();
@@ -151,7 +152,7 @@ public class Movement extends LinearOpMode {
         Y_PM = 1;
         Y_IM = 0;
         Y_DM = 0;
-        Z_PM = 1;
+        Z_PM = -1;
         Z_IM = 0;
         Z_DM = 0;
 
@@ -159,7 +160,7 @@ public class Movement extends LinearOpMode {
          E1 = -robot.LF_M.getCurrentPosition();
          E2 = robot.LB_M.getCurrentPosition();
          E3 = robot.RF_M.getCurrentPosition();
-        //Sets encoders to 1 at begining to prevent the robot from not moving due to the values being 0
+        //Sets encoders to 1 at begining to prevent null error
         if (E1 == 0){
             E1 = 1;
         }
@@ -241,7 +242,6 @@ public class Movement extends LinearOpMode {
             Speed_Setpoint = Slow_Rate*Speed_Setpoint;
             //Prevents robot from going to slow during deacceleration
         }
-        //robot is stoped before reaching setpoint increse speed
         if (Speed_Setpoint <=.265){
             Speed_Setpoint = .265;
         }
