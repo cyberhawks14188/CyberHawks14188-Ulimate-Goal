@@ -1,32 +1,24 @@
 package org.firstinspires.ftc.teamcode;
 //Imports RobotCore
-import java.util.List;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
+
 //Creates program Class
 @Autonomous
 //Sets name
-public class Auto extends LinearOpMode {
+public class Movement extends LinearOpMode {
     RobotHardware robot = new RobotHardware();
-    //Sets up Vuforia
-    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
-    private static final String LABEL_FIRST_ELEMENT = "Quad";
-    private static final String LABEL_SECOND_ELEMENT = "Single";
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
-    //Uses Vuforia Developer Code
-    private static final String VUFORIA_KEY = "AZickLn/////AAABmRdNRU8Vt0+EsSkecZ/dEtdwfmReQRmGjONFJw9IrZwj83V0JqVOw7lVMu8esNz/c2srCeQNiZSotXn5mKGHThTl4m0nN9xTmOVBgIkUOrtkA1rGeUkBw0dPy5AD8pk5L4Mv2yikiYUEXDVsPvVYjsp9p2+SHZNPXSBRL8OUPsUa+DpTQnpdRgtca4ZmRFGwUsfqkj/2pTz3/aS8KpFzZ6mjMVKJbJwiZnMhND5Bhy600+NNUNiTka0g6E+9lDEBQI5H0XVkEGCjHIFA0F8Z7L4iIZhotBPNB8kx3ep3MSRQSGg/yrzNIM4av2BqM2JVohuQFh2uSWyDJdgEwxtZ6drh3YZIa12CsuSHNkgaas2k";
+
     //Declares Varibles
     double x;
     double y;
@@ -94,6 +86,7 @@ public class Auto extends LinearOpMode {
     double Detected;
 
     double Intial_Speed_Setpoint;
+    //Enters the program method
     public void runOpMode() {
         robot.init(hardwareMap);
         //Resets Encoders
@@ -105,49 +98,9 @@ public class Auto extends LinearOpMode {
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Detected = 0;
 
-        initVuforia();
-        initTfod();
-        if (tfod != null) {
-            tfod.activate();
-        }
-        //recongniton.getLabel() = Single
-        //recongniton.getLabel() = Quad
-        pass = getRuntime() + 10;
-        while (getRuntime() <= pass) {
-            tfod.setZoom(3, 1.78);
-            if (tfod != null) {
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Object Detected", updatedRecognitions.size());
-                    // step through the list of recognitions and display boundary info.
-                    int i = 0;
-                    for (Recognition recognition : updatedRecognitions) {
-                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                recognition.getLeft(), recognition.getTop());
-                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
-                        if (recognition.getLabel() == "Single") {
-                            Detected = 1;
-                        }
-                        if (recognition.getLabel() == "Quad")
-                            Detected = 2;
-                    }
-                    telemetry();
-                    telemetry.update();
-                }
-            }
-            runtime = getRuntime();
-
-
-        }
-        if (tfod != null) {
-            tfod.shutdown();
-        }
         //Waits for start to be pressed
         waitForStart();
         //Set position robot will go to
-        if (Detected == 0) {
             Distance_From = 1000;
             Speed_Setpoint = .5;
             X_setpoint = 0;
@@ -159,34 +112,7 @@ public class Auto extends LinearOpMode {
                 Movement();
             }
             stop_motors();
-        }
-        if(Detected == 1){
-            Distance_From = 1000;
-            Speed_Setpoint = .5;
-            X_setpoint = 0;
-            Y_setpoint = 6000;
-            Z_setpoint = 0;
-            Slow_Down_Distance = 1000;
-            //Runs movement until 300 away
-            while (Distance_From>=300) {
-                Movement();
 
-            }
-            stop_motors();
-        }
-        if(Detected == 2){
-            Distance_From = 1000;
-            Speed_Setpoint = .5;
-            X_setpoint = 0;
-            Y_setpoint = 9000;
-            Z_setpoint = 0;
-            Slow_Down_Distance = 1000;
-            //Runs movement until 300 away
-            while (Distance_From>=300) {
-                Movement();
-            }
-            stop_motors();
-        }
         while(opModeIsActive()){
             telemetry();
         }
@@ -323,7 +249,7 @@ public class Auto extends LinearOpMode {
         telemetry();
     }
     public void MotorEquation() {
-        //Motor equationo from the PID output
+        //Make Equation
         LF_Distance = y+(x+z);
         LB_Distance = y-(x-z);
         RF_Distance = y-(x+z);
@@ -337,29 +263,5 @@ public class Auto extends LinearOpMode {
         robot.RB_M.setPower((Speed_Setpoint*(RB_Distance/Highest_Motor_Power)));
     }
     //Runs Encoders
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-    }
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.75f;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
-    }
 }
