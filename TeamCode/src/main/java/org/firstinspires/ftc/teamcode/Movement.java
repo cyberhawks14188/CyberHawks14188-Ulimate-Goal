@@ -32,6 +32,7 @@ public class Movement extends LinearOpMode {
     double  X_Intergral;
     double Y_Intergral;
     double Z_Sum_of_Errors;
+    double lastDistanceFrom;
     double X_Sum_of_Errors;
     double Y_Sum_of_Errors;
     double Z_Last_Error;
@@ -43,6 +44,7 @@ public class Movement extends LinearOpMode {
     double Z_Derivitive;
     double X_Derivitive;
     double Y_Derivitive;
+    int moving;
     double z_encoder_diffrence;
     double Distance;
     double y_error;
@@ -64,9 +66,12 @@ public class Movement extends LinearOpMode {
     double Z_setpoint;
     double Y_Distiance_From_Setpoint;
     double X_setpoint;
+    double expectedSpeedSetpoint;
     double Y_setpoint;
     double LF_Distance;
     double LB_Distance;
+    double distanceWithin;
+    double Velocity;
     int E1;
     int E2;
     int E3;
@@ -76,7 +81,9 @@ public class Movement extends LinearOpMode {
     double Highest_Motor_Power;
     double Distance_From ;
     int Y_Average;
+    double startPosition;
     double Y_A2;
+    int loopcount;
     int Slow_Down_Distance;
     double Slow_Rate;
 
@@ -102,14 +109,13 @@ public class Movement extends LinearOpMode {
         waitForStart();
         //Set position robot will go to
             Distance_From = 1000;
+            distanceWithin = 100;
+            startPosition = 0;
             Speed_Setpoint = .5;
-            X_setpoint = 0;
-            Y_setpoint = 3000;
-            Z_setpoint = 0;
-            Slow_Down_Distance = 1000;
+            expectedSpeedSetpoint = .5;
             //Runs movement until 300 away
-            while (Distance_From >= 300) {
-                Movement();
+        while (opModeIsActive()) {
+                Movement(0, 10000, 0, 1000, 1000);
             }
             stop_motors();
 
@@ -144,7 +150,7 @@ public class Movement extends LinearOpMode {
         telemetry.update();
     }
     //Uses a PID to move robot to XYZ setpoints
-    public void Movement() {
+    public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
         X_PM = 1;
         X_IM = 0;
@@ -231,19 +237,45 @@ public class Movement extends LinearOpMode {
             X_setpoint = X_Final_Setpoint;
          }
 */
+
         //Uses pythagrium therom to find distance and distance from
         Distance = Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2)));
         Y_A2 = Y_setpoint - Y_Average;
         X_B2 = X_setpoint - E2;
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
         //If we are below our slow down distance begin our slow down
+        loopcount = loopcount + 1;
+        if(loopcount >= 20){
+            Velocity = Distance_From - lastDistanceFrom;
+            loopcount = 0;
+            lastDistanceFrom = Velocity;
+        if (accelerationDistance >= Distance-Distance_From){
+            Speed_Setpoint = ((Distance - Distance_From)/accelerationDistance)*expectedSpeedSetpoint;
+        }
         if (Distance_From <= Slow_Down_Distance) {
-            Slow_Rate = (Distance_From/Slow_Down_Distance);
-            Speed_Setpoint = Slow_Rate*Speed_Setpoint;
+
+            if (Velocity >= 10 & Distance_From >= distanceWithin){
+                Slow_Rate = (Distance_From/Slow_Down_Distance);
+            }
+            Speed_Setpoint = Slow_Rate*expectedSpeedSetpoint;
             //Prevents robot from going to slow during deacceleration
         }
-        if (Speed_Setpoint <=.265){
+
+        if(Velocity <= 10 & Distance_From >= distanceWithin)   {
+                Speed_Setpoint = Speed_Setpoint+.025;
+            }
+
+        if (Speed_Setpoint <=.265) {
             Speed_Setpoint = .265;
+        }
+        if (Speed_Setpoint >= 1){
+            Speed_Setpoint = 1;
+        }
+        //Velocity program
+        //Average Encoder Count Sample= Curent encoder count-Previeous encoder count
+
+        //Velocity = ((Encooder readings - Start position)/3)/time-start time
+
         }
         MotorEquation();
         telemetry();
