@@ -249,9 +249,11 @@ public class Movement extends LinearOpMode {
             Velocity = Distance_From - lastDistanceFrom;
             loopcount = 0;
             lastDistanceFrom = Velocity;
+            /*
         if (accelerationDistance >= Distance-Distance_From){
             Speed_Setpoint = ((Distance - Distance_From)/accelerationDistance)*expectedSpeedSetpoint;
         }
+        */
         if (Distance_From <= Slow_Down_Distance) {
 
             if (Velocity >= 10 & Distance_From >= distanceWithin){
