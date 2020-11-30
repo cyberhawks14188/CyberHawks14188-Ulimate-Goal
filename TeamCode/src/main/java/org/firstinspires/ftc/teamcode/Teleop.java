@@ -20,6 +20,7 @@ public class Teleop extends LinearOpMode {
     double shooterAngle = 0;
     double Ring1Sensor;
     double Ring1Switch;
+    double Ring2Switch;
     double Ring2Sensor;
     double RingCounter = 0;
     @Override
@@ -62,11 +63,14 @@ public class Teleop extends LinearOpMode {
             if (gamepad1.dpad_right) {
                 stagerPower = 0;
             }
-
+            if(Ring2Sensor < 7){
+                Ring2Switch = 1;
+            }
             if (gamepad1.left_trigger >= .05) {
                 stagerPower = -1;
+                Ring2Switch = 0;
             }
-            if (gamepad1.left_bumper || Ring2Sensor < 7) {
+            if (gamepad1.left_bumper || Ring2Switch == 1) {
                 stagerPower = 0;
             }
             if (gamepad1.right_trigger >=.05){
