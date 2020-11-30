@@ -66,12 +66,12 @@ public class Teleop extends LinearOpMode {
             if(Ring2Sensor < 7){
                 Ring2Switch = 1;
             }
+            if (gamepad1.left_bumper || Ring2Switch == 1) {
+                stagerPower = 0;
+            }
             if (gamepad1.left_trigger >= .05) {
                 stagerPower = -1;
                 Ring2Switch = 0;
-            }
-            if (gamepad1.left_bumper || Ring2Switch == 1) {
-                stagerPower = 0;
             }
             if (gamepad1.right_trigger >=.05){
                 intakePower = -1;
