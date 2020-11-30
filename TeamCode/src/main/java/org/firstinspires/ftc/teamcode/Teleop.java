@@ -20,6 +20,8 @@ public class Teleop extends LinearOpMode {
     double shooterAngle = 0;
     double Ring1Sensor;
     double Ring1Switch;
+    double Ring2Switch;
+    double Ring2Sensor;
     double RingCounter = 0;
     @Override
     public void runOpMode() {
@@ -32,6 +34,7 @@ public class Teleop extends LinearOpMode {
         shooterPower = 0;
         while (opModeIsActive()) {
             Ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
+            Ring2Sensor = robot.Ring2_DS.getDistance(DistanceUnit.INCH);
             double x = -gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
             double z = -gamepad1.right_stick_x;
@@ -60,11 +63,15 @@ public class Teleop extends LinearOpMode {
             if (gamepad1.dpad_right) {
                 stagerPower = 0;
             }
-            if (gamepad1.left_bumper) {
-                 stagerPower = 0;
+            if(Ring2Sensor < 7){
+                Ring2Switch = 1;
+            }
+            if (gamepad1.left_bumper || Ring2Switch == 1) {
+                stagerPower = 0;
             }
             if (gamepad1.left_trigger >= .05) {
                 stagerPower = -1;
+                Ring2Switch = 0;
             }
             if (gamepad1.right_trigger >=.05){
                 intakePower = -1;

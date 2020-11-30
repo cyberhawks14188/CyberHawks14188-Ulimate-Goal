@@ -111,7 +111,6 @@ public class Movement extends LinearOpMode {
             Distance_From = 1000;
             distanceWithin = 100;
             startPosition = 0;
-            Speed_Setpoint = .5;
             expectedSpeedSetpoint = .5;
             //Runs movement until 300 away
         while (opModeIsActive()) {
@@ -140,6 +139,7 @@ public class Movement extends LinearOpMode {
         telemetry.addData("Speed_Setpoint", Speed_Setpoint);
         telemetry.addData("Y", y);
         telemetry.addData("X", x);
+        telemetry.addData("Velocity", Velocity);
         telemetry.addData("Y_Setpoint", Y_setpoint);
         telemetry.addData("X_Setpoint", X_setpoint);
         telemetry.addData("LF", Speed_Setpoint*(LF_Distance/Highest_Motor_Power));
@@ -248,25 +248,23 @@ public class Movement extends LinearOpMode {
         if(loopcount >= 20){
             Velocity = Distance_From - lastDistanceFrom;
             loopcount = 0;
-            lastDistanceFrom = Velocity;
+            lastDistanceFrom = Distance_From;
             /*
-        if (accelerationDistance >= Distance-Distance_From){
+        if (accelerationDistance >= Distance - Distance_From){
             Speed_Setpoint = ((Distance - Distance_From)/accelerationDistance)*expectedSpeedSetpoint;
         }
         */
+
         if (Distance_From <= Slow_Down_Distance) {
 
-            if (Velocity >= 10 & Distance_From >= distanceWithin){
-                Slow_Rate = (Distance_From/Slow_Down_Distance);
+            if (Velocity >= 10 & Distance_From >= distanceWithin) {
+                Speed_Setpoint = (Distance_From / Slow_Down_Distance) * expectedSpeedSetpoint;
             }
-            Speed_Setpoint = Slow_Rate*expectedSpeedSetpoint;
             //Prevents robot from going to slow during deacceleration
-        }
-
-        if(Velocity <= 10 & Distance_From >= distanceWithin)   {
-                Speed_Setpoint = Speed_Setpoint+.025;
+            if (Velocity <= 10 & Distance_From >= distanceWithin) {
+                Speed_Setpoint = Speed_Setpoint + .0005;
             }
-
+        }
         if (Speed_Setpoint <=.265) {
             Speed_Setpoint = .265;
         }

@@ -21,6 +21,7 @@ public class RobotHardware{
     public DcMotor SOT_M;
     public Servo SOT_S;
     public DistanceSensor Ring1_DS;
+    public DistanceSensor Ring2_DS;
 
 
     //Create Hardware map
@@ -40,6 +41,7 @@ public class RobotHardware{
         SOT_S = hardwareMap.get(Servo.class, "SOT_S");
 
         Ring1_DS = hardwareMap.get(DistanceSensor.class, "Ring1_DS");
+        Ring2_DS = hardwareMap.get(DistanceSensor.class, "Ring2_DS");
 
 
         //servo = hardwareMap.get(Servo.class, "servo");
