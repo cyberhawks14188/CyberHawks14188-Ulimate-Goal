@@ -67,7 +67,7 @@ public class Teleop extends LinearOpMode {
                 stagerPower = -1;
             }
             if (gamepad1.right_trigger >=.05){
-                intakePower = 1;
+                intakePower = -1;
             }
             if(gamepad1.right_bumper){
                 intakePower = 0;
