@@ -18,7 +18,7 @@ import java.util.List;
 //Sets name
 public class Movement extends LinearOpMode {
     RobotHardware robot = new RobotHardware();
-
+    Method_and_Varibles a = new Method_and_Varibles();
     //Declares Varibles
     double x;
     double y;
@@ -27,6 +27,7 @@ public class Movement extends LinearOpMode {
     double x_error;
     double z_porportional;
     double x_porportional;
+    double previousTime;
     double y_porportional;
     double Z_Intergral;
     double  X_Intergral;
@@ -34,13 +35,18 @@ public class Movement extends LinearOpMode {
     double Z_Sum_of_Errors;
     double lastDistanceFrom;
     double X_Sum_of_Errors;
+    double targetVelocity;
     double Y_Sum_of_Errors;
     double Z_Last_Error;
     double X_Last_Error;
     double Y_Last_Error;
     double Z_Diffrence_of_Errors;
     double X_Diffrence_of_Errors;
+    double velocityDiffrenceOfErrors;
+    double velocityLastError;
     double Y_Diffrence_of_Errors;
+    double VIM;
+    double velocityIntergral;
     double Z_Derivitive;
     double X_Derivitive;
     double Y_Derivitive;
@@ -66,12 +72,17 @@ public class Movement extends LinearOpMode {
     double Z_setpoint;
     double Y_Distiance_From_Setpoint;
     double X_setpoint;
+    double VPM;
+    double velocityPorportion;
     double expectedSpeedSetpoint;
     double Y_setpoint;
     double LF_Distance;
+    double velocityError;
     double LB_Distance;
     double distanceWithin;
     double Velocity;
+    double velocityCorrection;
+    double velocitySetpoint;
     int E1;
     int E2;
     int E3;
@@ -83,19 +94,27 @@ public class Movement extends LinearOpMode {
     int Y_Average;
     double startPosition;
     double Y_A2;
+    double velocitySumOfErrors;
     int loopcount;
     int Slow_Down_Distance;
-    double Slow_Rate;
+    double veloictyDerivitive;
 
+    double VDM;
+    double Slow_Rate;
     double X_B2;
     int breakout;
     double runtime;
     double Detected;
 
     double Intial_Speed_Setpoint;
+    public Object Auto;
+
     //Enters the program method
     public void runOpMode() {
         robot.init(hardwareMap);
+
+
+
         //Resets Encoders
         robot.LF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -112,6 +131,7 @@ public class Movement extends LinearOpMode {
             distanceWithin = 100;
             startPosition = 0;
             expectedSpeedSetpoint = .5;
+            velocitySetpoint = 10;
             //Runs movement until 300 away
         while (opModeIsActive()) {
                 Movement(0, 10000, 0, 1000, 1000);
@@ -143,6 +163,7 @@ public class Movement extends LinearOpMode {
         telemetry.addData("Y_Setpoint", Y_setpoint);
         telemetry.addData("X_Setpoint", X_setpoint);
         telemetry.addData("LF", Speed_Setpoint*(LF_Distance/Highest_Motor_Power));
+        telemetry.addData("Time", time);
         telemetry.addData("LB", Speed_Setpoint*(LB_Distance/Highest_Motor_Power));
         telemetry.addData("RF", Speed_Setpoint*(RF_Distance/Highest_Motor_Power));
         telemetry.addData("RB", Speed_Setpoint*(RB_Distance/Highest_Motor_Power));
@@ -158,9 +179,12 @@ public class Movement extends LinearOpMode {
         Y_PM = 1;
         Y_IM = 0;
         Y_DM = 0;
-        Z_PM = -1;
+        Z_PM = 1;
         Z_IM = 0;
         Z_DM = 0;
+        VPM = 0;
+        VIM = 0;
+        VDM = 0;
 
         //Gets encoder Positions
          E1 = -robot.LF_M.getCurrentPosition();
@@ -195,6 +219,7 @@ public class Movement extends LinearOpMode {
         //X Porportional
         x_porportional = x_error * X_PM;
         //X Intergral
+
         X_Sum_of_Errors = X_Sum_of_Errors + x_error;
         X_Intergral = X_Sum_of_Errors * X_IM;
         //X Derivitve
@@ -243,43 +268,42 @@ public class Movement extends LinearOpMode {
         Y_A2 = Y_setpoint - Y_Average;
         X_B2 = X_setpoint - E2;
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
-        //If we are below our slow down distance begin our slow down
         loopcount = loopcount + 1;
-        if(loopcount >= 20){
+        time = getRuntime();
+        if(time >= previousTime){
             Velocity = Distance_From - lastDistanceFrom;
-            loopcount = 0;
+            previousTime = time + .1;
             lastDistanceFrom = Distance_From;
-            /*
-        if (accelerationDistance >= Distance - Distance_From){
-            Speed_Setpoint = ((Distance - Distance_From)/accelerationDistance)*expectedSpeedSetpoint;
         }
-        */
+        velocityError = velocitySetpoint - Velocity;
+        velocityPorportion = velocityError * VPM;
+        velocitySumOfErrors = velocitySumOfErrors + Velocity;
+        velocityIntergral = velocitySumOfErrors * VIM;
+        velocityDiffrenceOfErrors = velocityError - velocityLastError;
+        veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
+        velocityCorrection = velocityPorportion + velocityIntergral + veloictyDerivitive;
+
+        if (accelerationDistance >= Distance - Distance_From){
+            velocitySetpoint = ((Distance - Distance_From)/accelerationDistance)*expectedSpeedSetpoint;
+        }
 
         if (Distance_From <= Slow_Down_Distance) {
-
+            //If we are below our slow down distance begin our slow down
             if (Velocity >= 10 & Distance_From >= distanceWithin) {
-                Speed_Setpoint = (Distance_From / Slow_Down_Distance) * expectedSpeedSetpoint;
+                velocitySetpoint = (Distance_From / Slow_Down_Distance) * expectedSpeedSetpoint;
             }
             //Prevents robot from going to slow during deacceleration
-            if (Velocity <= 10 & Distance_From >= distanceWithin) {
-                Speed_Setpoint = Speed_Setpoint + .0005;
-            }
         }
-        if (Speed_Setpoint <=.265) {
-            Speed_Setpoint = .265;
+        if (velocitySetpoint <=.265) {
+            velocitySetpoint = .265;
         }
-        if (Speed_Setpoint >= 1){
-            Speed_Setpoint = 1;
-        }
-        //Velocity program
-        //Average Encoder Count Sample= Curent encoder count-Previeous encoder count
-
-        //Velocity = ((Encooder readings - Start position)/3)/time-start time
-
+        if (velocitySetpoint >= 1){
+            velocitySetpoint = 1;
         }
         MotorEquation();
         telemetry();
-    }
+        }
+
     public void MotorEquation() {
         //Make Equation
         LF_Distance = y+(x+z);
@@ -289,10 +313,10 @@ public class Movement extends LinearOpMode {
         //Finds Highest power out of the drive motors
         Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Distance), Math.abs(RB_Distance)), Math.max(Math.abs(LF_Distance), Math.abs(LB_Distance)));
         //Sets motors
-        robot.LF_M.setPower((Speed_Setpoint*(LF_Distance/Highest_Motor_Power)));
-        robot.LB_M.setPower((Speed_Setpoint*(LB_Distance/Highest_Motor_Power)));
-        robot.RF_M.setPower((Speed_Setpoint*(RF_Distance/Highest_Motor_Power)));
-        robot.RB_M.setPower((Speed_Setpoint*(RB_Distance/Highest_Motor_Power)));
+        robot.LF_M.setPower((velocityCorrection*(LF_Distance/Highest_Motor_Power)));
+        robot.LB_M.setPower((velocityCorrection*(LB_Distance/Highest_Motor_Power)));
+        robot.RF_M.setPower((velocityCorrection*(RF_Distance/Highest_Motor_Power)));
+        robot.RB_M.setPower((velocityCorrection*(RB_Distance/Highest_Motor_Power)));
     }
     //Runs Encoders
 
