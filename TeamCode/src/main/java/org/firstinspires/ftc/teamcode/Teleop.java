@@ -26,8 +26,7 @@ public class Teleop extends LinearOpMode {
     double RBM;
     boolean stagerLoop = false;
     boolean stagerControl = false;
-    int cycleCounter = 0;
-    int oldCycleCounter = 0;
+    boolean shooterControl = false;
 
     @Override
     public void runOpMode() {
@@ -38,6 +37,7 @@ public class Teleop extends LinearOpMode {
         waitForStart();
         //main loop
         while (opModeIsActive()) {
+
             //Stager Control
             //Takes a reading from all of the distance sensors
             ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
@@ -50,7 +50,6 @@ public class Teleop extends LinearOpMode {
                     stagerPower = -1;
                     stopper = .1;
                     stagerLoop = true;
-
                 }else{
                     intakePower = 0;
                     stagerPower = 0;
@@ -60,32 +59,53 @@ public class Teleop extends LinearOpMode {
             }else if(!gamepad1.a){
                 stagerControl = false;
             }
-
-            if(stagerLoop == true){
-                if(ring1Sensor < 2 && ring2Sensor< 2 && ring3Sensor < 4){
+            if(stagerLoop == true && ring1Sensor < 2 && ring2Sensor< 2 && ring3Sensor < 4){
                     intakePower = 0;
                     stagerPower = 0;
-                }
             }
-
-
-
-
-
-
             if(gamepad1.b){
                 stopper = .5;
                 stagerPower = -1;
             }
 
+            //Shooter Control
+            //Shooter angle
+            if(gamepad1.right_trigger > .05){
+                shooterAngle = shooterAngle - .01;
+            }else if(gamepad1.left_trigger > .05){
+                shooterAngle = shooterAngle + .01;
+            }
+            //Stopper Servo Control
+            if(gamepad1.x){
+                stopper = .1;
+            }else if(gamepad1.y){
+                stopper = .5;
+            }
+            //Flywheel Speed Control
+            if (gamepad1.left_bumper && shooterControl == false) {
+                if(shooterPower == 0){
+                    shooterPower = .7;
+                }else{
+                    shooterPower = 0;
+                }
+                shooterControl = true;
+            }else if(!gamepad1.left_bumper){
+                shooterControl = false;
+            }
+            if (gamepad1.dpad_up) {
+                shooterPower = shooterPower + .005;
+            }
+            if (gamepad1.dpad_down) {
+                shooterPower = shooterPower - .005;
+            }
+
+            //Gamepad2 manual controls
             //manual stager power control
             if(gamepad2.left_trigger > .05){
                 stagerPower = 0;
             }else if(gamepad2.left_bumper){
                 stagerPower = -1;
             }
-
-
             //Intake Control
             if (gamepad2.right_trigger >=.05){
                 intakePower = 0;
@@ -95,10 +115,10 @@ public class Teleop extends LinearOpMode {
             }
 
             //Drivetrain Control
-            if(gamepad1.right_bumper && yzSpeedSetPoint == 1){
+            if(gamepad1.right_bumper){
                 yzSpeedSetPoint = .4;
                 xSpeedSetPoint = .5;
-            }else if(gamepad1.right_bumper && yzSpeedSetPoint != 1){
+            }else{
                 yzSpeedSetPoint = 1;
                 xSpeedSetPoint = 1;
             }
@@ -110,35 +130,6 @@ public class Teleop extends LinearOpMode {
             RFM = y + (x + z);
             RBM = y - (x - z);
             highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
-
-
-
-            //Shooter Control
-            //Shooter angle
-            if(gamepad1.right_trigger > .05){
-                shooterAngle = shooterAngle - .01;
-            }else if(gamepad1.left_trigger > .05){
-                shooterAngle = shooterAngle + .01;
-            }
-
-            //Stopper Servo Control
-            if(gamepad1.x){
-                stopper = .1;
-            }else if(gamepad1.y){
-                stopper = .5;
-            }
-            //Flywheel Speed Control
-            if (gamepad1.left_bumper && shooterPower == 0) {
-                shooterPower = .7;
-            }else if(gamepad1.left_bumper && shooterPower != 0){
-                shooterPower = 0;
-            }
-            if (gamepad1.dpad_up) {
-                shooterPower = shooterPower + .005;
-            }
-            if (gamepad1.dpad_down) {
-                shooterPower = shooterPower - .005;
-            }
 
             //Setting Motor Power
             robot.LF_M.setPower(LFM);
