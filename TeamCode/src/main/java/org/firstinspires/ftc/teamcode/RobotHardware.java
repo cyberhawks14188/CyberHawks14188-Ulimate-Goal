@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //import com.qualcomm.robotcore.hardware.TouchSensor
 
 public class RobotHardware{
@@ -20,8 +19,10 @@ public class RobotHardware{
     public DcMotor STG_M;
     public DcMotor SOT_M;
     public Servo SOT_S;
+    public Servo STOP_S;
     public DistanceSensor Ring1_DS;
     public DistanceSensor Ring2_DS;
+    public DistanceSensor Ring3_DS;
 
 
     //Create Hardware map
@@ -39,10 +40,11 @@ public class RobotHardware{
         STG_M = hardwareMap.get(DcMotor.class, "STG_M");
         SOT_M = hardwareMap.get(DcMotor.class, "SOT_M");
         SOT_S = hardwareMap.get(Servo.class, "SOT_S");
+        STOP_S = hardwareMap.get(Servo.class, "STOP_S");
 
         Ring1_DS = hardwareMap.get(DistanceSensor.class, "Ring1_DS");
         Ring2_DS = hardwareMap.get(DistanceSensor.class, "Ring2_DS");
-
+        Ring3_DS = hardwareMap.get(DistanceSensor.class, "Ring3_DS");
 
         //servo = hardwareMap.get(Servo.class, "servo");
 

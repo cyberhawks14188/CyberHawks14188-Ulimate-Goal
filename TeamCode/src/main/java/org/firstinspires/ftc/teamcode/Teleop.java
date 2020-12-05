@@ -1,96 +1,163 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp
-
-
 public class Teleop extends LinearOpMode {
 
-
+    //Declares Variables
     double shooterPower;
     double intakePower;
     double stagerPower;
-    double shooterAngle = 0;
-    double Ring1Sensor;
-    double Ring1Switch;
-    double Ring2Switch;
-    double Ring2Sensor;
-    double RingCounter = 0;
+    double shooterAngle = .21;
+    double ring1Sensor;
+    double ring2Sensor;
+    double ring3Sensor;
+    double stopper;
+    double xSpeedSetPoint = 1;
+    double yzSpeedSetPoint = 1;
+    double highestMotorPower;
+    double LFM;
+    double LBM;
+    double RFM;
+    double RBM;
+    boolean stagerLoop = false;
+    boolean stagerControl = false;
+    int cycleCounter = 0;
+    int oldCycleCounter = 0;
+
     @Override
     public void runOpMode() {
-
-
+        //Calling upon the HardwareMap
         RobotHardware robot = new RobotHardware();
         robot.init(hardwareMap);
+        //Waits for the play button to be pressed
         waitForStart();
-
-        shooterPower = 0;
+        //main loop
         while (opModeIsActive()) {
-            Ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
-            Ring2Sensor = robot.Ring2_DS.getDistance(DistanceUnit.INCH);
-            double x = -gamepad1.left_stick_x;
-            double y = -gamepad1.left_stick_y;
-            double z = -gamepad1.right_stick_x;
+            //Stager Control
+            //Takes a reading from all of the distance sensors
+            ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
+            ring2Sensor = robot.Ring2_DS.getDistance(DistanceUnit.INCH);
+            ring3Sensor = robot.Ring3_DS.getDistance(DistanceUnit.INCH);
 
-            robot.LF_M.setPower(y - (x + z));
-            robot.LB_M.setPower(y + (x - z));
-            robot.RF_M.setPower(y + (x + z));
-            robot.RB_M.setPower(y - (x - z));
+            if(gamepad1.a && stagerControl == false){
+                if(intakePower == 0){
+                    intakePower = -1;
+                    stagerPower = -1;
+                    stopper = .1;
+                    stagerLoop = true;
 
-            if(Ring1Sensor < 7){
-                Ring1Switch = 1;
-            }else if(Ring1Sensor >= 7 && Ring1Switch == 1){
-                RingCounter = RingCounter + 1;
-                Ring1Switch = 0;
+                }else{
+                    intakePower = 0;
+                    stagerPower = 0;
+                    stagerLoop = false;
+                }
+                stagerControl = true;
+            }else if(!gamepad1.a){
+                stagerControl = false;
             }
-            shooterAngle = shooterAngle + (.01 * (-gamepad2.left_stick_y));
-            if (gamepad1.a) {
-                shooterPower = 1;
+
+            if(stagerLoop == true){
+                if(ring1Sensor < 2 && ring2Sensor< 2 && ring3Sensor < 4){
+                    intakePower = 0;
+                    stagerPower = 0;
+                }
             }
-            if (gamepad1.b) {
-                shooterPower = 0;
-            }
-            if (gamepad1.dpad_down) {
+
+
+
+
+
+
+            if(gamepad1.b){
+                stopper = .5;
                 stagerPower = -1;
             }
-            if (gamepad1.dpad_right) {
+
+            //manual stager power control
+            if(gamepad2.left_trigger > .05){
                 stagerPower = 0;
-            }
-            if(Ring2Sensor < 7){
-                Ring2Switch = 1;
-            }
-            if (gamepad1.left_bumper || Ring2Switch == 1) {
-                stagerPower = 0;
-            }
-            if (gamepad1.left_trigger >= .05) {
+            }else if(gamepad2.left_bumper){
                 stagerPower = -1;
-                Ring2Switch = 0;
             }
-            if (gamepad1.right_trigger >=.05){
-                intakePower = -1;
-            }
-            if(gamepad1.right_bumper){
+
+
+            //Intake Control
+            if (gamepad2.right_trigger >=.05){
                 intakePower = 0;
             }
+            if(gamepad2.right_bumper){
+                intakePower = -1;
+            }
+
+            //Drivetrain Control
+            if(gamepad1.right_bumper && yzSpeedSetPoint == 1){
+                yzSpeedSetPoint = .4;
+                xSpeedSetPoint = .5;
+            }else if(gamepad1.right_bumper && yzSpeedSetPoint != 1){
+                yzSpeedSetPoint = 1;
+                xSpeedSetPoint = 1;
+            }
+            double x = xSpeedSetPoint * -gamepad1.left_stick_x;
+            double y = yzSpeedSetPoint * -gamepad1.left_stick_y;
+            double z = yzSpeedSetPoint * -gamepad1.right_stick_x;
+            LFM = y - (x + z);
+            LBM = y + (x - z);
+            RFM = y + (x + z);
+            RBM = y - (x - z);
+            highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
 
 
+
+            //Shooter Control
+            //Shooter angle
+            if(gamepad1.right_trigger > .05){
+                shooterAngle = shooterAngle - .01;
+            }else if(gamepad1.left_trigger > .05){
+                shooterAngle = shooterAngle + .01;
+            }
+
+            //Stopper Servo Control
+            if(gamepad1.x){
+                stopper = .1;
+            }else if(gamepad1.y){
+                stopper = .5;
+            }
+            //Flywheel Speed Control
+            if (gamepad1.left_bumper && shooterPower == 0) {
+                shooterPower = .7;
+            }else if(gamepad1.left_bumper && shooterPower != 0){
+                shooterPower = 0;
+            }
+            if (gamepad1.dpad_up) {
+                shooterPower = shooterPower + .005;
+            }
+            if (gamepad1.dpad_down) {
+                shooterPower = shooterPower - .005;
+            }
+
+            //Setting Motor Power
+            robot.LF_M.setPower(LFM);
+            robot.LB_M.setPower(LBM);
+            robot.RF_M.setPower(RFM);
+            robot.RB_M.setPower(RBM);
             robot.SOT_M.setPower(shooterPower);
             robot.IN_M.setPower(intakePower);
             robot.STG_M.setPower(stagerPower);
             robot.SOT_S.setPosition(shooterAngle);
-            telemetry.addData("Distance Sensor", Ring1Sensor);
+            robot.STOP_S.setPosition(stopper);
+
+            //Displaying Telemetry
+            telemetry.addData("stagerControl", stagerControl);
+            telemetry.addData("DS1", ring1Sensor);
+            telemetry.addData("DS2", ring2Sensor);
+            telemetry.addData("DS3", ring3Sensor);
             telemetry.addData("Shooter Angle", shooterAngle);
-            telemetry.addData("Ring Counter", RingCounter);
             telemetry.update();
-
         }
-
     }
 }
