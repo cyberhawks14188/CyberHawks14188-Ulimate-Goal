@@ -97,6 +97,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
     public void runOpMode(){
 
     }
+
     public double Intial_Speed_Setpoint;
      public void telemetry(){
          telemetry.addData("Time", time);
@@ -120,6 +121,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
          telemetry.update();
      }
      public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
+         robot.init(hardwareMap);
          //Sets Multipliers
          X_PM = 1;
          X_IM = 0;
