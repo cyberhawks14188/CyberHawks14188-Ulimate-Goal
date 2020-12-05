@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 @Disabled
- class Method_and_Varibles extends LinearOpMode {
+ public class Method_and_Varibles extends LinearOpMode{
      RobotHardware robot = new RobotHardware();
      public double x;
      public double y;
@@ -93,12 +93,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
     public int breakout;
     public double runtime;
     public double Detected;
-
+    public double Intial_Speed_Setpoint;
     public void runOpMode(){
 
     }
 
-    public double Intial_Speed_Setpoint;
+
      public void telemetry(){
          telemetry.addData("Time", time);
          telemetry.addData("Velocity", actualVelocity);
@@ -132,7 +132,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
          Z_PM = 1;
          Z_IM = 0;
          Z_DM = 0;
-         VPM = 0;
+         VPM = 1;
          VIM = 0;
          VDM = 0;
 
