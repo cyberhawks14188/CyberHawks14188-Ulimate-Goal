@@ -98,7 +98,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
     }
     public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
-        robot.init(hardwareMap);
         //Sets Multipliers
         X_PM = 1;
         X_IM = 0;
@@ -189,7 +188,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             X_setpoint = X_Final_Setpoint;
          }
 */
-
         //Uses pythagrium therom to find distance and distance from
         Distance = Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2)));
         Y_A2 = Y_setpoint - Y_Average;

@@ -24,6 +24,7 @@ public class Movement extends LinearOpMode {
     //Enters the program method
     public void runOpMode() {
         robot.init(hardwareMap);
+        a.robot.init(hardwareMap);
         //Resets Encoders
         robot.LF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
