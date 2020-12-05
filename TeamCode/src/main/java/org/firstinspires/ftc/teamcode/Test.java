@@ -8,7 +8,7 @@ public class Test extends LinearOpMode {
     Test_Pull a = new Test_Pull();
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode(){
         robot.init(hardwareMap);
         waitForStart();
         while(opModeIsActive()){
