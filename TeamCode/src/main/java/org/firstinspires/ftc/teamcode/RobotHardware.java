@@ -41,7 +41,6 @@ public class RobotHardware{
         SOT_M = hardwareMap.get(DcMotor.class, "SOT_M");
         SOT_S = hardwareMap.get(Servo.class, "SOT_S");
         STOP_S = hardwareMap.get(Servo.class, "STOP_S");
-
         Ring1_DS = hardwareMap.get(DistanceSensor.class, "Ring1_DS");
         Ring2_DS = hardwareMap.get(DistanceSensor.class, "Ring2_DS");
         Ring3_DS = hardwareMap.get(DistanceSensor.class, "Ring3_DS");

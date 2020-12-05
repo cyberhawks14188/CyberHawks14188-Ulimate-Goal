@@ -97,8 +97,137 @@ import com.qualcomm.robotcore.hardware.DcMotor;
     public void runOpMode(){
 
     }
+    public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
+        robot.init(hardwareMap);
+        //Sets Multipliers
+        X_PM = 1;
+        X_IM = 0;
+        X_DM = 0;
+        Y_PM = 1;
+        Y_IM = 0;
+        Y_DM = 0;
+        Z_PM = 1;
+        Z_IM = 0;
+        Z_DM = 0;
+        VPM = 1;
+        VIM = 0;
+        VDM = 0;
 
+        //Gets encoder Positions
+        E1 = -robot.LF_M.getCurrentPosition();
+        E2 = robot.LB_M.getCurrentPosition();
+        E3 = robot.RF_M.getCurrentPosition();
+        //Sets encoders to 1 at begining to prevent null error
+        if (E1 == 0){
+            E1 = 1;
+        }
+        if(E2 == 0){
+            E2 = 1;
+        }
+        if(E3 == 0){
+            E3 = 1;
+        }
+        //finds the diffrence of E1 and E3
+        z_encoder_diffrence = E1-E3;
+        //Z Porportional
+        z_error =  Z_setpoint - z_encoder_diffrence;
+        z_porportional = Z_PM*z_error;
+        // Z Intergral
+        //Finds the Sum of the Error
+        Z_Sum_of_Errors = Z_Sum_of_Errors + z_error;
+        Z_Intergral = Z_Sum_of_Errors * Z_IM;
+        //Z Derivitive
+        Z_Diffrence_of_Errors = z_error - Z_Last_Error;
+        Z_Derivitive = Z_Diffrence_of_Errors * Z_DM;
+        Z_Last_Error = z_error;
+        z = z_porportional + Z_Intergral + Z_Derivitive;
+        //Finds the X error
+        x_error = X_setpoint - E2;
+        //X Porportional
+        x_porportional = x_error * X_PM;
+        //X Intergral
 
+        X_Sum_of_Errors = X_Sum_of_Errors + x_error;
+        X_Intergral = X_Sum_of_Errors * X_IM;
+        //X Derivitve
+        X_Diffrence_of_Errors = x_error - X_Last_Error;
+        X_Derivitive = X_Diffrence_of_Errors * X_DM;
+        X_Last_Error = x_error;
+        x = x_porportional + X_Intergral + X_Derivitive;
+        //Finds Average Of E1&E3
+        Y_Average = (E1+E3)/2;
+        //finds the average of E1 and E3
+        y_error = Y_setpoint - Y_Average;
+        //Y Porportional
+        y_porportional = Y_PM*y_error;
+        // Y Intergral
+        //Finds the Sum of the Error
+        Y_Sum_of_Errors = Y_Sum_of_Errors + y_error;
+        Y_Intergral = Y_Sum_of_Errors * Y_IM;
+        //Y Derivitive
+        Y_Diffrence_of_Errors = y_error - Y_Last_Error;
+        Y_Derivitive = Y_Diffrence_of_Errors * Y_DM;
+        Y_Last_Error = y_error;
+        y = y_porportional + Y_Intergral + Y_Derivitive;
+        //slope equation
+       /* if(X_Final_Setpoint > 0 & Y_Final_Setpoint > 0){
+           slope = Y_Final_Setpoint/X_Final_Setpoint;
+        Y_setpoint = slope * E2;
+        X_setpoint = (((E1+E3)/2)/slope);
+        if(last_y_setpoint > 0){
+            Y_setpoint = Y_setpoint + last_y_setpoint;
+        }
+        if(last_x_setpoint > 0){
+            X_setpoint = X_setpoint + last_x_setpoint;
+        }
+           bypass = 1;
+        }
+        if(Y_setpoint >= Y_Final_Setpoint) {
+            Y_setpoint = Y_Final_Setpoint;
+        }
+        if(X_setpoint >= X_Final_Setpoint){
+            X_setpoint = X_Final_Setpoint;
+         }
+*/
+
+        //Uses pythagrium therom to find distance and distance from
+        Distance = Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2)));
+        Y_A2 = Y_setpoint - Y_Average;
+        X_B2 = X_setpoint - E2;
+        Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
+        loopcount = loopcount + 1;
+        time = getRuntime();
+        if(time >= previousTime){
+            //Velocity is number of ticks per second
+            actualVelocity = (Distance_From - lastDistanceFrom)/720;
+            previousTime = time + .2;
+            lastDistanceFrom = Distance_From;
+        }
+        velocityError = velocitySetpoint - actualVelocity;
+        velocityPorportion = velocityError * VPM;
+        velocitySumOfErrors = velocitySumOfErrors + actualVelocity;
+        velocityIntergral = velocitySumOfErrors * VIM;
+        velocityDiffrenceOfErrors = velocityError - velocityLastError;
+        veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
+        velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
+
+        if (accelerationDistance >= Distance - Distance_From){
+            velocitySetpoint = ((Distance - Distance_From)/accelerationDistance)* targetVelocity;
+        }
+
+        if (Distance_From <= Slow_Down_Distance) {
+
+            velocitySetpoint = (Distance_From / Slow_Down_Distance)*targetVelocity;
+        }
+        if (velocitySetpoint <=.265) {
+            velocitySetpoint = .265;
+        }
+        if (velocitySetpoint >= 1){
+            velocitySetpoint = 1;
+        }
+        MotorEquation();
+        telemetry();
+    }
      public void telemetry(){
          telemetry.addData("Time", time);
          telemetry.addData("Velocity", actualVelocity);
@@ -120,137 +249,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
          telemetry.addData("Dectected", Detected);
          telemetry.update();
      }
-     public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
-         robot.init(hardwareMap);
-         //Sets Multipliers
-         X_PM = 1;
-         X_IM = 0;
-         X_DM = 0;
-         Y_PM = 1;
-         Y_IM = 0;
-         Y_DM = 0;
-         Z_PM = 1;
-         Z_IM = 0;
-         Z_DM = 0;
-         VPM = 1;
-         VIM = 0;
-         VDM = 0;
 
-         //Gets encoder Positions
-         E1 = -robot.LF_M.getCurrentPosition();
-         E2 = robot.LB_M.getCurrentPosition();
-         E3 = robot.RF_M.getCurrentPosition();
-         //Sets encoders to 1 at begining to prevent null error
-         if (E1 == 0){
-             E1 = 1;
-         }
-         if(E2 == 0){
-             E2 = 1;
-         }
-         if(E3 == 0){
-             E3 = 1;
-         }
-         //finds the diffrence of E1 and E3
-         z_encoder_diffrence = E1-E3;
-         //Z Porportional
-         z_error =  Z_setpoint - z_encoder_diffrence;
-         z_porportional = Z_PM*z_error;
-         // Z Intergral
-         //Finds the Sum of the Error
-         Z_Sum_of_Errors = Z_Sum_of_Errors + z_error;
-         Z_Intergral = Z_Sum_of_Errors * Z_IM;
-         //Z Derivitive
-         Z_Diffrence_of_Errors = z_error - Z_Last_Error;
-         Z_Derivitive = Z_Diffrence_of_Errors * Z_DM;
-         Z_Last_Error = z_error;
-         z = z_porportional + Z_Intergral + Z_Derivitive;
-         //Finds the X error
-         x_error = X_setpoint - E2;
-         //X Porportional
-         x_porportional = x_error * X_PM;
-         //X Intergral
-
-         X_Sum_of_Errors = X_Sum_of_Errors + x_error;
-         X_Intergral = X_Sum_of_Errors * X_IM;
-         //X Derivitve
-         X_Diffrence_of_Errors = x_error - X_Last_Error;
-         X_Derivitive = X_Diffrence_of_Errors * X_DM;
-         X_Last_Error = x_error;
-         x = x_porportional + X_Intergral + X_Derivitive;
-         //Finds Average Of E1&E3
-         Y_Average = (E1+E3)/2;
-         //finds the average of E1 and E3
-         y_error = Y_setpoint - Y_Average;
-         //Y Porportional
-         y_porportional = Y_PM*y_error;
-         // Y Intergral
-         //Finds the Sum of the Error
-         Y_Sum_of_Errors = Y_Sum_of_Errors + y_error;
-         Y_Intergral = Y_Sum_of_Errors * Y_IM;
-         //Y Derivitive
-         Y_Diffrence_of_Errors = y_error - Y_Last_Error;
-         Y_Derivitive = Y_Diffrence_of_Errors * Y_DM;
-         Y_Last_Error = y_error;
-         y = y_porportional + Y_Intergral + Y_Derivitive;
-         //slope equation
-       /* if(X_Final_Setpoint > 0 & Y_Final_Setpoint > 0){
-           slope = Y_Final_Setpoint/X_Final_Setpoint;
-        Y_setpoint = slope * E2;
-        X_setpoint = (((E1+E3)/2)/slope);
-        if(last_y_setpoint > 0){
-            Y_setpoint = Y_setpoint + last_y_setpoint;
-        }
-        if(last_x_setpoint > 0){
-            X_setpoint = X_setpoint + last_x_setpoint;
-        }
-           bypass = 1;
-        }
-        if(Y_setpoint >= Y_Final_Setpoint) {
-            Y_setpoint = Y_Final_Setpoint;
-        }
-        if(X_setpoint >= X_Final_Setpoint){
-            X_setpoint = X_Final_Setpoint;
-         }
-*/
-
-         //Uses pythagrium therom to find distance and distance from
-         Distance = Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2)));
-         Y_A2 = Y_setpoint - Y_Average;
-         X_B2 = X_setpoint - E2;
-         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
-         loopcount = loopcount + 1;
-         time = getRuntime();
-         if(time >= previousTime){
-             //Velocity is number of ticks per second
-             actualVelocity = (Distance_From - lastDistanceFrom)/720;
-             previousTime = time + .2;
-             lastDistanceFrom = Distance_From;
-         }
-         velocityError = velocitySetpoint - actualVelocity;
-         velocityPorportion = velocityError * VPM;
-         velocitySumOfErrors = velocitySumOfErrors + actualVelocity;
-         velocityIntergral = velocitySumOfErrors * VIM;
-         velocityDiffrenceOfErrors = velocityError - velocityLastError;
-         veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
-         velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
-
-         if (accelerationDistance >= Distance - Distance_From){
-             velocitySetpoint = ((Distance - Distance_From)/accelerationDistance)* targetVelocity;
-         }
-
-         if (Distance_From <= Slow_Down_Distance) {
-
-                 velocitySetpoint = (Distance_From / Slow_Down_Distance)*targetVelocity;
-         }
-         if (velocitySetpoint <=.265) {
-             velocitySetpoint = .265;
-         }
-         if (velocitySetpoint >= 1){
-             velocitySetpoint = 1;
-         }
-         MotorEquation();
-         telemetry();
-     }
      public void MotorEquation() {
 
          //Make Equation
