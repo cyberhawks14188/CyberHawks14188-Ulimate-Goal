@@ -6,8 +6,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class Test extends LinearOpMode {
     RobotHardware robot = new RobotHardware();
     Test_Pull a = new Test_Pull();
+
+    @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
+        waitForStart();
         while(opModeIsActive()){
         a.tele();
     }
