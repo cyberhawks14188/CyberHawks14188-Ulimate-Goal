@@ -71,9 +71,9 @@ public class Teleop extends LinearOpMode {
             //Shooter Control
             //Shooter angle
             if(gamepad1.right_trigger > .05){
-                shooterAngle = shooterAngle - .01;
+                shooterAngle = shooterAngle - .001;
             }else if(gamepad1.left_trigger > .05){
-                shooterAngle = shooterAngle + .01;
+                shooterAngle = shooterAngle + .001;
             }
             //Stopper Servo Control
             if(gamepad1.x){
@@ -93,10 +93,10 @@ public class Teleop extends LinearOpMode {
                 shooterControl = false;
             }
             if (gamepad1.dpad_up) {
-                shooterPower = shooterPower + .005;
+                shooterPower = shooterPower + .01;
             }
             if (gamepad1.dpad_down) {
-                shooterPower = shooterPower - .005;
+                shooterPower = shooterPower - .01;
             }
 
             //Gamepad2 manual controls
@@ -143,6 +143,7 @@ public class Teleop extends LinearOpMode {
             robot.STOP_S.setPosition(stopper);
 
             //Displaying Telemetry
+            telemetry.addData("shooterPower", shooterPower);
             telemetry.addData("stagerControl", stagerControl);
             telemetry.addData("DS1", ring1Sensor);
             telemetry.addData("DS2", ring2Sensor);
