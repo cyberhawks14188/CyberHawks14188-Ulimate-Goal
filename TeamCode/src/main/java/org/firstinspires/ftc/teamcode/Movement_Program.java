@@ -284,6 +284,7 @@ public class Movement_Program extends LinearOpMode {
         telemetry.addData("Y", y);
         telemetry.addData("X", x);
         telemetry.addData("Velocity", actualVelocity);
+        telemetry.addData("Correctional Velocity", velocityCorrection);
         telemetry.addData("Y_Setpoint", Y_setpoint);
         telemetry.addData("X_Setpoint", X_setpoint);
         telemetry.addData("LF", Speed_Setpoint*(LF_Distance/Highest_Motor_Power));
