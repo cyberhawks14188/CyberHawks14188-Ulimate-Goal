@@ -148,7 +148,7 @@ public class Movement_Program extends LinearOpMode {
         Z_PM = 1;
         Z_IM = 0;
         Z_DM = 0;
-        VPM = 1;
+        VPM = .05;
         VIM = 0;
         VDM = 0;
 
@@ -243,10 +243,11 @@ public class Movement_Program extends LinearOpMode {
         time = getRuntime();
         if(time >= previousTime){
             //Velocity is number of ticks per second
-            actualVelocity = (Distance_From - lastDistanceFrom)/720;
-            previousTime = time + .2;
+            actualVelocity = (Distance_From - lastDistanceFrom)/360;
+            previousTime = time + .1;
             lastDistanceFrom = Distance_From;
         }
+
         velocityError = velocitySetpoint - actualVelocity;
         velocityPorportion = velocityError * VPM;
         velocitySumOfErrors = velocitySumOfErrors + actualVelocity;
@@ -305,10 +306,10 @@ public class Movement_Program extends LinearOpMode {
         //Finds Highest power out of the drive motors
         Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Distance), Math.abs(RB_Distance)), Math.max(Math.abs(LF_Distance), Math.abs(LB_Distance)));
         //Sets motors
-        robot.LF_M.setPower((velocityCorrection*(LF_Distance/Highest_Motor_Power)));
-        robot.LB_M.setPower((velocityCorrection*(LB_Distance/Highest_Motor_Power)));
-        robot.RF_M.setPower((velocityCorrection*(RF_Distance/Highest_Motor_Power)));
-        robot.RB_M.setPower((velocityCorrection*(RB_Distance/Highest_Motor_Power)));
+        robot.LF_M.setPower(((velocityCorrection + targetVelocity) * (LF_Distance/Highest_Motor_Power)));
+        robot.LB_M.setPower(((velocityCorrection + targetVelocity) * (LB_Distance/Highest_Motor_Power)));
+        robot.RF_M.setPower(((velocityCorrection + targetVelocity) * (RF_Distance/Highest_Motor_Power)));
+        robot.RB_M.setPower(((velocityCorrection + targetVelocity) * (RB_Distance/Highest_Motor_Power)));
     }
     public void stop_motors(){
         robot.LF_M.setPower(0);
