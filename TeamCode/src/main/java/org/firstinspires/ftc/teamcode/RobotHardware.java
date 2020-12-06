@@ -44,7 +44,6 @@ public class RobotHardware{
         Ring1_DS = hardwareMap.get(DistanceSensor.class, "Ring1_DS");
         Ring2_DS = hardwareMap.get(DistanceSensor.class, "Ring2_DS");
         Ring3_DS = hardwareMap.get(DistanceSensor.class, "Ring3_DS");
-
         //servo = hardwareMap.get(Servo.class, "servo");
 
         // Set all motors to zero power
@@ -72,6 +71,7 @@ public class RobotHardware{
         LF_M.getCurrentPosition();
         LB_M.getCurrentPosition();
         RF_M.getCurrentPosition();
+
         // Define and initialize ALL installed servos.
         //servo.setPosition(0);
     }
