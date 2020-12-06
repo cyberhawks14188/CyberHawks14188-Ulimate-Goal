@@ -127,7 +127,7 @@ public class Movement_Program extends LinearOpMode {
         targetVelocity = .5;
         //Runs movement until 100 away
         while (opModeIsActive()) {
-            Movement(0, 10000, 0, 1000, 1000);
+            Movement(0, 5000, 0, 1000, 1000);
         }
         stop_motors();
 
@@ -266,8 +266,8 @@ public class Movement_Program extends LinearOpMode {
         if (velocitySetpoint <= .265) {
             velocitySetpoint = .265;
         }
-        if (velocitySetpoint >= 1){
-            velocitySetpoint = 1;
+        if (velocitySetpoint >= .5){
+            velocitySetpoint = .5;
         }
         MotorEquation();
         telemetry();
