@@ -121,6 +121,7 @@ public class Movement_Program extends LinearOpMode {
         waitForStart();
         //Set position robot will go to
         Distance_From = 1000;
+        breakout = 1;
         distanceWithin = 100;
         startPosition = 0;
         targetVelocity = .5;
@@ -162,6 +163,7 @@ public class Movement_Program extends LinearOpMode {
         if(E2 == 0){
             E2 = 1;
         }
+
         if(E3 == 0){
             E3 = 1;
         }
@@ -227,12 +229,17 @@ public class Movement_Program extends LinearOpMode {
             X_setpoint = X_Final_Setpoint;
          }
 */
+
         //Uses pythagrium therom to find distance and distance from
         Distance = Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2)));
         Y_A2 = Y_setpoint - Y_Average;
         X_B2 = X_setpoint - E2;
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
-        loopcount = loopcount + 1;
+
+        if (breakout == 1){
+            lastDistanceFrom = Distance_From;
+            breakout = 0;
+        }
         time = getRuntime();
         if(time >= previousTime){
             //Velocity is number of ticks per second
@@ -256,7 +263,7 @@ public class Movement_Program extends LinearOpMode {
 
             velocitySetpoint = (Distance_From / Slow_Down_Distance)*targetVelocity;
         }
-        if (velocitySetpoint <=.265) {
+        if (velocitySetpoint <= .265) {
             velocitySetpoint = .265;
         }
         if (velocitySetpoint >= 1){
