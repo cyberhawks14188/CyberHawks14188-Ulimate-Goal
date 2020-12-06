@@ -152,7 +152,7 @@ public class Movement_Program extends LinearOpMode {
         VDM = 0;
 
         //Gets encoder Positions
-        E1 = -robot.LF_M.getCurrentPosition();
+        E1 = robot.LF_M.getCurrentPosition();
         E2 = robot.LB_M.getCurrentPosition();
         E3 = robot.RF_M.getCurrentPosition();
         //Sets encoders to 1 at begining to prevent null error
