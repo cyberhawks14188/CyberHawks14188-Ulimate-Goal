@@ -11,7 +11,6 @@ public class Test extends LinearOpMode {
         robot.init(hardwareMap);
         waitForStart();
         while(opModeIsActive()){
-        a.tele();
     }
 }
 }
