@@ -12,7 +12,6 @@ public class Teleop extends LinearOpMode {
     double shooterPower;
     double intakePower;
     double stagerPower;
-    double shooterAngle = .21;
     double ring1Sensor;
     double ring2Sensor;
     double ring3Sensor;
@@ -27,6 +26,19 @@ public class Teleop extends LinearOpMode {
     boolean stagerLoop = false;
     boolean stagerControl = false;
     boolean shooterControl = false;
+    boolean gPadBControl = false;
+    double wobbleSet = 0;
+    double wobbleCurrent;
+    double wobbleError;
+    double wobblePower;
+    double wobbleP = .01;
+    double GRIP_S;
+    double SOTCurrent;
+    double SOTSet = 2;
+    double SOTError;
+    double SOTPower;
+    double SOTP = 1.5;
+
 
     @Override
     public void runOpMode() {
@@ -63,18 +75,39 @@ public class Teleop extends LinearOpMode {
                     intakePower = 0;
                     stagerPower = 0;
             }
+            /*if(gamepad1.b && gPadBControl == false){
+                if(stopper < .3){
+                    stopper = .5;
+                    stagerPower = -1;
+                }else{
+                    stagerPower = 0;
+                }
+                gPadBControl = true;
+            }else if(!gamepad1.b){
+                gPadBControl = false;
+            }
+                */
             if(gamepad1.b){
                 stopper = .5;
                 stagerPower = -1;
             }
-
             //Shooter Control
             //Shooter angle
+            SOTCurrent = robot.SOT_ANGL_PT.getVoltage();
             if(gamepad1.right_trigger > .05){
-                shooterAngle = shooterAngle - .001;
+                SOTSet = SOTSet + .01;
             }else if(gamepad1.left_trigger > .05){
-                shooterAngle = shooterAngle + .001;
+                SOTSet = SOTSet - .01;
             }
+            SOTError = SOTSet - SOTCurrent;
+            SOTPower = SOTError * SOTP;
+
+            /*if(SOTPower >= 1){
+                SOTPower = 1;
+            }else if(SOTPower < 0){
+                SOTPower = 0;
+            }
+*/
             //Stopper Servo Control
             if(gamepad1.x){
                 stopper = .1;
@@ -84,7 +117,7 @@ public class Teleop extends LinearOpMode {
             //Flywheel Speed Control
             if (gamepad1.left_bumper && shooterControl == false) {
                 if(shooterPower == 0){
-                    shooterPower = .7;
+                    shooterPower = .8;
                 }else{
                     shooterPower = 0;
                 }
@@ -131,15 +164,28 @@ public class Teleop extends LinearOpMode {
             RBM = y - (x - z);
             highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
 
+            //Wobble Goal Arm
+            wobbleCurrent = robot.WB_M.getCurrentPosition();
+            wobbleSet = wobbleSet + gamepad2.right_stick_y;
+            wobbleError = wobbleSet - wobbleCurrent;
+            wobblePower = wobbleError * wobbleP;
+            if (gamepad2.a){
+                GRIP_S = .1;
+            }else if(gamepad2.b){
+                GRIP_S = .25;
+            }
+
             //Setting Motor Power
             robot.LF_M.setPower(LFM);
             robot.LB_M.setPower(LBM);
             robot.RF_M.setPower(RFM);
             robot.RB_M.setPower(RBM);
+            robot.WB_M.setPower(wobblePower);
             robot.SOT_M.setPower(shooterPower);
             robot.IN_M.setPower(intakePower);
             robot.STG_M.setPower(stagerPower);
-            robot.SOT_S.setPosition(shooterAngle);
+            robot.GRIP_S.setPosition(GRIP_S);
+            robot.SOT_S.setPower(SOTPower);
             robot.STOP_S.setPosition(stopper);
 
             //Displaying Telemetry
@@ -148,7 +194,12 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("DS1", ring1Sensor);
             telemetry.addData("DS2", ring2Sensor);
             telemetry.addData("DS3", ring3Sensor);
-            telemetry.addData("Shooter Angle", shooterAngle);
+            telemetry.addData("Potentiometer", robot.SOT_ANGL_PT.getVoltage());
+            telemetry.addData("SOTPower", SOTPower);
+            telemetry.addData("SOTCurrent", SOTCurrent);
+            telemetry.addData("SOTError", SOTError);
+            telemetry.addData("SOTSet", SOTSet);
+            telemetry.addData("WobblePower", wobblePower);
             telemetry.update();
         }
     }

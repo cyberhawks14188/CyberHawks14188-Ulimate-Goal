@@ -1,10 +1,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 //import com.qualcomm.robotcore.hardware.TouchSensor
 
@@ -18,8 +20,11 @@ public class RobotHardware{
     public DcMotor IN_M;
     public DcMotor STG_M;
     public DcMotor SOT_M;
-    public Servo SOT_S;
+    public DcMotor WB_M;
+    public CRServo SOT_S;
     public Servo STOP_S;
+    public Servo GRIP_S;
+    public AnalogInput SOT_ANGL_PT;
     public DistanceSensor Ring1_DS;
     public DistanceSensor Ring2_DS;
     public DistanceSensor Ring3_DS;
@@ -39,7 +44,10 @@ public class RobotHardware{
         IN_M = hardwareMap.get(DcMotor.class, "IN_M");
         STG_M = hardwareMap.get(DcMotor.class, "STG_M");
         SOT_M = hardwareMap.get(DcMotor.class, "SOT_M");
-        SOT_S = hardwareMap.get(Servo.class, "SOT_S");
+        WB_M = hardwareMap.get(DcMotor.class, "WB_M");
+        SOT_S = hardwareMap.get(CRServo.class, "SOT_S");
+        GRIP_S = hardwareMap.get(Servo.class, "GRIP_S");
+        SOT_ANGL_PT = hardwareMap.get(AnalogInput.class, "SOT_ANGL_PT");
         STOP_S = hardwareMap.get(Servo.class, "STOP_S");
         Ring1_DS = hardwareMap.get(DistanceSensor.class, "Ring1_DS");
         Ring2_DS = hardwareMap.get(DistanceSensor.class, "Ring2_DS");

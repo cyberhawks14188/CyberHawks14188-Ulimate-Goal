@@ -21,7 +21,7 @@ public class EncoderReading extends LinearOpMode {
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
         while(opModeIsActive()){
-            telemetry.addData("E1", robot.LF_M.getCurrentPosition());
+            telemetry.addData("E1", -robot.LF_M.getCurrentPosition());
             telemetry.addData("E2", robot.LB_M.getCurrentPosition());
             telemetry.addData("E3", robot.RF_M.getCurrentPosition());
             telemetry.update();
