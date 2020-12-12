@@ -415,8 +415,8 @@ public class Auto extends LinearOpMode {
         if (velocitySetpoint <= 0) {
             velocitySetpoint = 0;
         }
-        if (velocitySetpoint >= .7){
-            velocitySetpoint = .7;
+        if (velocitySetpoint >= .9){
+            velocitySetpoint = .9;
         }
         MotorEquation();
         telemetry();
