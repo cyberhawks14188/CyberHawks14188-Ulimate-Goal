@@ -247,6 +247,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
          telemetry.addData("Dectected", Detected);
          telemetry.update();
      }
+
      public void MotorEquation() {
          //Make Equation
          LF_Distance = y+(x+z);
