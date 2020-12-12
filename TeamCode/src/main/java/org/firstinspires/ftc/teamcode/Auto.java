@@ -181,13 +181,13 @@ public class Auto extends LinearOpMode {
         distanceWithin = 100;
         startPosition = 0;
         targetVelocity = .4;
-        shooterPower = .8;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
             Movement(0, 12500, 0, 1000, 1000);
             SubSystem();
         }
         stop_motors();
+        shooterPower = .8;
         pass = getRuntime() + 8;
         while(pass >= getRuntime()){
             getRuntime();
@@ -405,7 +405,10 @@ public class Auto extends LinearOpMode {
         veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
         velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
         if (accelerationDistance >= Distance - Distance_From){
-            velocitySetpoint = ((Distance - Distance_From)/accelerationDistance)* targetVelocity;
+            velocitySetpoint = ((Distance - Distance_From)/accelerationDistance) * targetVelocity;
+            if (velocitySetpoint <= .2) {
+                velocitySetpoint = .2;
+            }
         }
 
         if (Distance_From <= Slow_Down_Distance) {
