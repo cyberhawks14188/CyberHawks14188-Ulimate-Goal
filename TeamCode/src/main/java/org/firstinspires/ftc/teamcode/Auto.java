@@ -113,7 +113,7 @@ public class Auto extends LinearOpMode {
         //recongniton.getLabel() = Single
         //recongniton.getLabel() = Quad
         pass = getRuntime() + 10;
-        while (getRuntime() <= pass) {
+        while (isStarted() != true) {
             tfod.setZoom(3, 1.78);
             if (tfod != null) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -137,16 +137,23 @@ public class Auto extends LinearOpMode {
                     telemetry.update();
                 }
             }
-            runtime = getRuntime();
-
-
         }
-        if (tfod != null) {
-            tfod.shutdown();
-        }
-        //Waits for start to be pressed
         waitForStart();
-        //Set position robot will go to
+        tfod.shutdown();
+        //Waits for start to be pressed
+
+
+        /*//Set position robot will go to
+        Distance_From = 1000;
+        breakout = 1;
+        distanceWithin = 100;
+        startPosition = 0;
+        targetVelocity = .5;
+        //Runs movement until 100 away
+        while (opModeIsActive()) {
+            Movement(0, 5000, 0, 1000, 1000);
+        }
+        */
         if (Detected == 0) {
             Distance_From = 1000;
             Speed_Setpoint = .5;
@@ -182,7 +189,7 @@ public class Auto extends LinearOpMode {
             Z_setpoint = 0;
             Slow_Down_Distance = 1000;
             //Runs movement until 300 away
-            while (Distance_From>=300) {
+            while (Distance_From >= 300) {
                 Movement();
             }
             stop_motors();

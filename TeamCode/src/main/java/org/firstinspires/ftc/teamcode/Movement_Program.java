@@ -135,8 +135,6 @@ public class Movement_Program extends LinearOpMode {
             telemetry();
         }
     }
-
-
     public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
         X_PM = 1;
@@ -243,7 +241,7 @@ public class Movement_Program extends LinearOpMode {
         time = getRuntime();
         if(time >= previousTime){
             //Velocity is number of ticks per second
-            actualVelocity = (Distance_From - lastDistanceFrom)/360;
+            actualVelocity = Math.abs((Distance_From - lastDistanceFrom))/360;
             previousTime = time + .1;
             lastDistanceFrom = Distance_From;
         }
@@ -255,7 +253,6 @@ public class Movement_Program extends LinearOpMode {
         velocityDiffrenceOfErrors = velocityError - velocityLastError;
         veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
         velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
-
         if (accelerationDistance >= Distance - Distance_From){
             velocitySetpoint = ((Distance - Distance_From)/accelerationDistance)* targetVelocity;
         }
@@ -264,11 +261,11 @@ public class Movement_Program extends LinearOpMode {
 
             velocitySetpoint = (Distance_From / Slow_Down_Distance)*targetVelocity;
         }
-        if (velocitySetpoint <= .265) {
-            velocitySetpoint = .265;
+        if (velocitySetpoint <= 0) {
+            velocitySetpoint = 0;
         }
-        if (velocitySetpoint >= .5){
-            velocitySetpoint = .5;
+        if (velocitySetpoint >= .7){
+            velocitySetpoint = .7;
         }
         MotorEquation();
         telemetry();
