@@ -134,15 +134,15 @@ public class Auto extends LinearOpMode {
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Detected = 0;
 
-        initVuforia();
-        initTfod();
-        if (tfod != null) {
-            tfod.activate();
-        }
+        //initVuforia();
+        //initTfod();
+        //if (tfod != null) {
+       //     tfod.activate();
+        //}
         //recongniton.getLabel() = Single
         //recongniton.getLabel() = Quad
-        pass = getRuntime() + 10;
-        while (isStarted() != true) {
+        //pass = getRuntime() + 10;
+        /*while (isStarted() != true) {
             tfod.setZoom(3, 1.78);
             if (tfod != null) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -167,8 +167,10 @@ public class Auto extends LinearOpMode {
                 }
             }
         }
+        */
+
         waitForStart();
-        tfod.shutdown();
+        //tfod.shutdown();
         //Waits for start to be pressed
 
 
@@ -179,16 +181,24 @@ public class Auto extends LinearOpMode {
         distanceWithin = 100;
         startPosition = 0;
         targetVelocity = .4;
+        shooterPower = .8;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
-            Movement(0, 14000, 0, 1000, 1000);
+            Movement(0, 12500, 0, 1000, 1000);
             SubSystem();
+        }
+        stop_motors();
+        pass = getRuntime() + 8;
+        while(pass >= getRuntime()){
+            getRuntime();
+            SubSystem();
+            Movement(0,12500,0,1,1);
         }
         stop_motors();
         stopper = .5;
         stagerPower = -1;
         shooterPower = .8;
-        while(  robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 && robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 && robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4){
+        while(  robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 3 && robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 && robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4){
             SubSystem();
         }
 
@@ -201,7 +211,7 @@ public class Auto extends LinearOpMode {
         targetVelocity = .3;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
-            Movement(0, 15000, 0, 250, 250);
+            Movement(0, 14000, 0, 250, 250);
             SubSystem();
         }
         stop_motors();
@@ -281,7 +291,7 @@ public class Auto extends LinearOpMode {
         X_PM = 1;
         X_IM = 0;
         X_DM = 0;
-        Y_PM = .7;
+        Y_PM = .5;
         Y_IM = 0;
         Y_DM = 0;
         Z_PM = 1;
@@ -421,10 +431,10 @@ public class Auto extends LinearOpMode {
         //Finds Highest power out of the drive motors
         Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Distance), Math.abs(RB_Distance)), Math.max(Math.abs(LF_Distance), Math.abs(LB_Distance)));
         //Sets motors
-        robot.LF_M.setPower(((velocityCorrection + targetVelocity) * (LF_Distance/Highest_Motor_Power)));
-        robot.LB_M.setPower(((velocityCorrection + targetVelocity) * (LB_Distance/Highest_Motor_Power)));
-        robot.RF_M.setPower(((velocityCorrection + targetVelocity) * (RF_Distance/Highest_Motor_Power)));
-        robot.RB_M.setPower(((velocityCorrection + targetVelocity) * (RB_Distance/Highest_Motor_Power)));
+        robot.LF_M.setPower(((velocityCorrection + velocitySetpoint) * (LF_Distance/Highest_Motor_Power)));
+        robot.LB_M.setPower(((velocityCorrection + velocitySetpoint) * (LB_Distance/Highest_Motor_Power)));
+        robot.RF_M.setPower(((velocityCorrection + velocitySetpoint) * (RF_Distance/Highest_Motor_Power)));
+        robot.RB_M.setPower(((velocityCorrection + velocitySetpoint) * (RB_Distance/Highest_Motor_Power)));
     }
     //Runs Encoders
     public void SubSystem() {

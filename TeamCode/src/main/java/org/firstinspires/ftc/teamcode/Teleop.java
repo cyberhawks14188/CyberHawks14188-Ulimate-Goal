@@ -32,7 +32,7 @@ public class Teleop extends LinearOpMode {
     double wobbleError;
     double wobblePower;
     double wobbleP = .01;
-    double GRIP_S;
+    double GRIP_S = .4;
     double SOTCurrent;
     double SOTSet = 2;
     double SOTError;
@@ -94,9 +94,9 @@ public class Teleop extends LinearOpMode {
             //Shooter Control
             //Shooter angle
             SOTCurrent = robot.SOT_ANGL_PT.getVoltage();
-            if(gamepad1.right_trigger > .05){
+            if(gamepad1.y){
                 SOTSet = SOTSet + .01;
-            }else if(gamepad1.left_trigger > .05){
+            }else if(gamepad1.x){
                 SOTSet = SOTSet - .01;
             }
             SOTError = SOTSet - SOTCurrent;
@@ -109,9 +109,9 @@ public class Teleop extends LinearOpMode {
             }
 */
             //Stopper Servo Control
-            if(gamepad1.x){
+            if(gamepad2.x){
                 stopper = .1;
-            }else if(gamepad1.y){
+            }else if(gamepad2.y){
                 stopper = .5;
             }
             //Flywheel Speed Control
@@ -125,10 +125,10 @@ public class Teleop extends LinearOpMode {
             }else if(!gamepad1.left_bumper){
                 shooterControl = false;
             }
-            if (gamepad1.dpad_up) {
+            if (gamepad1.dpad_right) {
                 shooterPower = shooterPower + .01;
             }
-            if (gamepad1.dpad_down) {
+            if (gamepad1.dpad_left) {
                 shooterPower = shooterPower - .01;
             }
 
@@ -166,13 +166,17 @@ public class Teleop extends LinearOpMode {
 
             //Wobble Goal Arm
             wobbleCurrent = robot.WB_M.getCurrentPosition();
-            wobbleSet = wobbleSet + gamepad2.right_stick_y;
+            if(gamepad1.dpad_up){
+                wobbleSet = wobbleSet - 6;
+            }else if(gamepad1.dpad_down) {
+                wobbleSet = wobbleSet + 6;
+            }
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError * wobbleP;
-            if (gamepad2.a){
-                GRIP_S = .2;
-            }else if(gamepad2.b){
-                GRIP_S = .6;
+            if (gamepad1.right_trigger > .05){
+                GRIP_S = .4;
+            }else if(gamepad1.left_trigger > .05){
+                GRIP_S = .1;
             }
 
             //Setting Motor Power
