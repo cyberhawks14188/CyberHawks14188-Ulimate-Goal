@@ -170,9 +170,9 @@ public class Teleop extends LinearOpMode {
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError * wobbleP;
             if (gamepad2.a){
-                GRIP_S = .1;
+                GRIP_S = .2;
             }else if(gamepad2.b){
-                GRIP_S = .25;
+                GRIP_S = .6;
             }
 
             //Setting Motor Power

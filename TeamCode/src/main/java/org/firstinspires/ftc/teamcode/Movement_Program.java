@@ -124,10 +124,10 @@ public class Movement_Program extends LinearOpMode {
         breakout = 1;
         distanceWithin = 100;
         startPosition = 0;
-        targetVelocity = .5;
+        targetVelocity = .4;
         //Runs movement until 100 away
         while (opModeIsActive()) {
-            Movement(0, 5000, 0, 1000, 1000);
+            Movement(5000, 5000, 0, 1000, 1000);
         }
         stop_motors();
 
@@ -152,7 +152,7 @@ public class Movement_Program extends LinearOpMode {
 
         //Gets encoder Positions
         E1 = robot.LF_M.getCurrentPosition();
-        E2 = robot.LB_M.getCurrentPosition();
+        E2 = -robot.LB_M.getCurrentPosition();
         E3 = robot.RF_M.getCurrentPosition();
         //Sets encoders to 1 at begining to prevent null error
         if (E1 == 0){
@@ -246,7 +246,7 @@ public class Movement_Program extends LinearOpMode {
             lastDistanceFrom = Distance_From;
         }
 
-        velocityError = velocitySetpoint - actualVelocity;
+        velocityError = Math.abs(velocitySetpoint - actualVelocity);
         velocityPorportion = velocityError * VPM;
         velocitySumOfErrors = velocitySumOfErrors + actualVelocity;
         velocityIntergral = velocitySumOfErrors * VIM;
