@@ -194,14 +194,14 @@ public class Auto extends LinearOpMode {
         while(pass >= getRuntime()){
             getRuntime();
             SubSystem();
-            Movement(0,12500,0,1,1);
+            Movement(-500,12500,0,1,1);
         }
 
         stop_motors();
         stopper = .5;
         stagerPower = -1;
         shooterPower = .8;
-        while(robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 3){
+        while(robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 4){
             SubSystem();
         }
 
@@ -214,7 +214,7 @@ public class Auto extends LinearOpMode {
         targetVelocity = .3;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
-            Movement(0, 14000, 0, 250, 250);
+            Movement(-500, 15000, 0, 250, 250);
             SubSystem();
         }
         stop_motors();
