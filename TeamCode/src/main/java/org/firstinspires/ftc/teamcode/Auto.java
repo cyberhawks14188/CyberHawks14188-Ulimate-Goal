@@ -112,6 +112,7 @@ public class Auto extends LinearOpMode {
     double SOTSet;
     double SOTError;
     double shooterPower;
+    double lastDistance;
     double SOTPower;
     double SOTP;
     public double veloictyDerivitive;
@@ -186,6 +187,7 @@ public class Auto extends LinearOpMode {
             Movement(0, 12500, 0, 1000, 1000);
             SubSystem();
         }
+        lastDistance =  Distance;
         stop_motors();
         shooterPower = .8;
         pass = getRuntime() + 8;
@@ -194,6 +196,7 @@ public class Auto extends LinearOpMode {
             SubSystem();
             Movement(0,12500,0,1,1);
         }
+
         stop_motors();
         stopper = .5;
         stagerPower = -1;
@@ -211,7 +214,7 @@ public class Auto extends LinearOpMode {
         targetVelocity = .3;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
-            Movement(0, 15000, 0, 1, 250);
+            Movement(0, 14000, 0, 250, 250);
             SubSystem();
         }
         stop_motors();
@@ -380,7 +383,7 @@ public class Auto extends LinearOpMode {
 */
 
         //Uses pythagrium therom to find distance and distance from
-        Distance = Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2)));
+        Distance = Math.abs((Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2))))-lastDistance);
         Y_A2 = Y_setpoint - Y_Average;
         X_B2 = X_setpoint - E2;
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
