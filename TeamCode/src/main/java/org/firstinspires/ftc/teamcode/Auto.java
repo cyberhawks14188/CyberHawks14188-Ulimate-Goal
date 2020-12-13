@@ -183,7 +183,7 @@ public class Auto extends LinearOpMode {
         targetVelocity = .4;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
-            Movement(-1000, 12500, 0, 1000, 1000);
+            Movement(0, 12500, 0, 1000, 1000);
             SubSystem();
         }
         stop_motors();
@@ -192,7 +192,7 @@ public class Auto extends LinearOpMode {
         while(pass >= getRuntime()){
             getRuntime();
             SubSystem();
-            Movement(-1000,12500,0,1,1);
+            Movement(0,12500,0,1,1);
         }
         stop_motors();
         stopper = .5;
@@ -211,7 +211,7 @@ public class Auto extends LinearOpMode {
         targetVelocity = .3;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
-            Movement(-1000, 15000, 0, 1, 250);
+            Movement(0, 15000, 0, 1, 250);
             SubSystem();
         }
         stop_motors();
