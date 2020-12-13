@@ -426,7 +426,6 @@ public class Auto extends LinearOpMode {
     }
     public void MotorEquation() {
         //Motor equation from the PID output
-        //Make Equation
         LF_Distance = y+(x+z);
         LB_Distance = y-(x-z);
         RF_Distance = y-(x+z);
