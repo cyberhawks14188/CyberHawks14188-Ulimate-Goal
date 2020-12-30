@@ -176,45 +176,46 @@ public class Auto extends LinearOpMode {
 
 
         //Set position robot will go to
-        SOTSet = .78;
+        SOTSet = .865;
         Distance_From = 1000;
         breakout = 1;
-        distanceWithin = 100;
+        distanceWithin = 200;
         startPosition = 0;
         targetVelocity = .4;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
-            Movement(0, 12500, 0, 1000, 1000);
+            Movement(-1000, 12500, 0, 1000, 1000);
             SubSystem();
         }
         lastDistance =  Distance;
         stop_motors();
         shooterPower = .8;
-        pass = getRuntime() + 8;
+        pass = getRuntime() + 5;
         while(pass >= getRuntime()){
             getRuntime();
             SubSystem();
-            Movement(-500,12500,0,1,1);
+            Movement(-1000,12500,0,1,1);
         }
 
         stop_motors();
         stopper = .5;
         stagerPower = -1;
-        shooterPower = .8;
+        shooterPower = 1;
         while(robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 4){
             SubSystem();
         }
 
         stagerPower = 0;
+        sleep(1000);
         shooterPower = 0;
         Distance_From = 250;
         breakout = 1;
-        distanceWithin = 50;
+        distanceWithin = 40;
         startPosition = 0;
-        targetVelocity = .3;
+        targetVelocity = .2;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
-            Movement(-500, 15000, 0, 250, 250);
+            Movement(-1000, 16500, 0, 250, 250);
             SubSystem();
         }
         stop_motors();
@@ -291,7 +292,7 @@ public class Auto extends LinearOpMode {
     //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
-        X_PM = 1;
+        X_PM = 1.2;
         X_IM = 0;
         X_DM = 0;
         Y_PM = .5;
@@ -300,9 +301,9 @@ public class Auto extends LinearOpMode {
         Z_PM = 1;
         Z_IM = 0;
         Z_DM = 0;
-        VPM = .05;
-        VIM = 0;
-        VDM = 0;
+        VPM = .2;
+        VIM = 0.0001;
+        VDM = .105;
 
         //Gets encoder Positions
         E1 = robot.LF_M.getCurrentPosition();

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 @TeleOp
+@Disabled
 
 
 

@@ -15,7 +15,7 @@ public class Teleop extends LinearOpMode {
     double ring1Sensor;
     double ring2Sensor;
     double ring3Sensor;
-    double stopper;
+    double stopper = .3;
     double xSpeedSetPoint = 1;
     double yzSpeedSetPoint = 1;
     double highestMotorPower;
@@ -34,10 +34,10 @@ public class Teleop extends LinearOpMode {
     double wobbleP = .01;
     double GRIP_S = .4;
     double SOTCurrent;
-    double SOTSet = .78;
+    double SOTSet = .335;
     double SOTError;
     double SOTPower;
-    double SOTP = 1.5;
+    double SOTP = -70;
 
 
     @Override
@@ -67,7 +67,7 @@ public class Teleop extends LinearOpMode {
                     if(intakePower == 0){
                         intakePower = -1;
                         stagerPower = -1;
-                        stopper = .1;
+                        stopper = .3;
                         stagerLoop = true;
                     }else{
                         intakePower = 0;
@@ -90,18 +90,21 @@ public class Teleop extends LinearOpMode {
             //Shooter Control
                 //Shooter angle
                 if(gamepad1.y){
-                    SOTSet = SOTSet - .01;
+                    SOTSet = SOTSet - .001;
                 }else if(gamepad1.x){
-                    SOTSet = SOTSet + .01;
+                    SOTSet = SOTSet + .001;
                 }
                 SOTError = SOTSet - SOTCurrent;
                 SOTPower = SOTError * SOTP;
 
                 //Stopper Servo Control
                 if(gamepad2.x){
-                    stopper = .1;
+                    stopper = .3;
                 }else if(gamepad2.y){
                     stopper = .5;
+                }
+                if(gamepad1.back){
+                    SOTSet = .78;
                 }
                 //Flywheel Speed Control
                 if (gamepad1.left_bumper && shooterControl == false) {
