@@ -192,7 +192,7 @@ public class Movement_Program extends LinearOpMode {
         }
         lastDistance =  Distance;
         stop_motors();
-        ]
+
     }
     //Stops all drive motors
     public void stop_motors(){
