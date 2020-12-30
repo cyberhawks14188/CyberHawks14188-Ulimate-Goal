@@ -15,7 +15,7 @@ public class Teleop extends LinearOpMode {
     double ring1Sensor;
     double ring2Sensor;
     double ring3Sensor;
-    double stopper;
+    double stopper = .3;
     double xSpeedSetPoint = 1;
     double yzSpeedSetPoint = 1;
     double highestMotorPower;
@@ -34,10 +34,10 @@ public class Teleop extends LinearOpMode {
     double wobbleP = .01;
     double GRIP_S = .4;
     double SOTCurrent;
-    double SOTSet = 2;
+    double SOTSet = .335;
     double SOTError;
     double SOTPower;
-    double SOTP = 1.5;
+    double SOTP = -70;
 
 
     @Override
@@ -50,122 +50,81 @@ public class Teleop extends LinearOpMode {
         //main loop
         while (opModeIsActive()) {
 
-            //Stager Control
-            //Takes a reading from all of the distance sensors
-            ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
-            ring2Sensor = robot.Ring2_DS.getDistance(DistanceUnit.INCH);
-            ring3Sensor = robot.Ring3_DS.getDistance(DistanceUnit.INCH);
+            //all sensor readings
+                 //Takes a reading from all of the distance sensors
+                ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
+                ring2Sensor = robot.Ring2_DS.getDistance(DistanceUnit.INCH);
+                ring3Sensor = robot.Ring3_DS.getDistance(DistanceUnit.INCH);
 
-            if(gamepad1.a && stagerControl == false){
-                if(intakePower == 0){
-                    intakePower = -1;
-                    stagerPower = -1;
-                    stopper = .1;
-                    stagerLoop = true;
-                }else{
-                    intakePower = 0;
-                    stagerPower = 0;
-                    stagerLoop = false;
+                //Takes potentiometer reading and writes it to varible
+                SOTCurrent = robot.SOT_ANGL_PT.getVoltage();
+
+                //Gets wobble goal motor encoder reading
+                wobbleCurrent = robot.WB_M.getCurrentPosition();
+
+            //Intake Control and stager control
+                if(gamepad1.a && stagerControl == false){
+                    if(intakePower == 0){
+                        intakePower = -1;
+                        stagerPower = -1;
+                        stopper = .3;
+                        stagerLoop = true;
+                    }else{
+                        intakePower = 0;
+                        stagerPower = 0;
+                        stagerLoop = false;
+                    }
+                    stagerControl = true;
+                }else if(!gamepad1.a){
+                    stagerControl = false;
                 }
-                stagerControl = true;
-            }else if(!gamepad1.a){
-                stagerControl = false;
-            }
-            if(stagerLoop == true && ring1Sensor < 2 && ring2Sensor< 2 && ring3Sensor < 4){
-                    intakePower = 0;
-                    stagerPower = 0;
-            }
-            /*if(gamepad1.b && gPadBControl == false){
-                if(stopper < .3){
+                if(stagerLoop == true && ring1Sensor < 2 && ring2Sensor< 2 && ring3Sensor < 4){
+                        intakePower = 0;
+                        stagerPower = 0;
+                }
+                if(gamepad1.b){
                     stopper = .5;
                     stagerPower = -1;
-                }else{
-                    stagerPower = 0;
                 }
-                gPadBControl = true;
-            }else if(!gamepad1.b){
-                gPadBControl = false;
-            }
-                */
-            if(gamepad1.b){
-                stopper = .5;
-                stagerPower = -1;
-            }
+
             //Shooter Control
-            //Shooter angle
-            SOTCurrent = robot.SOT_ANGL_PT.getVoltage();
-            if(gamepad1.y){
-                SOTSet = SOTSet + .01;
-            }else if(gamepad1.x){
-                SOTSet = SOTSet - .01;
-            }
-            SOTError = SOTSet - SOTCurrent;
-            SOTPower = SOTError * SOTP;
-
-            /*if(SOTPower >= 1){
-                SOTPower = 1;
-            }else if(SOTPower < 0){
-                SOTPower = 0;
-            }
-*/
-            //Stopper Servo Control
-            if(gamepad2.x){
-                stopper = .1;
-            }else if(gamepad2.y){
-                stopper = .5;
-            }
-            //Flywheel Speed Control
-            if (gamepad1.left_bumper && shooterControl == false) {
-                if(shooterPower == 0){
-                    shooterPower = .8;
-                }else{
-                    shooterPower = 0;
+                //Shooter angle
+                if(gamepad1.y){
+                    SOTSet = SOTSet - .001;
+                }else if(gamepad1.x){
+                    SOTSet = SOTSet + .001;
                 }
-                shooterControl = true;
-            }else if(!gamepad1.left_bumper){
-                shooterControl = false;
-            }
-            if (gamepad1.dpad_right) {
-                shooterPower = shooterPower + .01;
-            }
-            if (gamepad1.dpad_left) {
-                shooterPower = shooterPower - .01;
-            }
+                SOTError = SOTSet - SOTCurrent;
+                SOTPower = SOTError * SOTP;
 
-            //Gamepad2 manual controls
-            //manual stager power control
-            if(gamepad2.left_trigger > .05){
-                stagerPower = 0;
-            }else if(gamepad2.left_bumper){
-                stagerPower = -1;
-            }
-            //Intake Control
-            if (gamepad2.right_trigger >=.05){
-                intakePower = 0;
-            }
-            if(gamepad2.right_bumper){
-                intakePower = -1;
-            }
-
-            //Drivetrain Control
-            if(gamepad1.right_bumper){
-                yzSpeedSetPoint = .4;
-                xSpeedSetPoint = .5;
-            }else{
-                yzSpeedSetPoint = 1;
-                xSpeedSetPoint = 1;
-            }
-            double x = xSpeedSetPoint * -gamepad1.left_stick_x;
-            double y = yzSpeedSetPoint * -gamepad1.left_stick_y;
-            double z = yzSpeedSetPoint * -gamepad1.right_stick_x;
-            LFM = y - (x + z);
-            LBM = y + (x - z);
-            RFM = y + (x + z);
-            RBM = y - (x - z);
-            highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
+                //Stopper Servo Control
+                if(gamepad2.x){
+                    stopper = .3;
+                }else if(gamepad2.y){
+                    stopper = .5;
+                }
+                if(gamepad1.back){
+                    SOTSet = .78;
+                }
+                //Flywheel Speed Control
+                if (gamepad1.left_bumper && shooterControl == false) {
+                    if(shooterPower == 0){
+                        shooterPower = .8;
+                    }else{
+                        shooterPower = 0;
+                    }
+                    shooterControl = true;
+                }else if(!gamepad1.left_bumper){
+                    shooterControl = false;
+                }
+                if (gamepad1.dpad_right) {
+                    shooterPower = shooterPower + .01;
+                }
+                if (gamepad1.dpad_left) {
+                    shooterPower = shooterPower - .01;
+                }
 
             //Wobble Goal Arm
-            wobbleCurrent = robot.WB_M.getCurrentPosition();
             if(gamepad1.dpad_up){
                 wobbleSet = wobbleSet - 6;
             }else if(gamepad1.dpad_down) {
@@ -178,6 +137,38 @@ public class Teleop extends LinearOpMode {
             }else if(gamepad1.left_trigger > .05){
                 GRIP_S = .1;
             }
+
+            //Drivetrain Control
+                if(gamepad1.right_bumper){
+                    yzSpeedSetPoint = .4;
+                    xSpeedSetPoint = .5;
+                }else{
+                    yzSpeedSetPoint = 1;
+                    xSpeedSetPoint = 1;
+                }
+                double x = xSpeedSetPoint * -gamepad1.left_stick_x;
+                double y = yzSpeedSetPoint * -gamepad1.left_stick_y;
+                double z = yzSpeedSetPoint * -gamepad1.right_stick_x;
+                LFM = y - (x + z);
+                LBM = y + (x - z);
+                RFM = y + (x + z);
+                RBM = y - (x - z);
+                highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
+
+            //Gamepad2 manual controls
+                //manual stager power control
+                if(gamepad2.left_trigger > .05){
+                    stagerPower = 0;
+                }else if(gamepad2.left_bumper){
+                    stagerPower = -1;
+                }
+                //Intake Control
+                if (gamepad2.right_trigger >=.05){
+                    intakePower = 0;
+                }
+                if(gamepad2.right_bumper){
+                    intakePower = -1;
+                }
 
             //Setting Motor Power
             robot.LF_M.setPower(LFM);
