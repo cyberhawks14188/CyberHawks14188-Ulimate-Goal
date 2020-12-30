@@ -126,14 +126,14 @@ public class Teleop extends LinearOpMode {
 
             //Wobble Goal Arm
             if(gamepad1.dpad_up){
-                wobbleSet = wobbleSet - 6;
+                wobbleSet = wobbleSet - 10;
             }else if(gamepad1.dpad_down) {
-                wobbleSet = wobbleSet + 6;
+                wobbleSet = wobbleSet + 10;
             }
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError * wobbleP;
             if (gamepad1.right_trigger > .05){
-                GRIP_S = .4;
+                GRIP_S = .6;
             }else if(gamepad1.left_trigger > .05){
                 GRIP_S = .1;
             }

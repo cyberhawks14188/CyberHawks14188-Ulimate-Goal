@@ -4,6 +4,7 @@ import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -182,13 +183,13 @@ public class Movement_Program extends LinearOpMode {
 
         Distance_From = 72;
         breakout = 1;
-        minimum_speed = 7;
+        minimum_speed = 5;
         distanceWithin = 1;
         startPosition = 0;
-        targetVelocity = 40;
+        targetVelocity = 32.4;
         //Runs movement until 100 away
         while (opModeIsActive()) {
-            Movement(0, 72, 0, 10, 10);
+            Movement(0, 72, 0, 40, 10);
         }
         lastDistance =  Distance;
         stop_motors();
@@ -210,6 +211,9 @@ public class Movement_Program extends LinearOpMode {
         telemetry.addData("Distance_From", Distance_From);
         telemetry.addData("Distance", Distance);
         telemetry.addData("Speed_Setpoint", Speed_Setpoint);
+        telemetry.addData("Velocitiy Setpoint", velocitySetpoint);
+        telemetry.addData("Velocity Correction", velocityCorrection);
+        telemetry.addData("Actual Velocity", actualVelocity);
         telemetry.addData("Y", y);
         telemetry.addData("X", x);
         telemetry.addData("Y_Setpoint", Y_setpoint);
@@ -234,9 +238,9 @@ public class Movement_Program extends LinearOpMode {
         Z_PM = 1;
         Z_IM = 0;
         Z_DM = 0;
-        VPM = .5;
-        VIM = 0;
-        VDM = 0;
+        VPM = .75;
+        VIM = 0.0001;
+        VDM = .75;
 
         //Gets encoder Positions
         E1 = robot.LF_M.getCurrentPosition() * 0.00436111;
@@ -335,7 +339,7 @@ public class Movement_Program extends LinearOpMode {
             lastDistanceFrom = Distance_From;
         if (accelerationDistance >= Distance - Distance_From){
 
-            velocitySetpoint = (Distance - Distance_From * (targetVelocity/accelerationDistance));
+            velocitySetpoint = ((Distance - Distance_From) * (targetVelocity/accelerationDistance));
             if (velocitySetpoint <= minimum_speed) {
                 velocitySetpoint = minimum_speed;
             }
