@@ -58,10 +58,10 @@ public class RobotHardware{
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        LF_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        LB_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        RF_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        WB_M.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        LF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        WB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

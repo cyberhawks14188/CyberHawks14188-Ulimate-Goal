@@ -1,23 +1,34 @@
 package org.firstinspires.ftc.teamcode;
 //Imports RobotCore
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
+import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
-import java.util.List;
-
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 //Creates program Class
 @Autonomous
 //Sets name
 public class Movement_Program extends LinearOpMode {
     RobotHardware robot = new RobotHardware();
+    //Sets up Vuforia
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
+    //Uses Vuforia Developer Code
+    private static final String VUFORIA_KEY = "AZickLn/////AAABmRdNRU8Vt0+EsSkecZ/dEtdwfmReQRmGjONFJw9IrZwj83V0JqVOw7lVMu8esNz/c2srCeQNiZSotXn5mKGHThTl4m0nN9xTmOVBgIkUOrtkA1rGeUkBw0dPy5AD8pk5L4Mv2yikiYUEXDVsPvVYjsp9p2+SHZNPXSBRL8OUPsUa+DpTQnpdRgtca4ZmRFGwUsfqkj/2pTz3/aS8KpFzZ6mjMVKJbJwiZnMhND5Bhy600+NNUNiTka0g6E+9lDEBQI5H0XVkEGCjHIFA0F8Z7L4iIZhotBPNB8kx3ep3MSRQSGg/yrzNIM4av2BqM2JVohuQFh2uSWyDJdgEwxtZ6drh3YZIa12CsuSHNkgaas2k";
+    //Declares Varibles
     public double x;
     public double y;
     public double z;
@@ -32,8 +43,10 @@ public class Movement_Program extends LinearOpMode {
     public double Y_Intergral;
     public double Z_Sum_of_Errors;
     public double lastDistanceFrom;
+    double SOTCurrent;
     public double X_Sum_of_Errors;
     public double targetVelocity;
+    double setVelocity;
     public double Y_Sum_of_Errors;
     public double Z_Last_Error;
     public double X_Last_Error;
@@ -65,6 +78,7 @@ public class Movement_Program extends LinearOpMode {
     public double X_DM;
     public double Y_PM;
     public double Y_IM;
+    double minimum_speed;
     public double Y_DM;
     public int last_x_setpoint;
     public double Z_setpoint;
@@ -81,20 +95,29 @@ public class Movement_Program extends LinearOpMode {
     public double actualVelocity;
     public double velocityCorrection;
     public double velocitySetpoint;
-    public int E1;
-    public int E2;
-    public int E3;
+    public double E1;
+    public double E2;
+    double time_passed;
+    public double E3;
     public double RF_Distance;
     public double RB_Distance;
     public double Speed_Setpoint;
     public double Highest_Motor_Power;
     public double Distance_From ;
-    public int Y_Average;
+    double stopper;
+    double stagerPower;
+    public double Y_Average;
     public double startPosition;
     public double Y_A2;
     public double velocitySumOfErrors;
     public int loopcount;
     public int Slow_Down_Distance;
+    double SOTSet;
+    double SOTError;
+    double shooterPower;
+    double lastDistance;
+    double SOTPower;
+    double SOTP;
     public double veloictyDerivitive;
 
     public double VDM;
@@ -104,11 +127,8 @@ public class Movement_Program extends LinearOpMode {
     public double runtime;
     public double Detected;
     public double Intial_Speed_Setpoint;
-    //Declares Varibles
-    //Enters the program method
     public void runOpMode() {
         robot.init(hardwareMap);
-
         //Resets Encoders
         robot.LF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -116,44 +136,112 @@ public class Movement_Program extends LinearOpMode {
         robot.LF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Detected = 0;
 
-        //Waits for start to be pressed
+        //initVuforia();
+        //initTfod();
+        //if (tfod != null) {
+        //     tfod.activate();
+        //}
+        //recongniton.getLabel() = Single
+        //recongniton.getLabel() = Quad
+        //pass = getRuntime() + 10;
+        /*while (isStarted() != true) {
+            tfod.setZoom(3, 1.78);
+            if (tfod != null) {
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
+                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                recognition.getLeft(), recognition.getTop());
+                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                recognition.getRight(), recognition.getBottom());
+                        if (recognition.getLabel() == "Single") {
+                            Detected = 1;
+                        }
+                        if (recognition.getLabel() == "Quad")
+                            Detected = 2;
+                    }
+                    telemetry();
+                    telemetry.update();
+                }
+            }
+        }
+        */
+
         waitForStart();
+        //tfod.shutdown();
+        //Waits for start to be pressed
+
+
         //Set position robot will go to
-        Distance_From = 1000;
+
+        Distance_From = 72;
         breakout = 1;
-        distanceWithin = 100;
+        minimum_speed = 7;
+        distanceWithin = 1;
         startPosition = 0;
-        targetVelocity = .4;
+        targetVelocity = 40;
         //Runs movement until 100 away
         while (opModeIsActive()) {
-            Movement(5000, 5000, 0, 1000, 1000);
+            Movement(0, 72, 0, 10, 10);
         }
+        lastDistance =  Distance;
         stop_motors();
-
-        while(opModeIsActive()){
-            telemetry();
-        }
+        ]
     }
+    //Stops all drive motors
+    public void stop_motors(){
+        robot.LF_M.setPower(0);
+        robot.LB_M.setPower(0);
+        robot.RF_M.setPower(0);
+        robot.RB_M.setPower(0);
+    }
+
+    //Displays useful telementry onto DS phone
+    public void telemetry(){
+        telemetry.addData("E1", E1);
+        telemetry.addData("E2", E2);
+        telemetry.addData("E3", E3);
+        telemetry.addData("Distance_From", Distance_From);
+        telemetry.addData("Distance", Distance);
+        telemetry.addData("Speed_Setpoint", Speed_Setpoint);
+        telemetry.addData("Y", y);
+        telemetry.addData("X", x);
+        telemetry.addData("Y_Setpoint", Y_setpoint);
+        telemetry.addData("X_Setpoint", X_setpoint);
+        telemetry.addData("LF", Speed_Setpoint*(LF_Distance/Highest_Motor_Power));
+        telemetry.addData("LB", Speed_Setpoint*(LB_Distance/Highest_Motor_Power));
+        telemetry.addData("RF", Speed_Setpoint*(RF_Distance/Highest_Motor_Power));
+        telemetry.addData("RB", Speed_Setpoint*(RB_Distance/Highest_Motor_Power));
+        telemetry.addData("Dectected", Detected);
+        telemetry.update();
+    }
+
+    //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
         X_PM = 1;
         X_IM = 0;
         X_DM = 0;
-        Y_PM = 1;
+        Y_PM = .5;
         Y_IM = 0;
         Y_DM = 0;
         Z_PM = 1;
         Z_IM = 0;
         Z_DM = 0;
-        VPM = .05;
+        VPM = .5;
         VIM = 0;
         VDM = 0;
 
         //Gets encoder Positions
-        E1 = robot.LF_M.getCurrentPosition();
-        E2 = -robot.LB_M.getCurrentPosition();
-        E3 = robot.RF_M.getCurrentPosition();
+        E1 = robot.LF_M.getCurrentPosition() * 0.00436111;
+        E2 = -robot.LB_M.getCurrentPosition() * 0.00436111;
+        E3 = robot.RF_M.getCurrentPosition() * 0.00436111;
         //Sets encoders to 1 at begining to prevent null error
         if (E1 == 0){
             E1 = 1;
@@ -229,7 +317,7 @@ public class Movement_Program extends LinearOpMode {
 */
 
         //Uses pythagrium therom to find distance and distance from
-        Distance = Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2)));
+        Distance = Math.abs((Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2))))-lastDistance);
         Y_A2 = Y_setpoint - Y_Average;
         X_B2 = X_setpoint - E2;
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
@@ -238,12 +326,24 @@ public class Movement_Program extends LinearOpMode {
             lastDistanceFrom = Distance_From;
             breakout = 0;
         }
+        //See if jitery or weird movement then add a back the interval sample time
         time = getRuntime();
-        if(time >= previousTime){
+            time_passed = time - (previousTime);
             //Velocity is number of ticks per second
-            actualVelocity = Math.abs((Distance_From - lastDistanceFrom))/360;
-            previousTime = time + .1;
+            actualVelocity = Math.abs((Distance_From - lastDistanceFrom))/time_passed;
+            previousTime = time;
             lastDistanceFrom = Distance_From;
+        if (accelerationDistance >= Distance - Distance_From){
+
+            velocitySetpoint = (Distance - Distance_From * (targetVelocity/accelerationDistance));
+            if (velocitySetpoint <= minimum_speed) {
+                velocitySetpoint = minimum_speed;
+            }
+        }
+
+        if (Distance_From <= Slow_Down_Distance) {
+
+            velocitySetpoint = Distance_From * (targetVelocity/Slow_Down_Distance);
         }
 
         velocityError = Math.abs(velocitySetpoint - actualVelocity);
@@ -253,49 +353,18 @@ public class Movement_Program extends LinearOpMode {
         velocityDiffrenceOfErrors = velocityError - velocityLastError;
         veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
         velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
-        if (accelerationDistance >= Distance - Distance_From){
-            velocitySetpoint = ((Distance - Distance_From)/accelerationDistance)* targetVelocity;
-        }
 
-        if (Distance_From <= Slow_Down_Distance) {
-
-            velocitySetpoint = (Distance_From / Slow_Down_Distance)*targetVelocity;
+        if (velocitySetpoint <= 0.00001) {
+            velocitySetpoint = 0.00001;
         }
-        if (velocitySetpoint <= 0) {
-            velocitySetpoint = 0;
-        }
-        if (velocitySetpoint >= .7){
-            velocitySetpoint = .7;
+        if (velocitySetpoint >= 62.8){
+            velocitySetpoint = 62.8;
         }
         MotorEquation();
         telemetry();
     }
-    public void telemetry(){
-        telemetry.addData("Time", time);
-        telemetry.addData("Velocity", actualVelocity);
-        telemetry.addData("E1", E1);
-        telemetry.addData("E2", E2);
-        telemetry.addData("E3", E3);
-        telemetry.addData("Distance_From", Distance_From);
-        telemetry.addData("Distance", Distance);
-        telemetry.addData("Speed_Setpoint", Speed_Setpoint);
-        telemetry.addData("Y", y);
-        telemetry.addData("X", x);
-        telemetry.addData("Velocity", actualVelocity);
-        telemetry.addData("Correctional Velocity", velocityCorrection);
-        telemetry.addData("Y_Setpoint", Y_setpoint);
-        telemetry.addData("X_Setpoint", X_setpoint);
-        telemetry.addData("LF", Speed_Setpoint*(LF_Distance/Highest_Motor_Power));
-        telemetry.addData("LB", Speed_Setpoint*(LB_Distance/Highest_Motor_Power));
-        telemetry.addData("RF", Speed_Setpoint*(RF_Distance/Highest_Motor_Power));
-        telemetry.addData("RB", Speed_Setpoint*(RB_Distance/Highest_Motor_Power));
-        telemetry.addData("Dectected", Detected);
-        telemetry.update();
-    }
-
     public void MotorEquation() {
-
-        //Make Equation
+        //Motor equation from the PID output
         LF_Distance = y+(x+z);
         LB_Distance = y-(x-z);
         RF_Distance = y-(x+z);
@@ -303,15 +372,22 @@ public class Movement_Program extends LinearOpMode {
         //Finds Highest power out of the drive motors
         Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Distance), Math.abs(RB_Distance)), Math.max(Math.abs(LF_Distance), Math.abs(LB_Distance)));
         //Sets motors
-        robot.LF_M.setPower(((velocityCorrection + targetVelocity) * (LF_Distance/Highest_Motor_Power)));
-        robot.LB_M.setPower(((velocityCorrection + targetVelocity) * (LB_Distance/Highest_Motor_Power)));
-        robot.RF_M.setPower(((velocityCorrection + targetVelocity) * (RF_Distance/Highest_Motor_Power)));
-        robot.RB_M.setPower(((velocityCorrection + targetVelocity) * (RB_Distance/Highest_Motor_Power)));
+        robot.LF_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) / (LF_Distance/Highest_Motor_Power));
+        robot.LB_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) / (LB_Distance/Highest_Motor_Power));
+        robot.RF_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) / (RF_Distance/Highest_Motor_Power));
+        robot.RB_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) / (RB_Distance/Highest_Motor_Power));
     }
-    public void stop_motors(){
-        robot.LF_M.setPower(0);
-        robot.LB_M.setPower(0);
-        robot.RF_M.setPower(0);
-        robot.RB_M.setPower(0);
+
+    //Runs Encoders
+    public void SubSystem() {
+        SOTCurrent = robot.SOT_ANGL_PT.getVoltage();
+        SOTP = 1.5;
+        SOTError = SOTSet - SOTCurrent;
+        SOTPower = SOTError * SOTP;
+        robot.SOT_S.setPower(SOTPower);
+        robot.STOP_S.setPosition(stopper);
+        robot.STG_M.setPower(stagerPower);
+        robot.SOT_M.setPower(shooterPower);
+
     }
 }

@@ -179,9 +179,9 @@ public class Auto extends LinearOpMode {
         SOTSet = .78;
         Distance_From = 1000;
         breakout = 1;
-        distanceWithin = 100;
+        distanceWithin = 200;
         startPosition = 0;
-        targetVelocity = .4;
+        targetVelocity = .6;
         //Runs movement until 100 away
         while (Distance_From >= distanceWithin) {
             Movement(0, 12500, 0, 1000, 1000);
@@ -269,6 +269,7 @@ public class Auto extends LinearOpMode {
         robot.RF_M.setPower(0);
         robot.RB_M.setPower(0);
     }
+    
     //Displays useful telementry onto DS phone
     public void telemetry(){
         telemetry.addData("E1", E1);
@@ -288,6 +289,7 @@ public class Auto extends LinearOpMode {
         telemetry.addData("Dectected", Detected);
         telemetry.update();
     }
+
     //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
@@ -300,7 +302,7 @@ public class Auto extends LinearOpMode {
         Z_PM = 1;
         Z_IM = 0;
         Z_DM = 0;
-        VPM = .05;
+        VPM = .5;
         VIM = 0;
         VDM = 0;
 
