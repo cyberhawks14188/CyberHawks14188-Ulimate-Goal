@@ -34,10 +34,10 @@ public class Teleop extends LinearOpMode {
     double wobbleP = .01;
     double GRIP_S = .4;
     double SOTCurrent;
-    double SOTSet = .335;
+    double SOTSet = 1.45;
     double SOTError;
     double SOTPower;
-    double SOTP = -70;
+    double SOTP = -30;
 
 
     @Override
