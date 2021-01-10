@@ -156,12 +156,12 @@ public class Teleop extends LinearOpMode {
                 RFM = y + (x + z);
                 RBM = y - (x - z);
                 highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
-                leftG1StickPoint = Math.sqrt(Math.exp(gamepad1.left_stick_x) + Math.exp(gamepad1.left_stick_y));
-                if (gamepad1.right_stick_x <.05){
+                leftG1StickPoint = Math.sqrt((gamepad1.left_stick_x*gamepad1.right_stick_x) + (gamepad1.left_stick_y*gamepad1.left_stick_y));
+                if (Math.abs(gamepad1.right_stick_x) <.005){
                     speed = leftG1StickPoint;
                 }
                 else{
-                    speed = (leftG1StickPoint + gamepad1.right_stick_x)/2;
+                    speed = (leftG1StickPoint + Math.abs(gamepad1.right_stick_x))/2;
                 }
 
 
@@ -194,6 +194,10 @@ public class Teleop extends LinearOpMode {
             robot.STOP_S.setPosition(stopper);
 
             //Displaying Telemetry
+            telemetry.addData("LeftX", gamepad1.left_stick_x);
+            telemetry.addData("LeftY", gamepad1.left_stick_y);
+            telemetry.addData("speed", speed);
+            telemetry.addData("LFM", robot.LF_M.getPower());
             telemetry.addData("shooterPower", shooterPower);
             telemetry.addData("stagerControl", stagerControl);
             telemetry.addData("DS1", ring1Sensor);
