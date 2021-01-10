@@ -20,6 +20,7 @@ public class Teleop extends LinearOpMode {
     double yzSpeedSetPoint = 1;
     double highestMotorPower;
     double LFM;
+    double speed;
     double LBM;
     double RFM;
     double RBM;
@@ -27,6 +28,7 @@ public class Teleop extends LinearOpMode {
     boolean stagerControl = false;
     boolean shooterControl = false;
     boolean gPadBControl = false;
+    double leftG1StickPoint;
     double wobbleSet = 0;
     double wobbleCurrent;
     double wobbleError;
@@ -154,6 +156,14 @@ public class Teleop extends LinearOpMode {
                 RFM = y + (x + z);
                 RBM = y - (x - z);
                 highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
+                leftG1StickPoint = Math.sqrt(Math.exp(gamepad1.left_stick_x) + Math.exp(gamepad1.left_stick_y));
+                if (gamepad1.right_stick_x <.05){
+                    speed = leftG1StickPoint;
+                }
+                else{
+                    speed = (leftG1StickPoint + gamepad1.right_stick_x)/2;
+                }
+
 
             //Gamepad2 manual controls
                 //manual stager power control
@@ -171,10 +181,10 @@ public class Teleop extends LinearOpMode {
                 }
 
             //Setting Motor Power
-            robot.LF_M.setPower(LFM);
-            robot.LB_M.setPower(LBM);
-            robot.RF_M.setPower(RFM);
-            robot.RB_M.setPower(RBM);
+            robot.LF_M.setPower((LFM/highestMotorPower) * speed);
+            robot.LB_M.setPower((LBM/highestMotorPower) * speed);
+            robot.RF_M.setPower((RFM/highestMotorPower) * speed);
+            robot.RB_M.setPower((RBM/highestMotorPower) * speed);
             robot.WB_M.setPower(wobblePower);
             robot.SOT_M.setPower(shooterPower);
             robot.IN_M.setPower(intakePower);

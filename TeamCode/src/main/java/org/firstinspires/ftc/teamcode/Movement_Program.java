@@ -46,6 +46,7 @@ public class Movement_Program extends LinearOpMode {
     public double lastDistanceFrom;
     double SOTCurrent;
     public double X_Sum_of_Errors;
+    double minimumVelocity;
     public double targetVelocity;
     double setVelocity;
     public double Y_Sum_of_Errors;
@@ -69,26 +70,38 @@ public class Movement_Program extends LinearOpMode {
     public double y_slope;
     public double x_slope;
     public double slope;
-    public int last_y_setpoint;
+    public int last_Y_EndSetpoint;
     public double Z_PM;
     public double Z_IM;
     public double Z_DM;
     public double pass;
     public double X_PM;
+    double Last_Y_EndSetpoint;
+    double Last_X_EndSetpoint;
     public double X_IM;
     public double X_DM;
     public double Y_PM;
     public double Y_IM;
     double minimum_speed;
     public double Y_DM;
-    public int last_x_setpoint;
+    public int last_X_EndSetpoint;
     public double Z_setpoint;
     public double Y_Distiance_From_Setpoint;
-    public double X_setpoint;
+    public double X_EndSetpoint;
     public double VPM;
     public double velocityPorportion;
+    double Y_Setpoint;
+    double Slope_Y_error;
+    double Slope_X_Error;
+    double Slope_Y_porportional;
+    double Slope_X_Porportional;
+    double Slope_Y_Derivitive;
+    double Slope_X_Derivitive;
+    double Slope_Y_Correction;
+    double Slope_X_Correction;
+    double X_Setpoint;
     public double expectedSpeedSetpoint;
-    public double Y_setpoint;
+    public double Y_EndSetpoint;
     public double LF_Distance;
     public double velocityError;
     public double LB_Distance;
@@ -107,6 +120,13 @@ public class Movement_Program extends LinearOpMode {
     public double Distance_From ;
     double stopper;
     double stagerPower;
+    double Slope_Y_PM;
+    double Slope_Y_Last_errorl;
+    double Slope_Y_Last_error;
+    double Slope_Y_DM;
+    double Slope_X_PM;
+    double Slope_X_last_error;
+    double Slope_X_DM;
     public double Y_Average;
     public double startPosition;
     public double Y_A2;
@@ -183,16 +203,20 @@ public class Movement_Program extends LinearOpMode {
 
         Distance_From = 72;
         breakout = 1;
-        minimum_speed = 5;
+        minimum_speed = 15;
+        minimumVelocity = 3;
         distanceWithin = 1;
         startPosition = 0;
-        targetVelocity = 32.4;
+        targetVelocity = 30;
         //Runs movement until 100 away
-        while (opModeIsActive()) {
-            Movement(0, 72, 0, 40, 10);
+        while (Distance_From >= .3) {
+            Movement(60, 30, 0, 12, 6);
         }
         lastDistance =  Distance;
         stop_motors();
+        while(opModeIsActive()){
+            telemetry();
+        }
 
     }
     //Stops all drive motors
@@ -216,8 +240,8 @@ public class Movement_Program extends LinearOpMode {
         telemetry.addData("Actual Velocity", actualVelocity);
         telemetry.addData("Y", y);
         telemetry.addData("X", x);
-        telemetry.addData("Y_Setpoint", Y_setpoint);
-        telemetry.addData("X_Setpoint", X_setpoint);
+        telemetry.addData("Y_EndSetpoint", Y_EndSetpoint);
+        telemetry.addData("X_EndSetpoint", X_EndSetpoint);
         telemetry.addData("LF", Speed_Setpoint*(LF_Distance/Highest_Motor_Power));
         telemetry.addData("LB", Speed_Setpoint*(LB_Distance/Highest_Motor_Power));
         telemetry.addData("RF", Speed_Setpoint*(RF_Distance/Highest_Motor_Power));
@@ -227,41 +251,46 @@ public class Movement_Program extends LinearOpMode {
     }
 
     //Uses a PID to move robot to XYZ setpoints
-    public void Movement(double X_setpoint, double Y_setpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
+    public void Movement(double X_EndSetpoint, double Y_EndSetpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
-        X_PM = 1;
-        X_IM = 0;
-        X_DM = 0;
+        X_PM = 1.5;
+        X_IM = .000001;
+        X_DM = 1;
         Y_PM = .5;
-        Y_IM = 0;
-        Y_DM = 0;
-        Z_PM = 1;
-        Z_IM = 0;
-        Z_DM = 0;
-        VPM = .75;
-        VIM = 0.0001;
-        VDM = .75;
+        Y_IM = .00001;
+        Y_DM = .3;
+        Z_PM = 1.5;
+        Z_IM = .00001;
+        Z_DM = .9;
+        VPM = .96;
+        VIM = .00099;
+        VDM = .96;
+        Slope_X_DM = .3;
+        Slope_Y_PM = .3;
+        Slope_X_PM = .3;
+        Slope_Y_DM = .3;
+
 
         //Gets encoder Positions
         E1 = robot.LF_M.getCurrentPosition() * 0.00436111;
         E2 = -robot.LB_M.getCurrentPosition() * 0.00436111;
         E3 = robot.RF_M.getCurrentPosition() * 0.00436111;
         //Sets encoders to 1 at begining to prevent null error
-        if (E1 == 0){
+        if (E1 == 0) {
             E1 = 1;
         }
-        if(E2 == 0){
+        if (E2 == 0) {
             E2 = 1;
         }
 
-        if(E3 == 0){
+        if (E3 == 0) {
             E3 = 1;
         }
         //finds the diffrence of E1 and E3
-        z_encoder_diffrence = E1-E3;
+        z_encoder_diffrence = E1 - E3;
         //Z Porportional
-        z_error =  Z_setpoint - z_encoder_diffrence;
-        z_porportional = Z_PM*z_error;
+        z_error = Z_setpoint - z_encoder_diffrence;
+        z_porportional = Z_PM * z_error;
         // Z Intergral
         //Finds the Sum of the Error
         Z_Sum_of_Errors = Z_Sum_of_Errors + z_error;
@@ -272,7 +301,7 @@ public class Movement_Program extends LinearOpMode {
         Z_Last_Error = z_error;
         z = z_porportional + Z_Intergral + Z_Derivitive;
         //Finds the X error
-        x_error = X_setpoint - E2;
+        x_error = X_EndSetpoint - E2;
         //X Porportional
         x_porportional = x_error * X_PM;
         //X Intergral
@@ -283,13 +312,13 @@ public class Movement_Program extends LinearOpMode {
         X_Diffrence_of_Errors = x_error - X_Last_Error;
         X_Derivitive = X_Diffrence_of_Errors * X_DM;
         X_Last_Error = x_error;
-        x = x_porportional + X_Intergral + X_Derivitive;
+        x = x_porportional + X_Intergral + X_Derivitive + Slope_X_Correction;
         //Finds Average Of E1&E3
-        Y_Average = (E1+E3)/2;
+        Y_Average = (E1 + E3) / 2;
         //finds the average of E1 and E3
-        y_error = Y_setpoint - Y_Average;
+        y_error = Y_EndSetpoint - Y_Average;
         //Y Porportional
-        y_porportional = Y_PM*y_error;
+        y_porportional = Y_PM * y_error;
         // Y Intergral
         //Finds the Sum of the Error
         Y_Sum_of_Errors = Y_Sum_of_Errors + y_error;
@@ -298,72 +327,117 @@ public class Movement_Program extends LinearOpMode {
         Y_Diffrence_of_Errors = y_error - Y_Last_Error;
         Y_Derivitive = Y_Diffrence_of_Errors * Y_DM;
         Y_Last_Error = y_error;
-        y = y_porportional + Y_Intergral + Y_Derivitive;
+        y = y_porportional + Y_Intergral + Y_Derivitive + Slope_Y_Correction;
         //slope equation
        /* if(X_Final_Setpoint > 0 & Y_Final_Setpoint > 0){
            slope = Y_Final_Setpoint/X_Final_Setpoint;
-        Y_setpoint = slope * E2;
-        X_setpoint = (((E1+E3)/2)/slope);
-        if(last_y_setpoint > 0){
-            Y_setpoint = Y_setpoint + last_y_setpoint;
+        Y_EndSetpoint = slope * E2;
+        X_EndSetpoint = (((E1+E3)/2)/slope);
+        if(last_Y_EndSetpoint > 0){
+            Y_EndSetpoint = Y_EndSetpoint + last_Y_EndSetpoint;
         }
-        if(last_x_setpoint > 0){
-            X_setpoint = X_setpoint + last_x_setpoint;
+        if(last_X_EndSetpoint > 0){
+            X_EndSetpoint = X_EndSetpoint + last_X_EndSetpoint;
         }
            bypass = 1;
         }
-        if(Y_setpoint >= Y_Final_Setpoint) {
-            Y_setpoint = Y_Final_Setpoint;
+        if(Y_EndSetpoint >= Y_Final_Setpoint) {
+            Y_EndSetpoint = Y_Final_Setpoint;
         }
-        if(X_setpoint >= X_Final_Setpoint){
-            X_setpoint = X_Final_Setpoint;
+        if(X_EndSetpoint >= X_Final_Setpoint){
+            X_EndSetpoint = X_Final_Setpoint;
          }
 */
 
         //Uses pythagrium therom to find distance and distance from
-        Distance = Math.abs((Math.sqrt(Math.pow(Y_setpoint, 2) + (Math.pow(X_setpoint, 2))))-lastDistance);
-        Y_A2 = Y_setpoint - Y_Average;
-        X_B2 = X_setpoint - E2;
+        Distance = Math.abs((Math.sqrt(Math.pow(Y_EndSetpoint, 2) + (Math.pow(X_EndSetpoint, 2)))) - lastDistance);
+        Y_A2 = Y_EndSetpoint - Y_Average;
+        X_B2 = X_EndSetpoint - E2;
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
 
-        if (breakout == 1){
+        if (breakout == 1) {
             lastDistanceFrom = Distance_From;
             breakout = 0;
         }
         //See if jitery or weird movement then add a back the interval sample time
         time = getRuntime();
-            time_passed = time - (previousTime);
-            //Velocity is number of ticks per second
-            actualVelocity = Math.abs((Distance_From - lastDistanceFrom))/time_passed;
-            previousTime = time;
-            lastDistanceFrom = Distance_From;
-        if (accelerationDistance >= Distance - Distance_From){
+        time_passed = time - (previousTime);
+        //Velocity is number of ticks per second
+        actualVelocity = Math.abs((Distance_From - lastDistanceFrom)) / time_passed;
+        previousTime = time;
+        lastDistanceFrom = Distance_From;
+        if (accelerationDistance >= Distance - Distance_From) {
 
-            velocitySetpoint = ((Distance - Distance_From) * (targetVelocity/accelerationDistance));
+            velocitySetpoint = ((Distance - Distance_From) * (targetVelocity / accelerationDistance));
             if (velocitySetpoint <= minimum_speed) {
                 velocitySetpoint = minimum_speed;
             }
         }
-
+        //Run the deacceleration when our distance from is less then the Slow_Down_Distance
         if (Distance_From <= Slow_Down_Distance) {
 
-            velocitySetpoint = Distance_From * (targetVelocity/Slow_Down_Distance);
+            velocitySetpoint = Distance_From * (targetVelocity / Slow_Down_Distance) + minimumVelocity;
         }
-
-        velocityError = Math.abs(velocitySetpoint - actualVelocity);
+        //Find the error between desitired velcotiy and the current robot velcoity
+        velocityError = velocitySetpoint - actualVelocity;
+        //Runs and PID on the velcoity of our robot
         velocityPorportion = velocityError * VPM;
-        velocitySumOfErrors = velocitySumOfErrors + actualVelocity;
+        velocitySumOfErrors = velocitySumOfErrors + velocityError;
         velocityIntergral = velocitySumOfErrors * VIM;
         velocityDiffrenceOfErrors = velocityError - velocityLastError;
+        velocityLastError = velocityError;
         veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
+        //Finds the sum of the PID
         velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
-
-        if (velocitySetpoint <= 0.00001) {
-            velocitySetpoint = 0.00001;
+        //Velocity Minimum
+        if (velocitySetpoint <= minimumVelocity) {
+            velocitySetpoint = minimumVelocity;
         }
-        if (velocitySetpoint >= 62.8){
+        //Velcotiy Max speed per second in inches
+        if (velocitySetpoint >= 62.8) {
             velocitySetpoint = 62.8;
         }
+        slope = ((Y_EndSetpoint - Last_Y_EndSetpoint) / (X_EndSetpoint - Last_X_EndSetpoint));
+        //If we are going diangle
+        if (Y_EndSetpoint - Last_Y_EndSetpoint != 0 & X_EndSetpoint - Last_X_EndSetpoint != 0) {
+
+
+            Y_Setpoint = slope * E2;
+            X_Setpoint = Y_Average / slope;
+
+        }
+        //Horizonatal line
+        else if (Y_EndSetpoint - Last_Y_EndSetpoint == 0) {
+            Y_Setpoint = Y_EndSetpoint;
+            X_Setpoint = E2;
+        }
+        //Vertical Line
+        else if (X_EndSetpoint - Last_X_EndSetpoint != 0) {
+            Y_Setpoint = Y_Average;
+            X_Setpoint = X_EndSetpoint;
+        }
+        if (Distance_From <= 4) {
+
+            Y_Setpoint = Y_EndSetpoint;
+            X_Setpoint = X_EndSetpoint;
+
+        }
+        //Find error between the desired point on line and our currenet E2 reading
+        Slope_Y_error = Y_Setpoint - Y_Average;
+        //Finds error between the desired point on line and our curernt E1 and E3 average
+        Slope_X_Error = X_Setpoint - E2;
+        //Runs the Y Slope PD
+        Slope_Y_porportional = Slope_Y_error * Slope_Y_PM;
+        Slope_Y_Derivitive = (Slope_Y_error - Slope_Y_Last_error) * Slope_Y_DM;
+        Slope_Y_Last_error = Slope_Y_error;
+        //Find the sum of the porportional and the derivitive
+        Slope_Y_Correction = Slope_Y_porportional + Slope_Y_Derivitive;
+        //Runs the X SLope PD
+        Slope_X_Porportional = Slope_X_Error * Slope_X_PM;
+        Slope_X_Derivitive = (Slope_X_Error - Slope_X_last_error) * Slope_X_DM;
+        Slope_X_last_error = Slope_X_Error;
+        //Find the sum of the  porprotional and the dervititive
+        Slope_X_Correction = Slope_X_Porportional + Slope_X_Derivitive;
         MotorEquation();
         telemetry();
     }
@@ -376,10 +450,10 @@ public class Movement_Program extends LinearOpMode {
         //Finds Highest power out of the drive motors
         Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Distance), Math.abs(RB_Distance)), Math.max(Math.abs(LF_Distance), Math.abs(LB_Distance)));
         //Sets motors
-        robot.LF_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) / (LF_Distance/Highest_Motor_Power));
-        robot.LB_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) / (LB_Distance/Highest_Motor_Power));
-        robot.RF_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) / (RF_Distance/Highest_Motor_Power));
-        robot.RB_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) / (RB_Distance/Highest_Motor_Power));
+        robot.LF_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) * (LF_Distance/Highest_Motor_Power));
+        robot.LB_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) * (LB_Distance/Highest_Motor_Power));
+        robot.RF_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) * (RF_Distance/Highest_Motor_Power));
+        robot.RB_M.setPower(((velocityCorrection+velocitySetpoint)/62.8) * (RB_Distance/Highest_Motor_Power));
     }
 
     //Runs Encoders
