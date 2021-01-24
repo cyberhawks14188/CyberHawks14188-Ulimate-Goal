@@ -212,9 +212,10 @@ public class Test_Movement_Program extends LinearOpMode {
         startPosition = 0;
         targetVelocity = 25;
         //Runs movement until 100 away
-        while (Distance_From > .3) {
+        while (Distance_From > .4) {
             Movement(-20, 20, 0, 6, 6);
         }
+
 
         Last_X_EndSetpoint = storingVarible1;
         Last_Y_EndSetpoint = storingVarible2;
@@ -226,7 +227,7 @@ public class Test_Movement_Program extends LinearOpMode {
         startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
-        while (Distance_From > .3) {
+        while (Distance_From > .4) {
             Movement(0, 40, 0, 6, 6);
         }
         Last_X_EndSetpoint = storingVarible1;
@@ -239,7 +240,8 @@ public class Test_Movement_Program extends LinearOpMode {
         startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
-        while (Distance_From > .3) {
+
+        while (Distance_From > .4) {
             Movement(20, 20, 0, 6, 6);
         }
         Last_X_EndSetpoint = storingVarible1;
@@ -252,7 +254,7 @@ public class Test_Movement_Program extends LinearOpMode {
         startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
-        while (Distance_From > .3) {
+        while (Distance_From > .4) {
             Movement(-20, -20, 0, 6, 6);
         }
         Last_X_EndSetpoint = storingVarible1;
@@ -265,7 +267,7 @@ public class Test_Movement_Program extends LinearOpMode {
         startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
-        while (Distance_From > .3) {
+        while (Distance_From > .4) {
             Movement(0, -40, 0, 6, 6);
         }
         Last_X_EndSetpoint = storingVarible1;
@@ -278,7 +280,7 @@ public class Test_Movement_Program extends LinearOpMode {
         startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
-        while (Distance_From > .3) {
+        while (Distance_From > .4) {
             Movement(20, -20, 0, 6, 6);
         }
         Last_X_EndSetpoint = storingVarible1;
@@ -294,6 +296,8 @@ public class Test_Movement_Program extends LinearOpMode {
         while (opModeIsActive()) {
             Movement(0, 0, 0, 6, 6);
         }
+
+
         stop_motors();
         while(opModeIsActive()){
             telemetry();
@@ -337,18 +341,18 @@ stop_motors();
     //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_EndSetpoint, double Y_EndSetpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
-        X_PM = .7;
-        X_IM = .00000005;
-        X_DM = .6;
-        Y_PM = .4;
-        Y_IM = .00000050;
-        Y_DM = .2;
-        Z_PM = 1.5;
-        Z_IM = .00000005;
-        Z_DM = 1.5;
-        VPM = .9;
+        X_PM = .9;
+        X_IM = .0000005;
+        X_DM = .9;
+        Y_PM = .5;
+        Y_IM = .0000050;
+        Y_DM = .5;
+        Z_PM = 1.8;
+        Z_IM = .000000;
+        Z_DM = 1.8;
+        VPM = 1.2;
         VIM = .000005;
-        VDM = .9;
+        VDM = 1./2;
         Slope_X_DM = 15;
         Slope_Y_PM = 15;
         Slope_X_PM = 15;

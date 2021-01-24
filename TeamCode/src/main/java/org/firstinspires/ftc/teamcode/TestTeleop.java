@@ -191,7 +191,7 @@ public class  TestTeleop extends LinearOpMode {
             if (Math.abs(gamepad1.right_stick_x) <.01){
                 speed = leftG1StickPoint;
             }else if(Math.abs(gamepad1.left_stick_x + gamepad1.left_stick_y) < .02){
-                speed = gamepad1.right_stick_x;
+                speed = Math.abs(gamepad1.right_stick_x);
             } else{
                 speed = (leftG1StickPoint + Math.abs(gamepad1.right_stick_x))/2;
             }
