@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.util.Range;
 //Creates program Class
 @Autonomous
 //Sets name
-public class Movement_Program extends LinearOpMode {
+public class BlueAuto extends LinearOpMode {
     RobotHardware robot = new RobotHardware();
     //Sets up Vuforia
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -158,16 +158,17 @@ public class Movement_Program extends LinearOpMode {
         robot.LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Detected = 0;
+        //Runs setup for vuforia
+        initVuforia();
+        initTfod();
+        if (tfod != null) {
+             tfod.activate();
+        }
+        //Sets up the 2 diffrent ring placements
 
-        //initVuforia();
-        //initTfod();
-        //if (tfod != null) {
-        //     tfod.activate();
-        //}
-        //recongniton.getLabel() = Single
-        //recongniton.getLabel() = Quad
-        //pass = getRuntime() + 10;
-        /*while (isStarted() != true) {
+        pass = getRuntime() + 5;
+        //Runs vuforia for a certain amount of time to deteect how many rings are in the stack
+        while (isStarted() != true) {
             tfod.setZoom(3, 1.78);
             if (tfod != null) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -192,132 +193,102 @@ public class Movement_Program extends LinearOpMode {
                 }
             }
         }
-        */
+
 
         waitForStart();
-        //tfod.shutdown();
+        tfod.shutdown();
         //Waits for start to be pressed
 
 
         //Set position robot will go to
 
-        Distance_From = 72;
+        Distance_From = 60;
         breakout = 1;
         minimum_speed = 15;
         minimumVelocity = 3;
         distanceWithin = 1;
         startPosition = 0;
-        targetVelocity = 30;
+        targetVelocity = 45;
         //Runs movement until 100 away
         while (Distance_From >= .5) {
-            Movement(-20, 20, 0, 4, 6);
+            Movement(-10, 50, 0, 12, 6);
         }
-        X_Sum_of_Errors = 0;
-        Y_Sum_of_Errors = 0;
-        Z_Sum_of_Errors = 0;
-        velocitySumOfErrors = 0;
-        lastDistance =  Distance;
-        Distance_From = 72;
-        breakout = 1;
-        minimum_speed = 15;
-        minimumVelocity = 3;
-        distanceWithin = 1;
-        startPosition = 0;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From >= .5) {
-            Movement(0, 40, 0, 4, 6);
-        }
-        X_Sum_of_Errors = 0;
-        Y_Sum_of_Errors = 0;
-        Z_Sum_of_Errors = 0;
-        velocitySumOfErrors = 0;
-        lastDistance =  Distance;
-        Distance_From = 72;
-        breakout = 1;
-        minimum_speed = 15;
-        minimumVelocity = 3;
-        distanceWithin = 1;
-        startPosition = 0;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From >= .5) {
-            Movement(20, 20, 0, 4, 6);
-        }
-        X_Sum_of_Errors = 0;
-        Y_Sum_of_Errors = 0;
-        Z_Sum_of_Errors = 0;
-        velocitySumOfErrors = 0;
-        lastDistance =  Distance;
-        Distance_From = 72;
-        breakout = 1;
-        minimum_speed = 15;
-        minimumVelocity = 3;
-        distanceWithin = 1;
-        startPosition = 0;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From >= .5) {
-            Movement(-20, -20, 0, 4, 6);
-        }
-        X_Sum_of_Errors = 0;
-        Y_Sum_of_Errors = 0;
-        Z_Sum_of_Errors = 0;
-        velocitySumOfErrors = 0;
-        lastDistance =  Distance;
-        Distance_From = 72;
-        breakout = 1;
-        minimum_speed = 15;
-        minimumVelocity = 3;
-        distanceWithin = 1;
-        startPosition = 0;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From >= .5) {
-            Movement(0, -40, 0, 4, 6);
-        }
-        X_Sum_of_Errors = 0;
-        Y_Sum_of_Errors = 0;
-        Z_Sum_of_Errors = 0;
-        velocitySumOfErrors = 0;
-
-        lastDistance =  Distance;
-        Distance_From = 72;
-        breakout = 1;
-        minimum_speed = 15;
-        minimumVelocity = 3;
-        distanceWithin = 1;
-        startPosition = 0;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From >= .5) {
-            Movement(20, -20, 0, 4, 6);
-        }
-        X_Sum_of_Errors = 0;
-        Y_Sum_of_Errors = 0;
-        Z_Sum_of_Errors = 0;
-        velocitySumOfErrors = 0;
-        lastDistance =  Distance;
-        Distance_From = 72;
-        breakout = 1;
-        minimum_speed = 15;
-        minimumVelocity = 3;
-        distanceWithin = 1;
-        startPosition = 0;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From >= .5) {
-            Movement(0, 0, 0, 4, 6);
-        }
-        X_Sum_of_Errors = 0;
-        Y_Sum_of_Errors = 0;
-        Z_Sum_of_Errors = 0;
-        velocitySumOfErrors = 0;
         lastDistance =  Distance;
         stop_motors();
-        while(opModeIsActive()){
-            telemetry();
+        if(Detected == 0){
+            Distance_From = 30;
+            breakout = 1;
+            minimum_speed = 15;
+            minimumVelocity = 3;
+            distanceWithin = 1;
+            startPosition = 0;
+            targetVelocity = 32;
+            //Runs movement until 100 away
+            while (Distance_From >= .5) {
+                Movement(-8, 80, 0, 12, 6);
+            }
         }
+        if(Detected == 1){
+            Distance_From = 50;
+            breakout = 1;
+            minimum_speed = 15;
+            minimumVelocity = 3;
+            distanceWithin = 1;
+            startPosition = 0;
+            targetVelocity = 35;
+            //Runs movement until 100 away
+            while (Distance_From >= .5) {
+                Movement(10, 98, 0, 12, 6);
+            }
+        }
+        if(Detected == 2){
+            Distance_From = 120;
+            breakout = 1;
+            minimum_speed = 15;
+            
+            minimumVelocity = 3;
+            distanceWithin = 1;
+            startPosition = 0;
+            targetVelocity = 45;
+            //Runs movement until 100 away
+            while (Distance_From >= .5) {
+                Movement(-8, 134, 0, 12, 6);
+            }
+        }
+        Distance_From = 50;
+        breakout = 1;
+        minimum_speed = 15;
+        minimumVelocity = 3;
+        distanceWithin = 1;
+        startPosition = 0;
+        targetVelocity = 45;
+        //Runs movement until 100 away
+        while (Distance_From >= .5) {
+            Movement(54, 85, 0, 12, 6);
+        }
+        Distance_From = 120;
+        breakout = 1;
+        minimum_speed = 15;
+        minimumVelocity = 3;
+        distanceWithin = 1;
+        startPosition = 0;
+        targetVelocity = 45;
+        //Runs movement until 100 away
+        while (Distance_From >= .5) {
+            Movement(25, 5, 0, 12, 6);
+        }
+        Distance_From = 120;
+        breakout = 1;
+        minimum_speed = 15;
+        minimumVelocity = 3;
+        distanceWithin = 1;
+        startPosition = 0;
+        targetVelocity = 45;
+        //Runs movement until 100 away
+        while (Distance_From >= .5) {
+            Movement(-18, 50, 0, 12, 6);
+        }
+
 
     }
     //Stops all drive motors
@@ -358,18 +329,18 @@ public class Movement_Program extends LinearOpMode {
         X_IM = .000001;
         X_DM = 1;
         Y_PM = .5;
-        Y_IM = .000001;
+        Y_IM = .00001;
         Y_DM = .3;
         Z_PM = 1.5;
-        Z_IM = .000001;
-        Z_DM = 1;
+        Z_IM = .00001;
+        Z_DM = .9;
         VPM = .96;
-        VIM = .00002;
+        VIM = .00099;
         VDM = .96;
-        Slope_X_DM = .4;
-        Slope_Y_PM = .4;
-        Slope_X_PM = .4;
-        Slope_Y_DM = .4;
+        Slope_X_DM = .3;
+        Slope_Y_PM = .3;
+        Slope_X_PM = .3;
+        Slope_Y_DM = .3;
 
 
         //Gets encoder Positions
@@ -459,6 +430,7 @@ public class Movement_Program extends LinearOpMode {
         if (breakout == 1) {
             lastDistanceFrom = Distance_From;
             breakout = 0;
+            slope = ((Y_EndSetpoint - Last_Y_EndSetpoint) / (X_EndSetpoint - Last_X_EndSetpoint));
         }
         //See if jitery or weird movement then add a back the interval sample time
         time = getRuntime();
@@ -498,7 +470,8 @@ public class Movement_Program extends LinearOpMode {
         if (velocitySetpoint >= 62.8) {
             velocitySetpoint = 62.8;
         }
-        slope = ((Y_EndSetpoint - Last_Y_EndSetpoint) / (X_EndSetpoint - Last_X_EndSetpoint));
+
+
         //If we are going diangle
         if (Y_EndSetpoint - Last_Y_EndSetpoint != 0 & X_EndSetpoint - Last_X_EndSetpoint != 0) {
 
@@ -541,6 +514,8 @@ public class Movement_Program extends LinearOpMode {
         Slope_X_Correction = Slope_X_Porportional + Slope_X_Derivitive;
         MotorEquation();
         telemetry();
+        Last_X_EndSetpoint = X_EndSetpoint;
+        Last_Y_EndSetpoint = Y_EndSetpoint;
     }
     public void MotorEquation() {
         //Motor equation from the PID output
@@ -568,5 +543,31 @@ public class Movement_Program extends LinearOpMode {
         robot.STG_M.setPower(stagerPower);
         robot.SOT_M.setPower(shooterPower);
 
+    }
+
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.75f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 }
