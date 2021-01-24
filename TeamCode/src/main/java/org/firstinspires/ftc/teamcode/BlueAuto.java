@@ -534,7 +534,7 @@ public class BlueAuto extends LinearOpMode {
 
     //Runs Encoders
     public void SubSystem() {
-        SOTCurrent = robot.SOT_ANGL_PT.getVoltage();
+        SOTCurrent = robot.SOT_PT.getVoltage();
         SOTP = 1.5;
         SOTError = SOTSet - SOTCurrent;
         SOTPower = SOTError * SOTP;

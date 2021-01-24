@@ -121,9 +121,6 @@ public class  TestTeleop extends LinearOpMode {
             }else if(gamepad2.y){
                 stopper = .5;
             }
-            if(gamepad1.back){
-                SOTSet = .78;
-            }
             //Flywheel Speed Control
 
             if (gamepad1.left_bumper && shooterControl == false) {
@@ -191,11 +188,12 @@ public class  TestTeleop extends LinearOpMode {
             RBM = y - (x - z);
             highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
             leftG1StickPoint = Math.sqrt((gamepad1.left_stick_x*gamepad1.left_stick_x) + (gamepad1.left_stick_y*gamepad1.left_stick_y));
-            if (Math.abs(gamepad1.right_stick_x) <.005){
+            if (Math.abs(gamepad1.right_stick_x) <.01){
                 speed = leftG1StickPoint;
-            }
-            else{
-                speed = (leftG1StickPoint + Math.abs(gamepad1.right_stick_x));
+            }else if(Math.abs(gamepad1.left_stick_x + gamepad1.left_stick_y) < .02){
+                speed = gamepad1.right_stick_x;
+            } else{
+                speed = (leftG1StickPoint + Math.abs(gamepad1.right_stick_x))/2;
             }
 
 
@@ -213,6 +211,9 @@ public class  TestTeleop extends LinearOpMode {
             if(gamepad2.right_bumper){
                 intakePower = -1;
             }
+            if(gamepad1.back){
+                intakePower = 1;
+            }
 
             //Setting Motor Power
             robot.LF_M.setPower((LFM/highestMotorPower) * speed);
@@ -228,6 +229,9 @@ public class  TestTeleop extends LinearOpMode {
             robot.STOP_S.setPosition(stopper);
 
             //Displaying Telemetry
+            telemetry.addData("E1", robot.LF_M.getCurrentPosition() * 0.00436111);
+            telemetry.addData("E2", robot.LB_M.getCurrentPosition() * 0.00436111);
+            telemetry.addData("E3", robot.RF_M.getCurrentPosition() * 0.00436111);
             telemetry.addData("ShooterEncoder", robot.SOT_M.getCurrentPosition());
             telemetry.addData("ShooterPower", (shooterSetpoint+shooterCorrection)/2800);
             telemetry.addData("shooterError", shooterError);
