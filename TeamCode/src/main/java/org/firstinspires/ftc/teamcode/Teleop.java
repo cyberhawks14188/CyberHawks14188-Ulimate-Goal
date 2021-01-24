@@ -105,9 +105,6 @@ public class Teleop extends LinearOpMode {
                 }else if(gamepad2.y){
                     stopper = .5;
                 }
-                if(gamepad1.back){
-                    SOTSet = .78;
-                }
                 //Flywheel Speed Control
                 if (gamepad1.left_bumper && shooterControl == false) {
                     if(shooterPower == 0){
@@ -174,7 +171,10 @@ public class Teleop extends LinearOpMode {
                     stagerPower = -1;
                 }
                 //Intake Control
-                if (gamepad2.right_trigger >=.05){
+            if(gamepad1.back){
+                intakePower = 1;
+            }
+            if (gamepad2.right_trigger >=.05){
                     intakePower = 0;
                 }
                 if(gamepad2.right_bumper){
