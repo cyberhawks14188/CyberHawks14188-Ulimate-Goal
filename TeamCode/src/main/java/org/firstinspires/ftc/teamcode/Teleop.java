@@ -148,19 +148,20 @@ public class Teleop extends LinearOpMode {
                     yzSpeedSetPoint = 1;
                     xSpeedSetPoint = 1;
                 }
-                double x = xSpeedSetPoint * -gamepad1.left_stick_x;
-                double y = yzSpeedSetPoint * -gamepad1.left_stick_y;
-                double z = yzSpeedSetPoint * -gamepad1.right_stick_x;
+                double x = -gamepad1.left_stick_x;
+                double y = -gamepad1.left_stick_y;
+                double z = -gamepad1.right_stick_x;
                 LFM = y - (x + z);
                 LBM = y + (x - z);
                 RFM = y + (x + z);
                 RBM = y - (x - z);
                 highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
                 leftG1StickPoint = Math.sqrt((gamepad1.left_stick_x * gamepad1.left_stick_x)+ (gamepad1.left_stick_y*gamepad1.left_stick_y));
-                if (Math.abs(gamepad1.right_stick_x) <.005){
+                if (Math.abs(gamepad1.right_stick_x) <.01){
                     speed = leftG1StickPoint;
-                }
-                else{
+                }else if(Math.abs(gamepad1.left_stick_x + gamepad1.left_stick_y) < .02){
+                    speed = gamepad1.right_stick_x;
+                } else{
                     speed = (leftG1StickPoint + Math.abs(gamepad1.right_stick_x))/2;
                 }
 
@@ -181,10 +182,10 @@ public class Teleop extends LinearOpMode {
                 }
 
             //Setting Motor Power
-            robot.LF_M.setPower((LFM/highestMotorPower) * speed);
-            robot.LB_M.setPower((LBM/highestMotorPower) * speed);
-            robot.RF_M.setPower((RFM/highestMotorPower) * speed);
-            robot.RB_M.setPower((RBM/highestMotorPower) * speed);
+            robot.LF_M.setPower(((LFM/highestMotorPower) * speed) * xSpeedSetPoint);
+            robot.LB_M.setPower(((LBM/highestMotorPower) * speed) * xSpeedSetPoint);
+            robot.RF_M.setPower(((RFM/highestMotorPower) * speed) * xSpeedSetPoint);
+            robot.RB_M.setPower(((RBM/highestMotorPower) * speed) * xSpeedSetPoint);
             robot.WB_M.setPower(wobblePower);
             robot.SOT_M.setPower(shooterPower);
             robot.IN_M.setPower(intakePower);
