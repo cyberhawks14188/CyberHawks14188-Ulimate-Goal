@@ -24,7 +24,7 @@ public class RobotHardware{
     public CRServo SOT_S;
     public Servo STOP_S;
     public Servo GRIP_S;
-    public AnalogInput SOT_ANGL_PT;
+    public AnalogInput SOT_PT;
     public DistanceSensor Ring1_DS;
     public DistanceSensor Ring2_DS;
     public DistanceSensor Ring3_DS;
@@ -47,7 +47,7 @@ public class RobotHardware{
         WB_M = hardwareMap.get(DcMotor.class, "WB_M");
         SOT_S = hardwareMap.get(CRServo.class, "SOT_S");
         GRIP_S = hardwareMap.get(Servo.class, "GRIP_S");
-        SOT_ANGL_PT = hardwareMap.get(AnalogInput.class, "SOT_ANGL_PT");
+        SOT_PT = hardwareMap.get(AnalogInput.class, "SOT_PT");
         STOP_S = hardwareMap.get(Servo.class, "STOP_S");
         Ring1_DS = hardwareMap.get(DistanceSensor.class, "Ring1_DS");
         Ring2_DS = hardwareMap.get(DistanceSensor.class, "Ring2_DS");

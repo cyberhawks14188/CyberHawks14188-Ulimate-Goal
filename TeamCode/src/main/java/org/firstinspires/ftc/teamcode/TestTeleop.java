@@ -75,7 +75,7 @@ public class  TestTeleop extends LinearOpMode {
             ring3Sensor = robot.Ring3_DS.getDistance(DistanceUnit.INCH);
 
             //Takes potentiometer reading and writes it to varible
-            SOTCurrent = robot.SOT_ANGL_PT.getVoltage();
+            SOTCurrent = robot.SOT_PT.getVoltage();
 
             //Gets wobble goal motor encoder reading
             wobbleCurrent = robot.WB_M.getCurrentPosition();
@@ -242,7 +242,7 @@ public class  TestTeleop extends LinearOpMode {
             telemetry.addData("DS1", ring1Sensor);
             telemetry.addData("DS2", ring2Sensor);
             telemetry.addData("DS3", ring3Sensor);
-            telemetry.addData("Potentiometer", robot.SOT_ANGL_PT.getVoltage());
+            telemetry.addData("Potentiometer", robot.SOT_PT.getVoltage());
             telemetry.addData("SOTPower", SOTPower);
             telemetry.addData("SOTCurrent", SOTCurrent);
             telemetry.addData("SOTError", SOTError);
