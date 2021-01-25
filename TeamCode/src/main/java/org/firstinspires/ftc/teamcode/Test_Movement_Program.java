@@ -82,7 +82,6 @@ public class Test_Movement_Program extends LinearOpMode {
     public double X_DM;
     public double Y_PM;
     public double Y_IM;
-    double minimum_speed;
     public double Y_DM;
     public int last_X_EndSetpoint;
     public double Z_setpoint;
@@ -203,41 +202,34 @@ public class Test_Movement_Program extends LinearOpMode {
         //Waits for start to be pressed
 
         //Set position robot will go to
-
+        Last_Y_EndSetpoint = -20;
+        Last_X_EndSetpoint = -20;
         Distance_From = 40;
         breakout = 1;
-        minimum_speed = 11;
-        minimumVelocity = 2;
         distanceWithin = 1;
-        startPosition = 0;
         targetVelocity = 25;
         //Runs movement until 100 away
         while (Distance_From > .4) {
-            Movement(-20, 20, 0, 6, 6);
+            Movement(0, 0, 0, 6, 6);
         }
 
-
+/*
         Last_X_EndSetpoint = storingVarible1;
         Last_Y_EndSetpoint = storingVarible2;
         Distance_From = 40;
         breakout = 1;
-        minimum_speed = 11;
-        minimumVelocity = 2;
         distanceWithin = 1;
-        startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
         while (Distance_From > .4) {
             Movement(0, 40, 0, 6, 6);
         }
+
         Last_X_EndSetpoint = storingVarible1;
         Last_Y_EndSetpoint = storingVarible2;
         Distance_From = 40;
         breakout = 1;
-        minimum_speed = 11;
-        minimumVelocity = 2;
         distanceWithin = 1;
-        startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
 
@@ -248,10 +240,7 @@ public class Test_Movement_Program extends LinearOpMode {
         Last_Y_EndSetpoint = storingVarible2;
         Distance_From = 40;
         breakout = 1;
-        minimum_speed = 11;
-        minimumVelocity = 2;
         distanceWithin = 1;
-        startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
         while (Distance_From > .4) {
@@ -261,10 +250,7 @@ public class Test_Movement_Program extends LinearOpMode {
         Last_Y_EndSetpoint = storingVarible2;
         Distance_From = 40;
         breakout = 1;
-        minimum_speed = 11;
-        minimumVelocity = 2;
         distanceWithin = 1;
-        startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
         while (Distance_From > .4) {
@@ -274,10 +260,7 @@ public class Test_Movement_Program extends LinearOpMode {
         Last_Y_EndSetpoint = storingVarible2;
         Distance_From = 40;
         breakout = 1;
-        minimum_speed = 11;
-        minimumVelocity = 2;
         distanceWithin = 1;
-        startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
         while (Distance_From > .4) {
@@ -287,16 +270,13 @@ public class Test_Movement_Program extends LinearOpMode {
         Last_Y_EndSetpoint = storingVarible2;
         Distance_From = 40;
         breakout = 1;
-        minimum_speed = 11;
-        minimumVelocity = 2;
         distanceWithin = 1;
-        startPosition = 0;
         targetVelocity = 30;
         //Runs movement until 100 away
         while (opModeIsActive()) {
             Movement(0, 0, 0, 6, 6);
         }
-
+*/
 
         stop_motors();
         while(opModeIsActive()){
@@ -330,6 +310,8 @@ stop_motors();
         telemetry.addData("X", x);
         telemetry.addData("Y_EndSetpoint", Y_EndSetpoint);
         telemetry.addData("X_EndSetpoint", X_EndSetpoint);
+        telemetry.addData("Last_Y_EndSetpoint", Last_X_EndSetpoint);
+        telemetry.addData("Last_X_EndSetpoint", Last_Y_EndSetpoint);
         telemetry.addData("LF", robot.LF_M.getPower());
         telemetry.addData("LB", robot.LB_M.getPower());
         telemetry.addData("RF", robot.RF_M.getPower());
@@ -345,34 +327,35 @@ stop_motors();
         X_IM = .0000005;
         X_DM = .9;
         Y_PM = .5;
-        Y_IM = .0000050;
+        Y_IM = .000005;
         Y_DM = .5;
         Z_PM = 1.8;
-        Z_IM = .000000;
+        Z_IM = .0000005;
         Z_DM = 1.8;
         VPM = 1.2;
         VIM = .000005;
-        VDM = 1./2;
-        Slope_X_DM = 15;
-        Slope_Y_PM = 15;
-        Slope_X_PM = 15;
-        Slope_Y_DM = 15;
+        VDM = 1.2;
+        Slope_X_DM = 7;
+        Slope_Y_PM = 7;
+        Slope_X_PM = 7;
+        Slope_Y_DM = 7;
 
+        minimumVelocity = 12;
 
         //Gets encoder Positions
-        E1 = robot.LF_M.getCurrentPosition() * 0.00436111;
-        E2 = -robot.LB_M.getCurrentPosition() * 0.00436111;
-        E3 = robot.RF_M.getCurrentPosition() * 0.00436111;
+        E1 = robot.LF_M.getCurrentPosition() * 0.00436111-20;
+        E2 = -robot.LB_M.getCurrentPosition() * 0.00436111-20;
+        E3 = robot.RF_M.getCurrentPosition() * 0.00436111-20;
         //Sets encoders to 1 at begining to prevent null error
         if (E1 == 0) {
-            E1 = 1;
+            E1 = .001;
         }
         if (E2 == 0) {
-            E2 = 1;
+            E2 = .001;
         }
 
         if (E3 == 0) {
-            E3 = 1;
+            E3 = .001;
         }
         //finds the diffrence of E1 and E3
         z_encoder_diffrence = E1 - E3;
@@ -416,37 +399,18 @@ stop_motors();
         Y_Derivitive = Y_Diffrence_of_Errors * Y_DM;
         Y_Last_Error = y_error;
         y = y_porportional + Y_Intergral + Y_Derivitive + Slope_Y_Correction;
-        //slope equation
-       /* if(X_Final_Setpoint > 0 & Y_Final_Setpoint > 0){
-           slope = Y_Final_Setpoint/X_Final_Setpoint;
-        Y_EndSetpoint = slope * E2;
-        X_EndSetpoint = (((E1+E3)/2)/slope);
-        if(last_Y_EndSetpoint > 0){
-            Y_EndSetpoint = Y_EndSetpoint + last_Y_EndSetpoint;
-        }
-        if(last_X_EndSetpoint > 0){
-            X_EndSetpoint = X_EndSetpoint + last_X_EndSetpoint;
-        }
-           bypass = 1;
-        }
-        if(Y_EndSetpoint >= Y_Final_Setpoint) {
-            Y_EndSetpoint = Y_Final_Setpoint;
-        }
-        if(X_EndSetpoint >= X_Final_Setpoint){
-            X_EndSetpoint = X_Final_Setpoint;
-         }
-*/
 
         //Uses pythagrium therom to find distance and distance from
-        Distance = Math.abs((Math.sqrt(Math.pow(Y_EndSetpoint-Last_Y_EndSetpoint, 2) + (Math.pow(X_EndSetpoint-Last_X_EndSetpoint, 2)))));
+        Distance = (Math.sqrt(Math.pow(Y_EndSetpoint-Last_Y_EndSetpoint, 2) + (Math.pow(X_EndSetpoint-Last_X_EndSetpoint, 2))));
         Y_A2 = Y_EndSetpoint - Y_Average;
         X_B2 = X_EndSetpoint - E2;
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
-
         if (breakout == 1) {
             lastDistanceFrom = Distance_From;
             breakout = 0;
         }
+        telemetry.addData("Y_EndSetpoint", Y_EndSetpoint);
+        telemetry.addData("X_EndSetpoint", X_EndSetpoint);
         //See if jitery or weird movement then add a back the interval sample time
         time = getRuntime();
         time_passed = time - (previousTime);
@@ -457,9 +421,6 @@ stop_motors();
         if (accelerationDistance >= Distance - Distance_From) {
 
             velocitySetpoint = ((Distance - Distance_From) * (targetVelocity / accelerationDistance));
-            if (velocitySetpoint <= minimum_speed) {
-                velocitySetpoint = minimum_speed;
-            }
         }
         //Run the deacceleration when our distance from is less then the Slow_Down_Distance
         if (Distance_From <= Slow_Down_Distance) {
@@ -468,9 +429,17 @@ stop_motors();
         }
         storingVarible1 = Y_EndSetpoint;
         storingVarible2 = X_EndSetpoint;
+        if (velocitySetpoint <= minimumVelocity) {
+            velocitySetpoint = minimumVelocity;
+        }
+        //Velcotiy Max speed per second in inches
+        if (velocitySetpoint >= 50) {
+            velocitySetpoint = 50;
+        }
         //Find the error between desitired velcotiy and the current robot velcoity
         velocityError = velocitySetpoint - actualVelocity;
         //Runs and PID on the velcoity of our robot
+
         velocityPorportion = velocityError * VPM;
         velocitySumOfErrors = velocitySumOfErrors + velocityError;
         velocityIntergral = velocitySumOfErrors * VIM;
@@ -480,13 +449,7 @@ stop_motors();
         //Finds the sum of the PID
         velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
         //Velocity Minimum
-        if (velocitySetpoint <= minimumVelocity) {
-            velocitySetpoint = minimumVelocity;
-        }
-        //Velcotiy Max speed per second in inches
-        if (velocitySetpoint >= 50) {
-            velocitySetpoint = 50;
-        }
+
         slope = ((Y_EndSetpoint - Last_Y_EndSetpoint) / (X_EndSetpoint - Last_X_EndSetpoint));
         //If we are going diangle
         if(Math.abs(slope) >= 1) {
