@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.util.Range;
 //Creates program Class
 @Autonomous
 //Sets name
+//
 public class BlueAuto extends LinearOpMode {
     RobotHardware robot = new RobotHardware();
     //Sets up Vuforia
