@@ -64,10 +64,12 @@ public class RobotHardware{
         LB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         WB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SOT_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         WB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        SOT_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //Zero power Behavor
         LF_M.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //or FLOAT
         LB_M.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

@@ -53,6 +53,8 @@ public class  TestTeleop extends LinearOpMode {
     double SOTError;
     double SOTPower;
     double SOTP = -20;
+    double WB_PT;
+    double shooterFSM = 0;
 
 
 
@@ -62,8 +64,6 @@ public class  TestTeleop extends LinearOpMode {
         RobotHardware robot = new RobotHardware();
         robot.init(hardwareMap);
         //Waits for the play button to be pressed
-        robot.SOT_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.SOT_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
         //main loop
         while (opModeIsActive()) {
@@ -76,11 +76,43 @@ public class  TestTeleop extends LinearOpMode {
 
             //Takes potentiometer reading and writes it to varible
             SOTCurrent = robot.SOT_PT.getVoltage();
+            WB_PT = robot.WB_PT.getVoltage();
 
             //Gets wobble goal motor encoder reading
             wobbleCurrent = robot.WB_M.getCurrentPosition();
 
             //Intake Control and stager control
+            //Using a finite State Machine to easily control the stager and intake motors
+            if(gamepad1.a && stagerControl == false){
+                if(intakePower == 0){
+                    shooterFSM = 1;
+                }else{
+                    shooterFSM = 2;
+                }
+                stagerControl = true;
+            }else if(!gamepad1.a){
+                stagerControl = false;
+            }
+            if(shooterFSM == 0){
+                intakePower = 0;
+                stagerPower = 0;
+                stagerLoop = false;
+            }
+            if(shooterFSM == 1){
+                intakePower = -1;
+                stagerPower = -1;
+                stopper = .3;
+                stagerLoop = true;
+            }
+            if(shooterFSM == 2){
+                if(gamepad1.b){
+                    stopper = .5;
+                    stagerPower = -1;
+                }else
+                    stagerPower = 0;
+            }
+
+/*
             if(gamepad1.a && stagerControl == false){
                 if(intakePower == 0){
                     intakePower = -1;
@@ -96,13 +128,11 @@ public class  TestTeleop extends LinearOpMode {
             }else if(!gamepad1.a){
                 stagerControl = false;
             }
+*/
             if(stagerLoop == true && ring1Sensor < 2 && ring2Sensor< 2 && ring3Sensor < 4){
                 intakePower = 0;
                 stagerPower = 0;
-            }
-            if(gamepad1.b){
-                stopper = .5;
-                stagerPower = -1;
+
             }
 
             //Shooter Control
