@@ -223,7 +223,7 @@ public class  TestTeleop extends LinearOpMode {
             robot.WB_M.setPower(wobblePower);
             robot.SOT_M.setPower((shooterSetpoint + shooterCorrection)/2800);
             robot.IN_M.setPower(intakePower);
-            robot.STG_M.setPower(stagerPower);
+            robot.STG_M.setPower(-stagerPower);
             robot.GRIP_S.setPosition(GRIP_S);
             robot.SOT_S.setPower(SOTPower);
             robot.STOP_S.setPosition(stopper);
@@ -252,6 +252,7 @@ public class  TestTeleop extends LinearOpMode {
             telemetry.addData("SOTError", SOTError);
             telemetry.addData("SOTSet", SOTSet);
             telemetry.addData("WobblePower", wobblePower);
+            telemetry.addData("WB_PT", robot.WB_PT.getVoltage());
             telemetry.update();
         }
     }

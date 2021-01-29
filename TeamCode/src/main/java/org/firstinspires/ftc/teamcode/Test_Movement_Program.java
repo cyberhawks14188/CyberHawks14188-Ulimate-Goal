@@ -40,6 +40,7 @@ public class Test_Movement_Program extends LinearOpMode {
     public double previousTime;
     public double y_porportional;
     public double Z_Intergral;
+    double minimumAccelerationVelocity;
     public double  X_Intergral;
     public double Y_Intergral;
     public double Z_Sum_of_Errors;
@@ -121,6 +122,7 @@ public class Test_Movement_Program extends LinearOpMode {
     double stopper;
     double stagerPower;
     double Slope_Y_PM;
+    double Y_intercept;
     double Slope_Y_Last_errorl;
     double Slope_Y_Last_error;
     double Slope_Y_DM;
@@ -137,6 +139,7 @@ public class Test_Movement_Program extends LinearOpMode {
     public int Slow_Down_Distance;
     double SOTSet;
     double maximumVelocity;
+    double test;
     double SOTError;
     double shooterPower;
     double lastDistance;
@@ -202,81 +205,81 @@ public class Test_Movement_Program extends LinearOpMode {
         //Waits for start to be pressed
 
         //Set position robot will go to
-        Last_Y_EndSetpoint = -20;
-        Last_X_EndSetpoint = -20;
         Distance_From = 40;
         breakout = 1;
         distanceWithin = 1;
         targetVelocity = 25;
         //Runs movement until 100 away
         while (Distance_From > .4) {
-            Movement(0, 0, 0, 6, 6);
+            Movement(-15, 15, 0, 6, 6);
         }
-
-/*
-        Last_X_EndSetpoint = storingVarible1;
-        Last_Y_EndSetpoint = storingVarible2;
-        Distance_From = 40;
-        breakout = 1;
-        distanceWithin = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From > .4) {
-            Movement(0, 40, 0, 6, 6);
-        }
-
-        Last_X_EndSetpoint = storingVarible1;
-        Last_Y_EndSetpoint = storingVarible2;
-        Distance_From = 40;
-        breakout = 1;
-        distanceWithin = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-
-        while (Distance_From > .4) {
-            Movement(20, 20, 0, 6, 6);
-        }
-        Last_X_EndSetpoint = storingVarible1;
-        Last_Y_EndSetpoint = storingVarible2;
-        Distance_From = 40;
-        breakout = 1;
-        distanceWithin = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From > .4) {
-            Movement(-20, -20, 0, 6, 6);
-        }
-        Last_X_EndSetpoint = storingVarible1;
-        Last_Y_EndSetpoint = storingVarible2;
-        Distance_From = 40;
-        breakout = 1;
-        distanceWithin = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From > .4) {
-            Movement(0, -40, 0, 6, 6);
-        }
-        Last_X_EndSetpoint = storingVarible1;
-        Last_Y_EndSetpoint = storingVarible2;
-        Distance_From = 40;
-        breakout = 1;
-        distanceWithin = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From > .4) {
-            Movement(20, -20, 0, 6, 6);
-        }
-        Last_X_EndSetpoint = storingVarible1;
-        Last_Y_EndSetpoint = storingVarible2;
+        stop_motors();
+        sleep(3000);
+        Last_X_EndSetpoint = storingVarible2;
+        Last_Y_EndSetpoint = storingVarible1;
         Distance_From = 40;
         breakout = 1;
         distanceWithin = 1;
         targetVelocity = 30;
         //Runs movement until 100 away
         while (opModeIsActive()) {
+            Movement(0, 30, 0, 6, 6);
+        }
+
+        Last_X_EndSetpoint = storingVarible1;
+        Last_Y_EndSetpoint = storingVarible2;
+        Distance_From = 40;
+        breakout = 1;
+        distanceWithin = 1;
+        targetVelocity = 30;
+        //Runs movement until 100 away
+
+        while (Distance_From > .4) {
+            Movement(15, 15, 0, 6, 6);
+        }
+
+        Last_X_EndSetpoint = storingVarible1;
+        Last_Y_EndSetpoint = storingVarible2;
+        Distance_From = 40;
+        breakout = 1;
+        distanceWithin = 1;
+        targetVelocity = 30;
+        //Runs movement until 100 away
+        while (Distance_From > .4) {
+            Movement(-15, -15, 0, 6, 6);
+        }
+        Last_X_EndSetpoint = storingVarible1;
+        Last_Y_EndSetpoint = storingVarible2;
+        Distance_From = 40;
+        breakout = 1;
+        distanceWithin = 1;
+        targetVelocity = 30;
+        //Runs movement until 100 away
+        while (Distance_From > .4) {
+            Movement(0, -30, 0, 6, 6);
+        }
+        Last_X_EndSetpoint = storingVarible1;
+        Last_Y_EndSetpoint = storingVarible2;
+        Distance_From = 40;
+        breakout = 1;
+        distanceWithin = 1;
+        targetVelocity = 30;
+        //Runs movement until 100 away
+        while (Distance_From > .4) {
+            Movement(15, -15, 0, 6, 6);
+        }
+        Last_X_EndSetpoint = storingVarible1;
+        Last_Y_EndSetpoint = storingVarible2;
+        Distance_From = 40;
+        breakout = 1;
+        distanceWithin = 1;
+        targetVelocity = 30;
+        //Runs movement until 100 away
+        while (Distance_From > .4) {
             Movement(0, 0, 0, 6, 6);
         }
-*/
+
+
 
         stop_motors();
         while(opModeIsActive()){
@@ -295,9 +298,9 @@ stop_motors();
 
     //Displays useful telementry onto DS phone
     public void telemetry(){
-        telemetry.addData("E1", E1);
-        telemetry.addData("E2", E2);
-        telemetry.addData("E3", E3);
+        telemetry.addData("E1", robot.LF_M.getCurrentPosition() * 0.00436111);
+        telemetry.addData("E2", -robot.LB_M.getCurrentPosition() * 0.00436111);
+        telemetry.addData("E3", robot.RF_M.getCurrentPosition() * 0.00436111);
         telemetry.addData("Y Slope Correction",Slope_Y_Correction);
         telemetry.addData("X Slope Corredton", Slope_X_Correction);
         telemetry.addData("Distance_From", Distance_From);
@@ -310,11 +313,13 @@ stop_motors();
         telemetry.addData("X", x);
         telemetry.addData("Y_EndSetpoint", Y_EndSetpoint);
         telemetry.addData("X_EndSetpoint", X_EndSetpoint);
-        telemetry.addData("Last_Y_EndSetpoint", Last_X_EndSetpoint);
-        telemetry.addData("Last_X_EndSetpoint", Last_Y_EndSetpoint);
+        telemetry.addData("Last_Y_EndSetpoint", Last_Y_EndSetpoint);
+        telemetry.addData("Last_X_EndSetpoint", Last_X_EndSetpoint);
         telemetry.addData("LF", robot.LF_M.getPower());
         telemetry.addData("LB", robot.LB_M.getPower());
+        telemetry.addData("test", test);
         telemetry.addData("RF", robot.RF_M.getPower());
+        telemetry.addData("slope", slope);
         telemetry.addData("RB", robot.RB_M.getPower());
         telemetry.addData("Dectected", Detected);
         telemetry.update();
@@ -323,29 +328,29 @@ stop_motors();
     //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_EndSetpoint, double Y_EndSetpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
-        X_PM = .9;
+        X_PM = .65;
         X_IM = .0000005;
-        X_DM = .9;
-        Y_PM = .5;
-        Y_IM = .000005;
-        Y_DM = .5;
-        Z_PM = 1.8;
+        X_DM = .7;
+        Y_PM = .35;
+        Y_IM = .0000005;
+        Y_DM = .4;
+        Z_PM = .9;
         Z_IM = .0000005;
-        Z_DM = 1.8;
-        VPM = 1.2;
+        Z_DM = 1.2;
+        VPM = .9;
         VIM = .000005;
-        VDM = 1.2;
-        Slope_X_DM = 7;
-        Slope_Y_PM = 7;
-        Slope_X_PM = 7;
-        Slope_Y_DM = 7;
-
-        minimumVelocity = 12;
+        VDM = 1;
+        Slope_X_DM = 1;
+        Slope_Y_PM = 1;
+        Slope_X_PM = 1;
+        Slope_Y_DM = 1;
+        minimumAccelerationVelocity = 12;
+        minimumVelocity = 2;
 
         //Gets encoder Positions
-        E1 = robot.LF_M.getCurrentPosition() * 0.00436111-20;
-        E2 = -robot.LB_M.getCurrentPosition() * 0.00436111-20;
-        E3 = robot.RF_M.getCurrentPosition() * 0.00436111-20;
+        E1 = robot.LF_M.getCurrentPosition() * 0.00436111;
+        E2 = -robot.LB_M.getCurrentPosition() * 0.00436111;
+        E3 = robot.RF_M.getCurrentPosition() * 0.00436111;
         //Sets encoders to 1 at begining to prevent null error
         if (E1 == 0) {
             E1 = .001;
@@ -401,7 +406,10 @@ stop_motors();
         y = y_porportional + Y_Intergral + Y_Derivitive + Slope_Y_Correction;
 
         //Uses pythagrium therom to find distance and distance from
-        Distance = (Math.sqrt(Math.pow(Y_EndSetpoint-Last_Y_EndSetpoint, 2) + (Math.pow(X_EndSetpoint-Last_X_EndSetpoint, 2))));
+        Distance = Math.sqrt((Math.pow(Y_EndSetpoint-Last_Y_EndSetpoint, 2)) + (Math.pow(X_EndSetpoint-Last_X_EndSetpoint, 2)));
+        test = Math.sqrt((Y_EndSetpoint-Last_Y_EndSetpoint*Y_EndSetpoint-Last_Y_EndSetpoint) + (X_EndSetpoint-Last_X_EndSetpoint * X_EndSetpoint-Last_X_EndSetpoint));
+        telemetry.addData("Y_EndSetpoint", Y_EndSetpoint);
+        telemetry.addData("X_EndSetpoint", X_EndSetpoint);
         Y_A2 = Y_EndSetpoint - Y_Average;
         X_B2 = X_EndSetpoint - E2;
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
@@ -409,8 +417,7 @@ stop_motors();
             lastDistanceFrom = Distance_From;
             breakout = 0;
         }
-        telemetry.addData("Y_EndSetpoint", Y_EndSetpoint);
-        telemetry.addData("X_EndSetpoint", X_EndSetpoint);
+
         //See if jitery or weird movement then add a back the interval sample time
         time = getRuntime();
         time_passed = time - (previousTime);
@@ -421,6 +428,9 @@ stop_motors();
         if (accelerationDistance >= Distance - Distance_From) {
 
             velocitySetpoint = ((Distance - Distance_From) * (targetVelocity / accelerationDistance));
+            if(velocitySetpoint <= minimumAccelerationVelocity){
+                velocitySetpoint = minimumAccelerationVelocity;
+            }
         }
         //Run the deacceleration when our distance from is less then the Slow_Down_Distance
         if (Distance_From <= Slow_Down_Distance) {
@@ -458,11 +468,10 @@ stop_motors();
         else if(Math.abs(slope) < 1){
             maximumVelocity = 40 - (10-(Math.abs(slope) * 10));
         }
-
+        Y_intercept = Y_EndSetpoint-(X_EndSetpoint*slope);
         if (Y_EndSetpoint - Last_Y_EndSetpoint != 0 & X_EndSetpoint - Last_X_EndSetpoint != 0) {
-
-            Y_Setpoint = slope * E2;
-            X_Setpoint = Y_Average / slope;
+            Y_Setpoint = slope * E2+Y_intercept;
+            X_Setpoint = (Y_Average-Y_intercept) / slope;
             telemetry.addData("1", "1");
         }
         //Horizonatal line
