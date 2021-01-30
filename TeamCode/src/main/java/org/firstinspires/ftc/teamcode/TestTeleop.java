@@ -44,8 +44,8 @@ public class  TestTeleop extends LinearOpMode {
     double wobbleCurrent;
     double wobbleError;
     double wobblePower;
-    double wobbleP = 1;
-    double GRIP_S = .4;
+    double wobbleP = 1.5;
+    double GRIP_S = .6;
     boolean gripperControl = false;
     double shooterLastEncoder;
     double SOTCurrent;
@@ -234,6 +234,8 @@ public class  TestTeleop extends LinearOpMode {
             //Displaying Telemetry
             telemetry.addData("WB_FSM", WB_FSM);
             telemetry.addData("WBSET", wobbleSet);
+            telemetry.addData("WBerror", wobbleError);
+            telemetry.addData("WB_PT", robot.WB_PT.getVoltage());
             telemetry.addData("E1", robot.LF_M.getCurrentPosition() * 0.00436111);
             telemetry.addData("E2", robot.LB_M.getCurrentPosition() * 0.00436111);
             telemetry.addData("E3", robot.RF_M.getCurrentPosition() * 0.00436111);
@@ -258,7 +260,6 @@ public class  TestTeleop extends LinearOpMode {
             telemetry.addData("SOTSet", SOTSet);
             telemetry.addData("WobblePower", wobblePower);
             telemetry.addData("WBmotor", robot.WB_M.getPower());
-            telemetry.addData("WB_PT", robot.WB_PT.getVoltage());
             telemetry.update();
             //Setting Motor Power
             robot.LF_M.setPower(((LFM/highestMotorPower) * speed)* xSpeedSetPoint);
