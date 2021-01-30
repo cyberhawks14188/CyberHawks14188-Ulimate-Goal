@@ -79,7 +79,7 @@ public class  TestTeleop extends LinearOpMode {
             //Takes potentiometer reading and writes it to varible
             SOTCurrent = robot.SOT_PT.getVoltage();
             WB_PT = robot.WB_PT.getVoltage();
-            wobbleCurrent = robot.WB_M.getCurrentPosition();//WB_PT.getVoltage();
+            wobbleCurrent = robot.WB_PT.getVoltage();
 
             //Intake Control and stager control
             //Using a finite State Machine to easily control the stager and intake motors
@@ -176,7 +176,7 @@ public class  TestTeleop extends LinearOpMode {
             }
             if(WB_FSM == 2){
                 wobbleSet = 2.295;//above wall but not all the way up
-         */   }
+            }*/
             if(gamepad1.dpad_up){
                 wobbleSet = wobbleSet - .1;
             }else if(gamepad1.dpad_down) {
