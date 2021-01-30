@@ -44,7 +44,7 @@ public class  TestTeleop extends LinearOpMode {
     double wobbleCurrent;
     double wobbleError;
     double wobblePower;
-    double wobbleP = 1.5;
+    double wobbleP = 1;
     double GRIP_S = .4;
     boolean gripperControl = false;
     double shooterLastEncoder;
@@ -156,7 +156,7 @@ public class  TestTeleop extends LinearOpMode {
                 shooterCorrection = shooterPorportional;
             }
             //Wobble Goal Arm
-           if(gamepad1.left_trigger > .05 && WBControl == false){
+            if(gamepad1.left_trigger > .05 && WBControl == false){
                 if(WB_FSM != 2){
                     WB_FSM = WB_FSM + 1;
                 }else{
