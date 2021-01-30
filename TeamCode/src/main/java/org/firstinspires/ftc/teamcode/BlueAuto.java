@@ -348,11 +348,13 @@ public class BlueAuto extends LinearOpMode {
             SubSystem();
         }
         stop_motors();
+        GRIP_POS =0;
         WB_Setpoint = 2.04;
         Timedloop = getRuntime() + 1;
         while(getRuntime() <= Timedloop){
             SubSystem();
         }
+        shooterSetpoint = 0;
         Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         Distance_From = 1;
@@ -361,7 +363,7 @@ public class BlueAuto extends LinearOpMode {
         //Runs movement until 100 away
 
         while (Distance_From > .5 & opModeIsActive()) {
-            Movement(22, 32, 0, 6, 6);
+            Movement(30, 22, 0, 6, 6);
             SubSystem();
         }
             stop_motors();
@@ -370,22 +372,126 @@ public class BlueAuto extends LinearOpMode {
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         Distance_From = 1;
         breakout = 1;
-        targetVelocity = 17;
+        targetVelocity = 30;
         //Runs movement until 100 away
-
-        while (imuZ <= 170 & opModeIsActive()) {
+        while (imuZ <= 86 & opModeIsActive()) {
             angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             imuZ = angles.firstAngle;
             telemetry.addData("imuZ", imuZ);
-            Movement(18.5, 42, 58, 1, 1);
+            Movement(18.5, 42, -70, 1, 1);
             SubSystem();
         }
+
         stop_motors();
         GRIP_POS = .6;
         Timedloop = getRuntime() + 1;
         while(getRuntime() <= Timedloop){
             SubSystem();
         }
+        WB_Setpoint = .32;
+        Timedloop = getRuntime() + 2;
+        while(getRuntime() <= Timedloop){
+            SubSystem();
+        }
+        JustTurn = 1;
+        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+        Distance_From = 1;
+        breakout = 1;
+        targetVelocity = 20;
+        while (imuZ >= 20 & opModeIsActive()) {
+            angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            imuZ = angles.firstAngle;
+            telemetry.addData("imuZ", imuZ);
+            Movement(18.5, 42, 10, 1, 1);
+            SubSystem();
+        }
+        stop_motors();
+        JustTurn = 0;
+        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+        Distance_From = 1;
+        breakout = 1;
+        targetVelocity = 35;
+        //Runs movement until 100 away
+        while (Distance_From > .5 & opModeIsActive()) {
+            Movement(22, 40, 0, 6, 6);
+            SubSystem();
+        }
+        if(Detected == 0){
+            Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+            Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+            Distance_From = 1;
+            breakout = 1;
+            targetVelocity = 30;
+            //Runs movement until 100 away
+            while (Distance_From > .5 & opModeIsActive()) {
+                Movement(-13, 60, 0, 6, 6);
+                SubSystem();
+            }
+            stop_motors();
+        }
+        if(Detected == 1){
+            Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+            Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+            Distance_From = 1;
+            breakout = 1;
+            targetVelocity = 30;
+            //Runs movement until 100 away
+
+            while (Distance_From > .5 & opModeIsActive()) {
+                Movement(12, 86, 0, 6, 6);
+                SubSystem();
+            }
+            stop_motors();
+        }
+        if (Detected ==2){
+            Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+            Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+            Distance_From = 1;
+            breakout = 1;
+            targetVelocity = 45;
+            //Runs movement until 100 away
+            while (Distance_From > .5 & opModeIsActive()) {
+                Movement(-15, 108, 0, 13, 9);
+                SubSystem();
+            }
+            stop_motors();
+        }
+        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+        WB_Setpoint = 2.04;
+        Distance_From = 1;
+        breakout = 1;
+        targetVelocity = 5;
+        shooterSetpoint = 1900;
+        //velocitySetpoint = minimumVelocity;
+        //Runs movement until 100 away
+        while (robot.WB_PT.getVoltage() <= 2.02 & opModeIsActive()) {
+            Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, 1, 1);
+            SubSystem();
+            if (robot.WB_PT.getVoltage() > 2) {
+                GRIP_POS = .1;
+            }
+        }
+        stop_motors();
+        Timedloop = getRuntime() + .5;
+        while(getRuntime() <= Timedloop){
+            SubSystem();
+        }
+        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+        Distance_From = 1;
+        breakout = 1;
+        targetVelocity = 45;
+        //Runs movement until 100 away
+        while (Distance_From > .5 & opModeIsActive()) {
+            Movement(-15, 60, 0, 13, 9);
+            SubSystem();
+        }
+        stop_motors();
+
+
         }
     //Stops all drive motors
     public void stop_motors(){
@@ -562,7 +668,7 @@ public class BlueAuto extends LinearOpMode {
             velocitySetpoint = 50;
         }
         if(actualVelocity == 0 & velocitySetpoint >.1){
-            velocitySetpoint = velocitySetpoint + 3;
+            velocitySetpoint = velocitySetpoint + 4;
         }
         //Find the error between desitired velcotiy and the current robot velcoity
         velocityError = velocitySetpoint - actualVelocity;
@@ -651,7 +757,7 @@ public class BlueAuto extends LinearOpMode {
     public void SubSystem() {
         SOTCurrent = robot.SOT_PT.getVoltage();
         SOTP = -20;
-        WB_PM = .3;
+        WB_PM = .6;
         SOTError = SOTSet - SOTCurrent;
         SOTPower = SOTError * SOTP;
         WB_error = WB_Setpoint - robot.WB_PT.getVoltage();
