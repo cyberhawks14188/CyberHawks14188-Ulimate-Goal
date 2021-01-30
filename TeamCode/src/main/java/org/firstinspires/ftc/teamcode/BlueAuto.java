@@ -222,7 +222,7 @@ public class BlueAuto extends LinearOpMode {
             //Waits for start to be pressed
             //Set position robot will go to
             shooterSetpoint = 0;
-            SOTSet = 1.4;
+            SOTSet = 1.47;
             Distance_From = 1;
             WB_Setpoint = .32;
             GRIP_POS = .585;
@@ -312,7 +312,7 @@ public class BlueAuto extends LinearOpMode {
 
             //Runs movement until 100 away
             while (Distance_From >= .5 & opModeIsActive()) {
-                Movement(20, 60, 0, 6, 6);
+                Movement(18.5, 60, 0, 6, 6);
                 SubSystem();
             }
         stop_motors();
@@ -340,47 +340,6 @@ public class BlueAuto extends LinearOpMode {
         while(getRuntime() <= Timedloop){
             SubSystem();
         }
-
-
-/*
-        Last_X_EndSetpoint = storingVarible2;
-        Last_Y_EndSetpoint = storingVarible1;
-        Distance_From = 40;
-        breakout = 1;
-        distanceWithin = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From > .5) {
-            Movement(50, 40, 0, 6, 6);
-        }
-        stop_motors();
-        sleep(500);
-        Last_X_EndSetpoint = storingVarible2;
-        Last_Y_EndSetpoint = storingVarible1;
-        Distance_From = 40;
-        breakout = 1;
-        distanceWithin = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From > .5) {
-            Movement(10, 5, 0, 6, 6);
-        }
-        stop_motors();
-        sleep(500);
-        Last_X_EndSetpoint = storingVarible2;
-        Last_Y_EndSetpoint = storingVarible1;
-        Distance_From = 40;
-        breakout = 1;
-        distanceWithin = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-        while (Distance_From > .5) {
-            Movement(-15, 48, 0, 6, 6);
-        }
-        stop_motors();
-        sleep(500);
-        */
-
 
             stop_motors();
             while (opModeIsActive()) {
@@ -432,17 +391,17 @@ public class BlueAuto extends LinearOpMode {
     //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_EndSetpoint, double Y_EndSetpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
-        X_PM = .65;
+        X_PM = .5;
         X_IM = .000000001;
-        X_DM = .9;
+        X_DM = .8;
         Y_PM = .39;
         Y_IM = .000000001;
-        Y_DM = .5;
-        Z_PM = .9;
+        Y_DM = .4;
+        Z_PM = .8;
         Z_IM = .000000001;
-        Z_DM = 1;
+        Z_DM = .9;
         VPM = 1;
-        VIM = .0000001;
+        VIM = .00000001;
         VDM = 1.2;
         Slope_X_DM = .4;
         Slope_Y_PM = .4;
