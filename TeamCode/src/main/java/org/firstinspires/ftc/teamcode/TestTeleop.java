@@ -78,7 +78,6 @@ public class  TestTeleop extends LinearOpMode {
 
             //Takes potentiometer reading and writes it to varible
             SOTCurrent = robot.SOT_PT.getVoltage();
-            WB_PT = robot.WB_PT.getVoltage();
             wobbleCurrent = robot.WB_PT.getVoltage();
 
             //Intake Control and stager control
@@ -157,7 +156,7 @@ public class  TestTeleop extends LinearOpMode {
             }
             //Wobble Goal Arm
             if(gamepad1.left_trigger > .05 && WBControl == false){
-                if(WB_FSM != 2){
+                if(WB_FSM != 3){
                     WB_FSM = WB_FSM + 1;
                 }else{
                     WB_FSM = 0;
