@@ -187,8 +187,8 @@ public class  TestTeleop extends LinearOpMode {
                 }
             }
 //this is a comment
-            wobbleError = wobbleSet - wobbleCurrent;
-            wobblePower = wobbleError / wobbleP;
+            //wobbleError = wobbleSet - robot.WB_PT.getVoltage();
+           // wobblePower = wobbleError / wobbleP;
             //Drivetrain Control
             if(gamepad1.right_bumper){
                 yzSpeedSetPoint = .4;
@@ -266,7 +266,7 @@ public class  TestTeleop extends LinearOpMode {
             robot.LB_M.setPower(((LBM/highestMotorPower) * speed)* xSpeedSetPoint);
             robot.RF_M.setPower(((RFM/highestMotorPower) * speed)* xSpeedSetPoint);
             robot.RB_M.setPower(((RBM/highestMotorPower) * speed)* xSpeedSetPoint);
-            robot.WB_M.setPower(wobblePower);
+            robot.WB_M.setPower(wobbleError * wobbleP);
             robot.SOT_M.setPower((shooterSetpoint + shooterCorrection)/2800);
             robot.IN_M.setPower(intakePower);
             robot.STG_M.setPower(-stagerPower);
