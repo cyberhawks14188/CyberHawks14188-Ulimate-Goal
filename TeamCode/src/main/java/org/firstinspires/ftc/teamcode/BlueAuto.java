@@ -285,7 +285,7 @@ public class BlueAuto extends LinearOpMode {
             WB_Setpoint = 2.04;
             Distance_From = 1;
             breakout = 1;
-            targetVelocity = 20;
+            targetVelocity = 5;
             shooterSetpoint = 1900;
             //velocitySetpoint = minimumVelocity;
             //Runs movement until 100 away
@@ -315,6 +315,7 @@ public class BlueAuto extends LinearOpMode {
                 Movement(18.5, 60, 0, 6, 6);
                 SubSystem();
             }
+        targetVelocity = minimumVelocity;
         stop_motors();
         Timedloop = getRuntime() + 1;
         while(getRuntime() <= Timedloop){
@@ -325,14 +326,15 @@ public class BlueAuto extends LinearOpMode {
         WB_Setpoint = 2.04;
         Distance_From = 1;
         breakout = 1;
-        targetVelocity = 12;
-        stagerPower = -1;
+        targetVelocity = minimumVelocity;
+        stagerPower = -.7;
         stopper = .5;
         shooterSetpoint = 1900;
         //velocitySetpoint = minimumVelocity;
         //Runs movement until 100 away
         while (robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4 & opModeIsActive()) {
             //Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, 1, 1);
+            Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, .01, .01);
             SubSystem();
         }
         stop_motors();
@@ -391,22 +393,22 @@ public class BlueAuto extends LinearOpMode {
     //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_EndSetpoint, double Y_EndSetpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
-        X_PM = .5;
+        X_PM = .2;
         X_IM = .000000001;
-        X_DM = .8;
-        Y_PM = .39;
+        X_DM = .4;
+        Y_PM = .2;
         Y_IM = .000000001;
-        Y_DM = .4;
-        Z_PM = .8;
+        Y_DM = .3;
+        Z_PM = .5;
         Z_IM = .000000001;
-        Z_DM = .9;
-        VPM = 1;
+        Z_DM = .6;
+        VPM = .6;
         VIM = .00000001;
-        VDM = 1.2;
-        Slope_X_DM = .4;
-        Slope_Y_PM = .4;
-        Slope_X_PM = .4;
-        Slope_Y_DM = .4;
+        VDM = .8;
+        Slope_X_DM = .3;
+        Slope_Y_PM = .3;
+        Slope_X_PM = .3;
+        Slope_Y_DM = .3;
         minimumAccelerationVelocity = 12;
         minimumVelocity = 2;
 
@@ -598,12 +600,12 @@ public class BlueAuto extends LinearOpMode {
     public void SubSystem() {
         SOTCurrent = robot.SOT_PT.getVoltage();
         SOTP = -20;
-        WB_PM = .4;
+        WB_PM = .3;
         SOTError = SOTSet - SOTCurrent;
         SOTPower = SOTError * SOTP;
         WB_error = WB_Setpoint - robot.WB_PT.getVoltage();
         if (shooterSetpoint > 0){
-            shooterPM = 6;
+            shooterPM = 15;
             timepassed = getRuntime() - lastTime;
             shooterActualVelocity = Math.abs(robot.SOT_M.getCurrentPosition() - shooterLastEncoder) / timepassed;
             lastTime = getRuntime();
