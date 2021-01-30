@@ -56,7 +56,8 @@ public class  TestTeleop extends LinearOpMode {
     double SOTP = -20;
     double WB_PT;
     double shooterFSM = 0;
-
+    double WB_FSM = 0;
+    boolean WBControl = false;
 
 
     @Override
@@ -156,20 +157,38 @@ public class  TestTeleop extends LinearOpMode {
                 shooterPorportional = shooterError *  shooterPM;
                 shooterCorrection = shooterPorportional;
             }
-
             //Wobble Goal Arm
+            if(gamepad1.left_trigger > .05 && WBControl == false){
+                if(WB_FSM != 2){
+                    WB_FSM = WB_FSM + 1;
+                }else{
+                    WB_FSM = 0;
+                }
+                WBControl = true;
+            }else if(gamepad1.left_trigger < .05){
+                WBControl = false;
+            }
+            //Down and ready to grab
+            if(WB_FSM == 0) {
+                wobbleSet = 2.324;
+                GRIP_S = .1;            }
+            if(WB_FSM == 1){
+                GRIP_S = .6;
+            }
+            if(WB_FSM == 2){
+                wobbleSet = 2.295;//above wall but not all the way
+            }
             if(gamepad1.dpad_up){
-                wobbleSet = wobbleSet - 10;
+                wobbleSet = wobbleCurrent - .02;
             }else if(gamepad1.dpad_down) {
-                wobbleSet = wobbleSet + 10;
+                wobbleSet = wobbleCurrent + .02;
             }
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError * wobbleP;
-            if
             if (gamepad1.right_trigger > .05){
-                GRIP_S = .6;
+                GRIP_S = .6;//closed
             }else if(gamepad1.left_trigger > .05){
-                GRIP_S = .1;
+                GRIP_S = .1;//Open
             }
 
             //Drivetrain Control
