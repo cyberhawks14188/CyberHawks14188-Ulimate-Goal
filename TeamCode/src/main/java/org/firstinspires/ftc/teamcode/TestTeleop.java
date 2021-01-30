@@ -45,8 +45,8 @@ public class  TestTeleop extends LinearOpMode {
     double wobbleError;
     double wobblePower;
     double wobbleP = .01;
-    double GRIP_S = .4;
-    boolean gripperControl = false;
+    double GRIP_S = .6;
+    boolean WBControl = false;
     double shooterLastEncoder;
     double SOTCurrent;
     double SOTSet = 1.47;
@@ -54,8 +54,8 @@ public class  TestTeleop extends LinearOpMode {
     double SOTError;
     double SOTPower;
     double SOTP = -20;
-    double WB_PT;
     double shooterFSM = 0;
+    double WB_FSM = 0;
 
 
 
@@ -77,10 +77,7 @@ public class  TestTeleop extends LinearOpMode {
 
             //Takes potentiometer reading and writes it to varible
             SOTCurrent = robot.SOT_PT.getVoltage();
-            WB_PT = robot.WB_PT.getVoltage();
-
-            //Gets wobble goal motor encoder reading
-            wobbleCurrent = robot.WB_M.getCurrentPosition();
+            wobbleCurrent = robot.WB_PT.getVoltage();
 
             //Intake Control and stager control
             //Using a finite State Machine to easily control the stager and intake motors
@@ -158,18 +155,37 @@ public class  TestTeleop extends LinearOpMode {
             }
 
             //Wobble Goal Arm
+            if(gamepad1.left_trigger > .05 && WBControl == false){
+                if(WB_FSM != 2){
+                    WB_FSM = WB_FSM + 1;
+                }else{
+                    WB_FSM = 0;
+                }
+                WBControl = true;
+            }else if(gamepad1.left_trigger < .05){
+                WBControl = false;
+            }
+            //Down and ready to grab
+            if(WB_FSM == 0) {
+                wobbleSet = 2.324;
+                GRIP_S = .1;            }
+            if(WB_FSM == 1){
+                GRIP_S = .6;
+            }
+            if(WB_FSM == 2){
+                wobbleSet = 2.295;//above wall but not all the way
+            }
             if(gamepad1.dpad_up){
-                wobbleSet = wobbleSet - 10;
+                wobbleSet = wobbleCurrent - .02;
             }else if(gamepad1.dpad_down) {
-                wobbleSet = wobbleSet + 10;
+                wobbleSet = wobbleCurrent + .02;
             }
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError * wobbleP;
-            if
             if (gamepad1.right_trigger > .05){
-                GRIP_S = .6;
+                GRIP_S = .6;//closed
             }else if(gamepad1.left_trigger > .05){
-                GRIP_S = .1;
+                GRIP_S = .1;//Open
             }
 
             //Drivetrain Control
