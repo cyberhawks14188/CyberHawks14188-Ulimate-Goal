@@ -274,7 +274,7 @@ public class BlueAuto extends LinearOpMode {
                 targetVelocity = 40;
                 //Runs movement until 100 away
                 while (Distance_From > .5 & opModeIsActive()) {
-                    Movement(-17, 112, 0, 13, 6);
+                    Movement(-18, 112, 0, 13, 6);
                     SubSystem();
                 }
                 stop_motors();
@@ -351,7 +351,7 @@ public class BlueAuto extends LinearOpMode {
         //Runs movement until 100 away
 
         while (Distance_From > .5 & opModeIsActive()) {
-            Movement(18.5, 33, 0, 6, 6);
+            Movement(22, 30, 0, 6, 6);
             SubSystem();
         }
             stop_motors();
@@ -364,10 +364,15 @@ public class BlueAuto extends LinearOpMode {
         //Runs movement until 100 away
 Timedloop = getRuntime() + 4;
         while (getRuntime()<Timedloop & opModeIsActive()) {
-            Movement(18.5, 40, 44, 6, 6);
+            Movement(18.5, 42, 52, 6, 6);
             SubSystem();
         }
         stop_motors();
+        GRIP_POS = .6;
+        Timedloop = getRuntime() + 1;
+        while(getRuntime() <= Timedloop){
+            SubSystem();
+        }
         }
 
 
