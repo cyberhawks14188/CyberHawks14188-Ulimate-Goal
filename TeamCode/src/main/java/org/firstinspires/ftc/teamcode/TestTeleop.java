@@ -44,7 +44,7 @@ public class  TestTeleop extends LinearOpMode {
     double wobbleCurrent;
     double wobbleError;
     double wobblePower;
-    double wobbleP = 1.5;
+    double wobbleP = .9;
     double GRIP_S = .6;
     boolean gripperControl = false;
     double shooterLastEncoder;
@@ -266,7 +266,7 @@ public class  TestTeleop extends LinearOpMode {
             robot.LB_M.setPower(((LBM/highestMotorPower) * speed)* xSpeedSetPoint);
             robot.RF_M.setPower(((RFM/highestMotorPower) * speed)* xSpeedSetPoint);
             robot.RB_M.setPower(((RBM/highestMotorPower) * speed)* xSpeedSetPoint);
-            robot.WB_M.setPower(wobbleError * wobbleP);
+            robot.WB_M.setPower(wobbleError / wobbleP);
             robot.SOT_M.setPower((shooterSetpoint + shooterCorrection)/2800);
             robot.IN_M.setPower(intakePower);
             robot.STG_M.setPower(-stagerPower);
