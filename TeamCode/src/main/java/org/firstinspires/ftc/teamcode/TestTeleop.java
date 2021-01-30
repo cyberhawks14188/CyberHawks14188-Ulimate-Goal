@@ -169,18 +169,24 @@ public class  TestTeleop extends LinearOpMode {
             if(WB_FSM == 0) {
                 wobbleSet = 2.324;
                 GRIP_S = .1;
+                WB_FSM = 3;
             }
             if(WB_FSM == 1){
                 GRIP_S = .6;
+                WB_FSM = 3;
             }
             if(WB_FSM == 2){
                 wobbleSet = 2.295;//above wall but not all the way up
+                WB_FSM = 3;
             }
-            if(gamepad1.dpad_up){
-                wobbleSet = wobbleCurrent - .1;
-            }else if(gamepad1.dpad_down) {
-                wobbleSet = wobbleCurrent + .1;
+            if(WB_FSM == 3){
+                if(gamepad1.dpad_up){
+                    wobbleSet = wobbleSet - .1;
+                }else if(gamepad1.dpad_down) {
+                    wobbleSet = wobbleSet + .1;
+                }
             }
+
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError / wobbleP;
             //Drivetrain Control
