@@ -46,6 +46,7 @@ public class  TestTeleop extends LinearOpMode {
     double wobblePower;
     double wobbleP = .01;
     double GRIP_S = .4;
+    boolean gripperControl = false;
     double shooterLastEncoder;
     double SOTCurrent;
     double SOTSet = 1.47;
@@ -113,50 +114,24 @@ public class  TestTeleop extends LinearOpMode {
                     stopper = .5;
                     stagerPower = -1;
                     intakePower = 0;
-                } else{
+                } else {
                     stagerPower = 0;
                     intakePower = 0;
                 }
-
             }
-
-/*
-            if(gamepad1.a && stagerControl == false){
-                if(intakePower == 0){
-                    intakePower = -1;
-                    stagerPower = -1;
-                    stopper = .3;
-                    stagerLoop = true;
-                }else{
-                    intakePower = 0;
-                    stagerPower = 0;
-                    stagerLoop = false;
-                }
-                stagerControl = true;
-            }else if(!gamepad1.a){
-                stagerControl = false;
-            }
-*/
-
 
             //Shooter Control
             //Shooter angle
             if(gamepad1.y){
-                SOTSet = SOTSet - .001;
+                SOTSet = SOTSet - .003;
             }else if(gamepad1.x){
-                SOTSet = SOTSet + .001;
+                SOTSet = SOTSet + .003;
             }
+            //Shooter Angle PID Loop to make sure the shooter is at the correct angle
             SOTError = SOTSet - SOTCurrent;
             SOTPower = SOTError * SOTP;
 
-            //Stopper Servo Control
-            if(gamepad2.x){
-                stopper = .3;
-            }else if(gamepad2.y){
-                stopper = .5;
-            }
             //Flywheel Speed Control
-
             if (gamepad1.left_bumper && shooterControl == false) {
                 if(shooterSetpoint == 0){
                     shooterSetpoint = 1900;
@@ -165,11 +140,12 @@ public class  TestTeleop extends LinearOpMode {
                     shooterSetpoint = 0;
                     shooterCorrection = 0;
                 }
-
                 shooterControl = true;
             }else if(!gamepad1.left_bumper){
                 shooterControl = false;
             }
+            //Runs the PID for the shooter
+            //The PID makes sure the Shotoer RPM is the same no matter the battery power
             if(shooterSetpoint !=0){
                 shooterPM = 15;
                 timepassed = getRuntime() - lastTime;
@@ -180,16 +156,6 @@ public class  TestTeleop extends LinearOpMode {
                 shooterPorportional = shooterError *  shooterPM;
                 shooterCorrection = shooterPorportional;
             }
-            /*
-            if (gamepad1.dpad_right) {
-                shooterSetpoint = shooterSetpoint + .01;
-            }
-            if (gamepad1.dpad_left) {
-                shooterSetpoint = shooterSetpoint - .01;
-            }
-            */
-
-
 
             //Wobble Goal Arm
             if(gamepad1.dpad_up){
@@ -199,6 +165,7 @@ public class  TestTeleop extends LinearOpMode {
             }
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError * wobbleP;
+            if
             if (gamepad1.right_trigger > .05){
                 GRIP_S = .6;
             }else if(gamepad1.left_trigger > .05){
