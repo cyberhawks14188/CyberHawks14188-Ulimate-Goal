@@ -364,7 +364,7 @@ public class BlueAuto extends LinearOpMode {
         //Runs movement until 100 away
 
         while (Distance_From > .5 & opModeIsActive()) {
-            Movement(0, 40, 0, 6, 6);
+            Movement(18.5, 40, 15, 6, 6);
             SubSystem();
         }
         stop_motors();
