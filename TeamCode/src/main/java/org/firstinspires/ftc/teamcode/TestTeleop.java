@@ -187,7 +187,7 @@ public class  TestTeleop extends LinearOpMode {
                 }
             }
 //this is a comment
-            //wobbleError = wobbleSet - robot.WB_PT.getVoltage();
+            wobbleError = wobbleSet - robot.WB_PT.getVoltage();
            // wobblePower = wobbleError / wobbleP;
             //Drivetrain Control
             if(gamepad1.right_bumper){
