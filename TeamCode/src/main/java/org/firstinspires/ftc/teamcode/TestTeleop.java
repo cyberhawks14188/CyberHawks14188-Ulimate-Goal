@@ -156,7 +156,7 @@ public class  TestTeleop extends LinearOpMode {
             }
             //Wobble Goal Arm
             if(gamepad1.left_trigger > .05 && WBControl == false){
-                if(WB_FSM != 3){
+                if(WB_FSM < 3){
                     WB_FSM = WB_FSM + 1;
                 }else{
                     WB_FSM = 0;
@@ -169,15 +169,15 @@ public class  TestTeleop extends LinearOpMode {
             if(WB_FSM == 0) {
                 wobbleSet = 2.324;
                 GRIP_S = .1;
-                WB_FSM = 3;
+              //  WB_FSM = 3;
             }
             if(WB_FSM == 1){
                 GRIP_S = .6;
-                WB_FSM = 3;
+             //   WB_FSM = 3;
             }
             if(WB_FSM == 2){
                 wobbleSet = 2.295;//above wall but not all the way up
-                WB_FSM = 3;
+              //  WB_FSM = 3;
             }
             if(WB_FSM == 3){
                 if(gamepad1.dpad_up){
