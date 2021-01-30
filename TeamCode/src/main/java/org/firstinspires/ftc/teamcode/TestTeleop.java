@@ -227,6 +227,7 @@ public class  TestTeleop extends LinearOpMode {
             }
 
             //Displaying Telemetry
+            telemetry.addData("WB_FSM", WB_FSM);
             telemetry.addData("WBSET", wobbleSet);
             telemetry.addData("E1", robot.LF_M.getCurrentPosition() * 0.00436111);
             telemetry.addData("E2", robot.LB_M.getCurrentPosition() * 0.00436111);
