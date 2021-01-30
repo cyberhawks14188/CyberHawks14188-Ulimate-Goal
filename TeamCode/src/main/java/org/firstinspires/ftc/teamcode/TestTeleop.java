@@ -48,7 +48,7 @@ public class  TestTeleop extends LinearOpMode {
     double GRIP_S = .4;
     double shooterLastEncoder;
     double SOTCurrent;
-    double SOTSet = 1.5;
+    double SOTSet = 1.47;
     double lastTime;
     double SOTError;
     double SOTPower;
@@ -96,20 +96,28 @@ public class  TestTeleop extends LinearOpMode {
             if(shooterFSM == 0){
                 intakePower = 0;
                 stagerPower = 0;
-                stagerLoop = false;
             }
             if(shooterFSM == 1){
-                intakePower = -1;
-                stagerPower = -1;
                 stopper = .3;
-                stagerLoop = true;
+                if(ring1Sensor < 2 && ring2Sensor < 2 && ring3Sensor < 4){
+                    intakePower = 0;
+                    stagerPower = 0;
+                    shooterFSM = 2;
+                }else {
+                    intakePower = -1;
+                    stagerPower = -1;
+                }
             }
-            if(shooterFSM == 2){
-                if(gamepad1.b){
+            if(shooterFSM == 2) {
+                if (gamepad1.b) {
                     stopper = .5;
                     stagerPower = -1;
-                }else
+                    intakePower = 0;
+                } else{
                     stagerPower = 0;
+                    intakePower = 0;
+                }
+
             }
 
 /*
@@ -129,11 +137,7 @@ public class  TestTeleop extends LinearOpMode {
                 stagerControl = false;
             }
 */
-            if(stagerLoop == true && ring1Sensor < 2 && ring2Sensor< 2 && ring3Sensor < 4){
-                intakePower = 0;
-                stagerPower = 0;
 
-            }
 
             //Shooter Control
             //Shooter angle
@@ -167,7 +171,7 @@ public class  TestTeleop extends LinearOpMode {
                 shooterControl = false;
             }
             if(shooterSetpoint !=0){
-                shooterPM = 6;
+                shooterPM = 15;
                 timepassed = getRuntime() - lastTime;
                 shooterActualVelocity = Math.abs(robot.SOT_M.getCurrentPosition()-shooterLastEncoder)/timepassed;
                 lastTime = getRuntime();
@@ -209,9 +213,9 @@ public class  TestTeleop extends LinearOpMode {
                 yzSpeedSetPoint = 1;
                 xSpeedSetPoint = 1;
             }
-            double x = xSpeedSetPoint * -gamepad1.left_stick_x;
-            double y = yzSpeedSetPoint * -gamepad1.left_stick_y;
-            double z = yzSpeedSetPoint * -gamepad1.right_stick_x;
+            double x = -gamepad1.left_stick_x;
+            double y = -gamepad1.left_stick_y;
+            double z = -gamepad1.right_stick_x;
             LFM = y - (x + z);
             LBM = y + (x - z);
             RFM = y + (x + z);
@@ -246,10 +250,10 @@ public class  TestTeleop extends LinearOpMode {
             }
 
             //Setting Motor Power
-            robot.LF_M.setPower((LFM/highestMotorPower) * speed);
-            robot.LB_M.setPower((LBM/highestMotorPower) * speed);
-            robot.RF_M.setPower((RFM/highestMotorPower) * speed);
-            robot.RB_M.setPower((RBM/highestMotorPower) * speed);
+            robot.LF_M.setPower(((LFM/highestMotorPower) * speed)* xSpeedSetPoint);
+            robot.LB_M.setPower(((LBM/highestMotorPower) * speed)* xSpeedSetPoint);
+            robot.RF_M.setPower(((RFM/highestMotorPower) * speed)* xSpeedSetPoint);
+            robot.RB_M.setPower(((RBM/highestMotorPower) * speed)* xSpeedSetPoint);
             robot.WB_M.setPower(wobblePower);
             robot.SOT_M.setPower((shooterSetpoint + shooterCorrection)/2800);
             robot.IN_M.setPower(intakePower);
