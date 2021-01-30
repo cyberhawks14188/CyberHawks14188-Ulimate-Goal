@@ -183,7 +183,7 @@ public class  TestTeleop extends LinearOpMode {
                 wobbleSet = wobbleSet + .1;
             }
             wobbleError = wobbleSet - wobbleCurrent;
-            wobblePower = wobbleError * wobbleP;
+            wobblePower = wobbleError / wobbleP;
             /*if (gamepad1.right_trigger > .05){
                 GRIP_S = .6;//closed
             }else if(gamepad1.left_trigger > .05){
