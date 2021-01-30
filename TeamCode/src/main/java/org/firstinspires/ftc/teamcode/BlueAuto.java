@@ -295,8 +295,6 @@ public class BlueAuto extends LinearOpMode {
                 if (robot.WB_PT.getVoltage() > 2) {
                     GRIP_POS = .1;
                 }
-
-
             }
             stop_motors();
             Timedloop = getRuntime() + .5;
@@ -315,18 +313,19 @@ public class BlueAuto extends LinearOpMode {
                 Movement(18.5, 60, 0, 6, 6);
                 SubSystem();
             }
+        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+        Distance_From = 1;
+        breakout = 1;
         targetVelocity = minimumVelocity;
         stop_motors();
         Timedloop = getRuntime() + 1;
         while(getRuntime() <= Timedloop){
             SubSystem();
+            Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, .01, .01);
+
         }
-        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
-        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         WB_Setpoint = 2.04;
-        Distance_From = 1;
-        breakout = 1;
-        targetVelocity = minimumVelocity;
         stagerPower = -.7;
         stopper = .5;
         shooterSetpoint = 1900;
@@ -334,7 +333,7 @@ public class BlueAuto extends LinearOpMode {
         //Runs movement until 100 away
         while (robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4 & opModeIsActive()) {
             //Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, 1, 1);
-            Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, .01, .01);
+
             SubSystem();
         }
         stop_motors();
@@ -393,22 +392,22 @@ public class BlueAuto extends LinearOpMode {
     //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_EndSetpoint, double Y_EndSetpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
         //Sets Multipliers
-        X_PM = .2;
+        X_PM = .15;
         X_IM = .000000001;
-        X_DM = .4;
-        Y_PM = .2;
+        X_DM = .3;
+        Y_PM = .15;
         Y_IM = .000000001;
-        Y_DM = .3;
-        Z_PM = .5;
+        Y_DM = .15;
+        Z_PM = .4;
         Z_IM = .000000001;
-        Z_DM = .6;
-        VPM = .6;
+        Z_DM = .5;
+        VPM = .5;
         VIM = .00000001;
-        VDM = .8;
-        Slope_X_DM = .3;
-        Slope_Y_PM = .3;
-        Slope_X_PM = .3;
-        Slope_Y_DM = .3;
+        VDM = .7;
+        Slope_X_DM = .25;
+        Slope_Y_PM = .25;
+        Slope_X_PM = .25;
+        Slope_Y_DM = .25;
         minimumAccelerationVelocity = 12;
         minimumVelocity = 2;
 
