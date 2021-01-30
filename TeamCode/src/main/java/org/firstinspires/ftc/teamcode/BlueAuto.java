@@ -118,6 +118,7 @@ public class BlueAuto extends LinearOpMode {
     public double E3;
     public double RF_Distance;
     public double RB_Distance;
+    double JustTurn;
     double leaveLoop;
     public double Speed_Setpoint;
     public double Highest_Motor_Power;
@@ -317,14 +318,15 @@ public class BlueAuto extends LinearOpMode {
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         Distance_From = 1;
         breakout = 1;
-        targetVelocity = minimumVelocity;
+        targetVelocity = 5;
         stop_motors();
         Timedloop = getRuntime() + 1;
         while(getRuntime() <= Timedloop){
             SubSystem();
-            Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, .01, .01);
+            Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, 1, 1);
 
         }
+        stop_motors();
         WB_Setpoint = 2.04;
         stagerPower = -.7;
         stopper = .5;
@@ -341,12 +343,31 @@ public class BlueAuto extends LinearOpMode {
         while(getRuntime() <= Timedloop){
             SubSystem();
         }
+        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+        Distance_From = 1;
+        breakout = 1;
+        targetVelocity = 30;
+        //Runs movement until 100 away
 
+        while (Distance_From > .5 & opModeIsActive()) {
+            Movement(18.5, 40, 0, 6, 6);
+            SubSystem();
+        }
             stop_motors();
-            while (opModeIsActive()) {
-                telemetry();
-            }
-            stop_motors();
+        JustTurn = 1;
+        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+        Distance_From = 1;
+        breakout = 1;
+        targetVelocity = 30;
+        //Runs movement until 100 away
+
+        while (Distance_From > .5 & opModeIsActive()) {
+            Movement(0, 40, 0, 6, 6);
+            SubSystem();
+        }
+        stop_motors();
         }
 
 
@@ -410,6 +431,19 @@ public class BlueAuto extends LinearOpMode {
         Slope_Y_DM = .25;
         minimumAccelerationVelocity = 12;
         minimumVelocity = 2;
+        if(JustTurn == 1){
+            X_PM = 0;
+            X_IM = 0;
+            X_DM = 0;
+            Y_PM = 0;
+            Y_IM = 0;
+            Y_DM = 0;
+            Slope_X_DM = 0;
+            Slope_Y_PM = 0;
+            Slope_X_PM = 0;
+            Slope_Y_DM = 0;
+
+        }
 
         //Gets encoder Positions
         E1 = robot.LF_M.getCurrentPosition() * 0.00436111;

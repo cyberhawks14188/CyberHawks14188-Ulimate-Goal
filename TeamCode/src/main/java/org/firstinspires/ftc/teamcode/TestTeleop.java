@@ -185,11 +185,13 @@ public class  TestTeleop extends LinearOpMode {
             }
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError * wobbleP;
-            if (gamepad1.right_trigger > .05){
+            /*if (gamepad1.right_trigger > .05){
                 GRIP_S = .6;//closed
             }else if(gamepad1.left_trigger > .05){
                 GRIP_S = .1;//Open
             }
+            /
+             **/
 
             //Drivetrain Control
             if(gamepad1.right_bumper){
@@ -215,8 +217,6 @@ public class  TestTeleop extends LinearOpMode {
             } else{
                 speed = (leftG1StickPoint + Math.abs(gamepad1.right_stick_x))/2;
             }
-
-
             //Gamepad2 manual controls
             //manual stager power control
             if(gamepad2.left_trigger > .05){
@@ -234,7 +234,6 @@ public class  TestTeleop extends LinearOpMode {
             if(gamepad1.back){
                 intakePower = 1;
             }
-
             //Setting Motor Power
             robot.LF_M.setPower(((LFM/highestMotorPower) * speed)* xSpeedSetPoint);
             robot.LB_M.setPower(((LBM/highestMotorPower) * speed)* xSpeedSetPoint);
@@ -247,7 +246,6 @@ public class  TestTeleop extends LinearOpMode {
             robot.GRIP_S.setPosition(GRIP_S);
             robot.SOT_S.setPower(SOTPower);
             robot.STOP_S.setPosition(stopper);
-
             //Displaying Telemetry
             telemetry.addData("E1", robot.LF_M.getCurrentPosition() * 0.00436111);
             telemetry.addData("E2", robot.LB_M.getCurrentPosition() * 0.00436111);
