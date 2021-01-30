@@ -362,8 +362,8 @@ public class BlueAuto extends LinearOpMode {
         breakout = 1;
         targetVelocity = 30;
         //Runs movement until 100 away
-Timedloop = getRuntime() + 3;
-        while (getRuntime()>Timedloop & opModeIsActive()) {
+Timedloop = getRuntime() + 4;
+        while (getRuntime()<Timedloop & opModeIsActive()) {
             Movement(18.5, 40, 15, 6, 6);
             SubSystem();
         }
