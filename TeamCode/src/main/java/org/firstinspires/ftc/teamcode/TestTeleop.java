@@ -40,11 +40,11 @@ public class  TestTeleop extends LinearOpMode {
     double shooterCorrection;
     double shooterError;
     double timepassed;
-    double wobbleSet = 0;
+    double wobbleSet = 2.324;
     double wobbleCurrent;
     double wobbleError;
     double wobblePower;
-    double wobbleP = .01;
+    double wobbleP = .0000005;
     double GRIP_S = .4;
     boolean gripperControl = false;
     double shooterLastEncoder;
@@ -79,9 +79,7 @@ public class  TestTeleop extends LinearOpMode {
             //Takes potentiometer reading and writes it to varible
             SOTCurrent = robot.SOT_PT.getVoltage();
             WB_PT = robot.WB_PT.getVoltage();
-
-            //Gets wobble goal motor encoder reading
-            wobbleCurrent = robot.WB_M.getCurrentPosition();
+            wobbleCurrent = robot.WB_M.getCurrentPosition();//WB_PT.getVoltage();
 
             //Intake Control and stager control
             //Using a finite State Machine to easily control the stager and intake motors
@@ -158,7 +156,7 @@ public class  TestTeleop extends LinearOpMode {
                 shooterCorrection = shooterPorportional;
             }
             //Wobble Goal Arm
-            if(gamepad1.left_trigger > .05 && WBControl == false){
+       /*     if(gamepad1.left_trigger > .05 && WBControl == false){
                 if(WB_FSM != 2){
                     WB_FSM = WB_FSM + 1;
                 }else{
@@ -171,17 +169,18 @@ public class  TestTeleop extends LinearOpMode {
             //Down and ready to grab
             if(WB_FSM == 0) {
                 wobbleSet = 2.324;
-                GRIP_S = .1;            }
+                GRIP_S = .1;
+            }
             if(WB_FSM == 1){
                 GRIP_S = .6;
             }
             if(WB_FSM == 2){
-                wobbleSet = 2.295;//above wall but not all the way
-            }
+                wobbleSet = 2.295;//above wall but not all the way up
+         */   }
             if(gamepad1.dpad_up){
-                wobbleSet = wobbleCurrent - .02;
+                wobbleSet = wobbleSet - .1;
             }else if(gamepad1.dpad_down) {
-                wobbleSet = wobbleCurrent + .02;
+                wobbleSet = wobbleSet + .1;
             }
             wobbleError = wobbleSet - wobbleCurrent;
             wobblePower = wobbleError * wobbleP;
@@ -192,7 +191,11 @@ public class  TestTeleop extends LinearOpMode {
             }
             /
              **/
-
+         /*   if(wobblePower > 1){
+                wobblePower = 1;
+            }else if(wobblePower < -1){
+                wobblePower = -1;
+            }*/
             //Drivetrain Control
             if(gamepad1.right_bumper){
                 yzSpeedSetPoint = .4;
@@ -234,19 +237,9 @@ public class  TestTeleop extends LinearOpMode {
             if(gamepad1.back){
                 intakePower = 1;
             }
-            //Setting Motor Power
-            robot.LF_M.setPower(((LFM/highestMotorPower) * speed)* xSpeedSetPoint);
-            robot.LB_M.setPower(((LBM/highestMotorPower) * speed)* xSpeedSetPoint);
-            robot.RF_M.setPower(((RFM/highestMotorPower) * speed)* xSpeedSetPoint);
-            robot.RB_M.setPower(((RBM/highestMotorPower) * speed)* xSpeedSetPoint);
-            robot.WB_M.setPower(wobblePower);
-            robot.SOT_M.setPower((shooterSetpoint + shooterCorrection)/2800);
-            robot.IN_M.setPower(intakePower);
-            robot.STG_M.setPower(-stagerPower);
-            robot.GRIP_S.setPosition(GRIP_S);
-            robot.SOT_S.setPower(SOTPower);
-            robot.STOP_S.setPosition(stopper);
+
             //Displaying Telemetry
+            telemetry.addData("WBSET", wobbleSet);
             telemetry.addData("E1", robot.LF_M.getCurrentPosition() * 0.00436111);
             telemetry.addData("E2", robot.LB_M.getCurrentPosition() * 0.00436111);
             telemetry.addData("E3", robot.RF_M.getCurrentPosition() * 0.00436111);
@@ -270,8 +263,21 @@ public class  TestTeleop extends LinearOpMode {
             telemetry.addData("SOTError", SOTError);
             telemetry.addData("SOTSet", SOTSet);
             telemetry.addData("WobblePower", wobblePower);
+            telemetry.addData("WBmotor", robot.WB_M.getPower());
             telemetry.addData("WB_PT", robot.WB_PT.getVoltage());
             telemetry.update();
+            //Setting Motor Power
+            robot.LF_M.setPower(((LFM/highestMotorPower) * speed)* xSpeedSetPoint);
+            robot.LB_M.setPower(((LBM/highestMotorPower) * speed)* xSpeedSetPoint);
+            robot.RF_M.setPower(((RFM/highestMotorPower) * speed)* xSpeedSetPoint);
+            robot.RB_M.setPower(((RBM/highestMotorPower) * speed)* xSpeedSetPoint);
+            robot.WB_M.setPower(wobblePower);
+            robot.SOT_M.setPower((shooterSetpoint + shooterCorrection)/2800);
+            robot.IN_M.setPower(intakePower);
+            robot.STG_M.setPower(-stagerPower);
+            robot.GRIP_S.setPosition(GRIP_S);
+            robot.SOT_S.setPower(SOTPower);
+            robot.STOP_S.setPosition(stopper);
         }
     }
 }
