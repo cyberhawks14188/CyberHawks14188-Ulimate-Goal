@@ -168,7 +168,8 @@ public class  TestTeleop extends LinearOpMode {
             //Down and ready to grab
             if(WB_FSM == 0) {
                 wobbleSet = 2.324;
-                GRIP_S = .1;            }
+                GRIP_S = .1;
+            }
             if(WB_FSM == 1){
                 GRIP_S = .6;
             }
