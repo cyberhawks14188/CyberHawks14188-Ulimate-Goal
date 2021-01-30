@@ -44,7 +44,7 @@ public class  TestTeleop extends LinearOpMode {
     double wobbleCurrent;
     double wobbleError;
     double wobblePower;
-    double wobbleP = 1.5;
+    double wobbleP = .9;
     double GRIP_S = .6;
     boolean gripperControl = false;
     double shooterLastEncoder;
@@ -187,7 +187,7 @@ public class  TestTeleop extends LinearOpMode {
                 }
             }
 
-            wobbleError = wobbleSet - wobbleCurrent;
+            wobbleError = 2.324 - wobbleCurrent;
             wobblePower = wobbleError / wobbleP;
             //Drivetrain Control
             if(gamepad1.right_bumper){

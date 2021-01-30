@@ -1,13 +1,18 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 //import com.qualcomm.robotcore.hardware.TouchSensor
 
 public class RobotHardware{
@@ -23,12 +28,14 @@ public class RobotHardware{
     public DcMotor WB_M;
     public CRServo SOT_S;
     public Servo STOP_S;
+
     public AnalogInput WB_PT;
     public Servo GRIP_S;
     public AnalogInput SOT_PT;
     public DistanceSensor Ring1_DS;
     public DistanceSensor Ring2_DS;
     public DistanceSensor Ring3_DS;
+    public BNO055IMU imu;
 
 
     //Create Hardware map
@@ -36,8 +43,16 @@ public class RobotHardware{
 
     public void init(HardwareMap hardwareMap) {
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "imu";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         // Define motors and servos
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
         LF_M = hardwareMap.get(DcMotor.class, "LF_M");
         LB_M = hardwareMap.get(DcMotor.class, "LB_M");
         RF_M = hardwareMap.get(DcMotor.class, "RF_M");
@@ -54,6 +69,8 @@ public class RobotHardware{
         Ring1_DS = hardwareMap.get(DistanceSensor.class, "Ring1_DS");
         Ring2_DS = hardwareMap.get(DistanceSensor.class, "Ring2_DS");
         Ring3_DS = hardwareMap.get(DistanceSensor.class, "Ring3_DS");
+
+        imu.initialize(parameters);
         //servo = hardwareMap.get(Servo.class, "servo");
 
         // Set all motors to zero power

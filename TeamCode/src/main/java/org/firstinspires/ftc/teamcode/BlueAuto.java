@@ -3,11 +3,17 @@ package org.firstinspires.ftc.teamcode;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -138,6 +144,7 @@ public class BlueAuto extends LinearOpMode {
     double WB_Setpoint;
     double WB_error;
     double WB_PM;
+
     double Y_intercept;
     double Slope_Y_Last_errorl;
     double Slope_Y_Last_error;
@@ -162,18 +169,22 @@ public class BlueAuto extends LinearOpMode {
     double lastDistance;
     double SOTPower;
     double SOTP;
+    double imuZ;
     public double veloictyDerivitive;
-
+    double imuAngle;
     public double VDM;
     public double Slow_Rate;
     public double X_B2;
     public int breakout;
     public double runtime;
     public double Detected;
+    double angles;
     public double Intial_Speed_Setpoint;
     public void runOpMode() {
         robot.init(hardwareMap);
         //Resets Encoders
+        Orientation angles;
+        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         robot.LF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -181,6 +192,7 @@ public class BlueAuto extends LinearOpMode {
         robot.LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Detected = 0;
+
 
         initVuforia();
         initTfod();
@@ -280,7 +292,6 @@ public class BlueAuto extends LinearOpMode {
                 stop_motors();
 
             }
-
             Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
             Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
             WB_Setpoint = 2.04;
@@ -302,16 +313,15 @@ public class BlueAuto extends LinearOpMode {
             while(getRuntime() <= Timedloop){
                 SubSystem();
             }
+            WB_Setpoint = .5;
             Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
             Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
-            WB_Setpoint = 1.5;
             Distance_From = 1;
             breakout = 1;
             targetVelocity = 30;
-
             //Runs movement until 100 away
             while (Distance_From >= .5 & opModeIsActive()) {
-                Movement(18.5, 60, 0, 6, 6);
+                Movement(16, 60, 0, 6, 6);
                 SubSystem();
             }
         Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
@@ -327,7 +337,6 @@ public class BlueAuto extends LinearOpMode {
 
         }
         stop_motors();
-        WB_Setpoint = 2.04;
         stagerPower = -.7;
         stopper = .5;
         shooterSetpoint = 1900;
@@ -339,6 +348,7 @@ public class BlueAuto extends LinearOpMode {
             SubSystem();
         }
         stop_motors();
+        WB_Setpoint = 2.04;
         Timedloop = getRuntime() + 1;
         while(getRuntime() <= Timedloop){
             SubSystem();
@@ -351,7 +361,7 @@ public class BlueAuto extends LinearOpMode {
         //Runs movement until 100 away
 
         while (Distance_From > .5 & opModeIsActive()) {
-            Movement(22, 30, 0, 6, 6);
+            Movement(22, 32, 0, 6, 6);
             SubSystem();
         }
             stop_motors();
@@ -360,11 +370,14 @@ public class BlueAuto extends LinearOpMode {
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         Distance_From = 1;
         breakout = 1;
-        targetVelocity = 30;
+        targetVelocity = 17;
         //Runs movement until 100 away
-Timedloop = getRuntime() + 4;
-        while (getRuntime()<Timedloop & opModeIsActive()) {
-            Movement(18.5, 42, 52, 6, 6);
+
+        while (imuZ <= 170 & opModeIsActive()) {
+            angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            imuZ = angles.firstAngle;
+            telemetry.addData("imuZ", imuZ);
+            Movement(18.5, 42, 58, 1, 1);
             SubSystem();
         }
         stop_motors();
@@ -374,8 +387,6 @@ Timedloop = getRuntime() + 4;
             SubSystem();
         }
         }
-
-
     //Stops all drive motors
     public void stop_motors(){
         robot.LF_M.setPower(0);
@@ -447,8 +458,8 @@ Timedloop = getRuntime() + 4;
             Slope_Y_PM = 0;
             Slope_X_PM = 0;
             Slope_Y_DM = 0;
-            Z_PM = .2;
-            Z_DM = .25;
+            Z_PM = .15;
+            Z_DM = .2;
 
         }
 
