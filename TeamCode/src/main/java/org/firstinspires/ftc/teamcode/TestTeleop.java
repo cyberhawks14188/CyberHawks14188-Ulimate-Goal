@@ -44,7 +44,7 @@ public class  TestTeleop extends LinearOpMode {
     double wobbleCurrent;
     double wobbleError;
     double wobblePower;
-    double wobbleP = .6;
+    double wobbleP = .9;
     double GRIP_S = .6;
     boolean gripperControl = false;
     double shooterLastEncoder;
