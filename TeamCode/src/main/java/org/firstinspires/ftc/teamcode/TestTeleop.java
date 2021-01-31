@@ -40,13 +40,12 @@ public class  TestTeleop extends LinearOpMode {
     double shooterCorrection;
     double shooterError;
     double timepassed;
-    double wobbleSet = 2.324;
+    double wobbleSet;
     double wobbleCurrent;
     double wobbleError;
     double wobblePower;
-    double wobbleP = .9;
+    double wobbleP = 1.1;
     double GRIP_S = .6;
-    boolean gripperControl = false;
     double shooterLastEncoder;
     double SOTCurrent;
     double SOTSet = 1.47;
@@ -54,10 +53,10 @@ public class  TestTeleop extends LinearOpMode {
     double SOTError;
     double SOTPower;
     double SOTP = -20;
-    double WB_PT;
     double shooterFSM = 0;
-    double WB_FSM = 0;
+    double WB_FSM = 5;
     boolean WBControl = false;
+
 
 
     @Override
@@ -65,6 +64,7 @@ public class  TestTeleop extends LinearOpMode {
         //Calling upon the HardwareMap
         RobotHardware robot = new RobotHardware();
         robot.init(hardwareMap);
+        double wobbleEndSet = robot.WB_PT.getVersion();
         //Waits for the play button to be pressed
         waitForStart();
         //main loop
@@ -156,7 +156,7 @@ public class  TestTeleop extends LinearOpMode {
             }
             //Wobble Goal Arm
             if(gamepad1.left_trigger > .05 && WBControl == false){
-                if(WB_FSM < 3){
+                if(WB_FSM < 4){
                     WB_FSM = WB_FSM + 1;
                 }else{
                     WB_FSM = 0;
@@ -167,33 +167,37 @@ public class  TestTeleop extends LinearOpMode {
             }
             //Down and ready to grab
             if(WB_FSM == 0) {
-                wobbleSet = 2.324;
+                wobbleEndSet = 2.324;
                 GRIP_S = .1;
                 //  WB_FSM = 3;
-                wobbleError = wobbleSet - robot.WB_PT.getVoltage();
-                wobblePower = wobbleError / wobbleP;
-            }
-            if(WB_FSM == 1){
-                GRIP_S = .6;
+            }else if(WB_FSM == 1){
+                GRIP_S = .7;
                 //   WB_FSM = 3;
-                wobbleError = wobbleSet - robot.WB_PT.getVoltage();
-                wobblePower = wobbleError / wobbleP;
-            }
-            if(WB_FSM == 2){
-                wobbleSet = 2.295;//above wall but not all the way up
+            }else if(WB_FSM == 2){
+                wobbleEndSet = .6;//above wall but not all the way up
                 //  WB_FSM = 3;
-                wobbleError = wobbleSet - robot.WB_PT.getVoltage();
-                wobblePower = wobbleError / wobbleP;
+            }else if(WB_FSM == 3) {
+                wobbleEndSet = 1;
+            }else if(WB_FSM == 4){
+                GRIP_S = .1;
+            }else if(WB_FSM == 5){
+                GRIP_S = .7;
             }
-            if(WB_FSM == 3){
-                if(gamepad1.dpad_up){
-                    wobbleSet = wobbleSet - .1;
-                }else if(gamepad1.dpad_down) {
-                    wobbleSet = wobbleSet + .1;
-                }
-                wobbleError = wobbleSet - robot.WB_PT.getVoltage();
-                wobblePower = wobbleError / wobbleP;
+            if (gamepad1.dpad_up) {
+                wobbleEndSet = wobbleSet - .1;
+            } else if (gamepad1.dpad_down) {
+                wobbleEndSet = wobbleSet + .1;
             }
+            if(wobbleEndSet > .2 + wobbleSet){
+                wobbleSet = wobbleSet + .05;
+            }else if(wobbleEndSet < .2 - wobbleSet){
+                wobbleSet = wobbleSet - .05;
+            }else{
+                wobbleSet = wobbleEndSet;
+            }
+            wobbleError = wobbleSet - robot.WB_PT.getVoltage();
+            wobblePower = wobbleError * wobbleP;
+
 //this is a comment
 
             //Drivetrain Control
