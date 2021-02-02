@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 //Imports RobotCore
+import android.graphics.ImageDecoder;
+
+import java.sql.Time;
+import java.util.GregorianCalendar;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -52,6 +56,7 @@ public class BlueAuto extends LinearOpMode {
     public double Z_Sum_of_Errors;
     public double lastDistanceFrom;
     double SOTCurrent;
+    double While;
     public double X_Sum_of_Errors;
     double minimumVelocity;
     public double targetVelocity;
@@ -111,7 +116,7 @@ public class BlueAuto extends LinearOpMode {
     double X_Setpoint;
     public double expectedSpeedSetpoint;
     public double Y_EndSetpoint;
-    public double LF_Distance;
+    public double LF_Direction;
     public double velocityError;
     public double LB_Distance;
     public double distanceWithin;
@@ -144,7 +149,6 @@ public class BlueAuto extends LinearOpMode {
     double WB_Setpoint;
     double WB_error;
     double WB_PM;
-
     double Y_intercept;
     double Slope_Y_Last_errorl;
     double Slope_Y_Last_error;
@@ -180,30 +184,36 @@ public class BlueAuto extends LinearOpMode {
     public double Detected;
     double angles;
     public double Intial_Speed_Setpoint;
+    //Makes the runOpMode public method
     public void runOpMode() {
+        //Intializes our hardware map
         robot.init(hardwareMap);
-        //Resets Encoders
+        //Creates the Orintation Angles to be able to get the IMU's angle
         Orientation angles;
-        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //Resets Encoders
         robot.LF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.LF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //If we see no rings it will still be 0
         Detected = 0;
 
-
+        //Intializes Vuforia
         initVuforia();
+        //Intializes TensorFlow
         initTfod();
+        //If TensorFlow is not active, activate it
         if (tfod != null) {
             tfod.activate();
         }
-        //recongniton.getLabel() = Single
-        //recongniton.getLabel() = Quad
-        pass = getRuntime() + 10;
+        //Will run until we hit play
         while (isStarted() != true) {
+            //Sets up a ratio for our webcam to look at
+            //Allows our camera to focus only on the ring stack
             tfod.setZoom(3, 1.78);
+            //Runs Tenosor Flow to detect the ring stack
             if (tfod != null) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 if (updatedRecognitions != null) {
@@ -216,38 +226,41 @@ public class BlueAuto extends LinearOpMode {
                                 recognition.getLeft(), recognition.getTop());
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                 recognition.getRight(), recognition.getBottom());
+                        //If we see 1 ring set Detected to 1
                         if (recognition.getLabel() == "Single") {
                             Detected = 1;
                         }
+                        //If we see 4 rings set detected to 2
                         if (recognition.getLabel() == "Quad")
                             Detected = 2;
                     }
+
                     telemetry();
                     telemetry.update();
                 }
             }
         }
 
-
+        //Waits for start
         waitForStart();
-
-            //tfod.shutdown();
-            //Waits for start to be pressed
-            //Set position robot will go to
+            //Our First move
+            //Go up and to the left, just to the left of the ring stack
             shooterSetpoint = 0;
             SOTSet = 1.47;
             Distance_From = 1;
             WB_Setpoint = .32;
-            GRIP_POS = .585;
+            GRIP_POS = .7;
             breakout = 1;
             targetVelocity = 37;
-            while (Distance_From > .5 & opModeIsActive()) {
-                Movement(-15, 48, 0, 6, 6);
+            while (Distance_From > .6 && opModeIsActive()) {
+                Movement(-18, 48, 0, 6, 6);
                 SubSystem();
             }
             stop_motors();
-
-
+            //Low our wobble to just above the ground to make the dropping quicker
+            WB_Setpoint = 1.3;
+            //Split up our movements depending on how many rings were in the stack
+            //If no rings go to Target Zone A
             if (Detected == 0) {
                 Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
                 Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
@@ -255,14 +268,14 @@ public class BlueAuto extends LinearOpMode {
                 breakout = 1;
                 targetVelocity = 30;
                 //Runs movement until 100 away
-                while (Distance_From > .5 & opModeIsActive()) {
+                while (Distance_From > .6 && opModeIsActive()) {
                     Movement(-18, 64, 0, 6, 6);
                     SubSystem();
                 }
                 stop_motors();
 
             }
-
+            //If 1 ring go to target zone B
             if (Detected == 1) {
                 Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
                 Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
@@ -271,27 +284,29 @@ public class BlueAuto extends LinearOpMode {
                 targetVelocity = 30;
                 //Runs movement until 100 away
 
-                while (Distance_From > .5 & opModeIsActive()) {
-                    Movement(9, 88, 0, 6, 6);
+                while (Distance_From > .6 && opModeIsActive()) {
+                    Movement(8, 90, 0, 6, 6);
                     SubSystem();
                 }
                 stop_motors();
 
             }
+            //If 4 rings go to target zone C
             if (Detected == 2) {
-                Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+                Last_X_EndSetpoint = storingVarible2;
                 Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
                 Distance_From = 1;
                 breakout = 1;
                 targetVelocity = 40;
                 //Runs movement until 100 away
-                while (Distance_From > .5 & opModeIsActive()) {
-                    Movement(-18, 112, 0, 13, 6);
+                while (Distance_From > .6 && opModeIsActive()) {
+                    Movement(-18, 112, 0, 5, 6);
                     SubSystem();
                 }
                 stop_motors();
 
             }
+            //Maintains our position while dropping the wobble goal and opening the gripper
             Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
             Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
             WB_Setpoint = 2.04;
@@ -301,7 +316,7 @@ public class BlueAuto extends LinearOpMode {
             shooterSetpoint = 1900;
             //velocitySetpoint = minimumVelocity;
             //Runs movement until 100 away
-            while (robot.WB_PT.getVoltage() <= 2.02 & opModeIsActive()) {
+            while (robot.WB_PT.getVoltage() <= 2.02 && opModeIsActive()) {
                 Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, 1, 1);
                 SubSystem();
                 if (robot.WB_PT.getVoltage() > 2) {
@@ -309,10 +324,13 @@ public class BlueAuto extends LinearOpMode {
                 }
             }
             stop_motors();
+            //Give the robot .5 seconds to finish dropping
             Timedloop = getRuntime() + .5;
             while(getRuntime() <= Timedloop){
                 SubSystem();
             }
+            //Moves our robot to shooting position
+             GRIP_POS = 0.7;
             WB_Setpoint = .5;
             Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
             Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
@@ -320,76 +338,114 @@ public class BlueAuto extends LinearOpMode {
             breakout = 1;
             targetVelocity = 30;
             //Runs movement until 100 away
-            while (Distance_From >= .5 & opModeIsActive()) {
+            while (Distance_From >= .6 && opModeIsActive()) {
                 Movement(16, 60, 0, 6, 6);
                 SubSystem();
             }
+        //Maintains position to make sure our robot is lined up with the shooter
         Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         Distance_From = 1;
         breakout = 1;
         targetVelocity = 5;
         stop_motors();
-        Timedloop = getRuntime() + 1;
-        while(getRuntime() <= Timedloop){
+        Timedloop = getRuntime() + .5;
+        while(getRuntime() <= Timedloop && opModeIsActive()){
             SubSystem();
             Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, 1, 1);
 
         }
+        //Begins shooting
         stop_motors();
+        //Activates our stager to get the rings to the stagger motor
         stagerPower = -.7;
+        //Lifts our stopper servo
         stopper = .5;
+        //Turns on our shooter setpoint
         shooterSetpoint = 1900;
-        //velocitySetpoint = minimumVelocity;
-        //Runs movement until 100 away
-        while (robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4 & opModeIsActive()) {
-            //Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, 1, 1);
-
+        //Shoots rings until our distance sensors sees that we have no rings in our stager
+        while (robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4 && opModeIsActive()) {
             SubSystem();
         }
         stop_motors();
-        GRIP_POS =0;
+        //Lowers wobble goal arm back down to grabbing position
         WB_Setpoint = 2.04;
-        Timedloop = getRuntime() + 1;
+        //Gives the robot .5 seconds to drop the wobble arm
+        Timedloop = getRuntime() + .5;
         while(getRuntime() <= Timedloop){
             SubSystem();
         }
+        //Stops our shooter
         shooterSetpoint = 0;
         Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         Distance_From = 1;
         breakout = 1;
-        targetVelocity = 30;
-        //Runs movement until 100 away
-
-        while (Distance_From > .5 & opModeIsActive()) {
-            Movement(30, 22, 0, 6, 6);
+        targetVelocity = 40;
+        //Moves to the up and left to the 2nd wobble goal to be able to not hit the ring stack
+        while (Distance_From > .6 && opModeIsActive()) {
+            Movement(45, 35, 0, 6, 6);
             SubSystem();
         }
-            stop_motors();
-        JustTurn = 1;
+        //Stops our stagger
+        stagerPower =0;
+        stop_motors();
+        //Opens our claw
+        GRIP_POS = 0;
+
         Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         Distance_From = 1;
         breakout = 1;
         targetVelocity = 30;
-        //Runs movement until 100 away
-        while (imuZ <= 86 & opModeIsActive()) {
+        //Moves to the wobble goal
+        //Diffrent positions based on where our wobble goal is
+        if(Detected == 0) {
+            while (Distance_From > .6 && opModeIsActive()) {
+                Movement(29, 22, 0, 6, 6);
+                SubSystem();
+            }
+        }
+            if(Detected == 1) {
+                while (Distance_From > .6 && opModeIsActive()) {
+                    Movement(31, 22, 0, 6, 6);
+                    SubSystem();
+                }
+        }
+        if(Detected == 2) {
+            while (Distance_From > .6 && opModeIsActive()) {
+                Movement(34.25, 22, 0, 6, 6);
+                SubSystem();
+            }
+        }
+
+        stop_motors();
+        JustTurn = 1;
+        Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
+        Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+        Distance_From = 1;
+        breakout = 1;
+        targetVelocity = 25;
+        //Turns the robot 86 degrees umping the IMU
+        while (imuZ <= 86 && opModeIsActive()) {
             angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             imuZ = angles.firstAngle;
             telemetry.addData("imuZ", imuZ);
             Movement(18.5, 42, -70, 1, 1);
             SubSystem();
         }
-
         stop_motors();
-        GRIP_POS = .6;
-        Timedloop = getRuntime() + 1;
+
+        //Closes claw
+        GRIP_POS = .7;
+        //Gives robot .75 seconds to Grab the 2nd wobble goal
+        Timedloop = getRuntime() + .75;
         while(getRuntime() <= Timedloop){
             SubSystem();
         }
-        WB_Setpoint = .32;
-        Timedloop = getRuntime() + 2;
+        //Raises wobble goal arm just above the ground
+        WB_Setpoint = 1.2;
+        Timedloop = getRuntime() + .75;
         while(getRuntime() <= Timedloop){
             SubSystem();
         }
@@ -399,7 +455,8 @@ public class BlueAuto extends LinearOpMode {
         Distance_From = 1;
         breakout = 1;
         targetVelocity = 20;
-        while (imuZ >= 20 & opModeIsActive()) {
+        //Turns the robot back forward using IMU
+        while (imuZ >= 25 && opModeIsActive()) {
             angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             imuZ = angles.firstAngle;
             telemetry.addData("imuZ", imuZ);
@@ -413,19 +470,20 @@ public class BlueAuto extends LinearOpMode {
         Distance_From = 1;
         breakout = 1;
         targetVelocity = 35;
-        //Runs movement until 100 away
-        while (Distance_From > .5 & opModeIsActive()) {
+        //Moves to a position where we can go to any target zone
+        while (Distance_From > .5 && opModeIsActive()) {
             Movement(22, 40, 0, 6, 6);
             SubSystem();
         }
+        //Depending on what the ring stack was we go back to the target zone where we dropped the 1st wobble goal
         if(Detected == 0){
             Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
             Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
             Distance_From = 1;
             breakout = 1;
             targetVelocity = 30;
-            //Runs movement until 100 away
-            while (Distance_From > .5 & opModeIsActive()) {
+
+            while (Distance_From > .6 && opModeIsActive()) {
                 Movement(-13, 60, 0, 6, 6);
                 SubSystem();
             }
@@ -437,23 +495,23 @@ public class BlueAuto extends LinearOpMode {
             Distance_From = 1;
             breakout = 1;
             targetVelocity = 30;
-            //Runs movement until 100 away
 
-            while (Distance_From > .5 & opModeIsActive()) {
+
+            while (Distance_From > .6 && opModeIsActive()) {
                 Movement(12, 86, 0, 6, 6);
                 SubSystem();
             }
             stop_motors();
         }
-        if (Detected ==2){
+        if (Detected == 2){
             Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
             Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
             Distance_From = 1;
             breakout = 1;
             targetVelocity = 45;
-            //Runs movement until 100 away
-            while (Distance_From > .5 & opModeIsActive()) {
-                Movement(-15, 108, 0, 13, 9);
+
+            while (Distance_From > .8 && opModeIsActive()) {
+                Movement(-12, 106, 0, 13, 9);
                 SubSystem();
             }
             stop_motors();
@@ -464,29 +522,30 @@ public class BlueAuto extends LinearOpMode {
         Distance_From = 1;
         breakout = 1;
         targetVelocity = 5;
-        shooterSetpoint = 1900;
-        //velocitySetpoint = minimumVelocity;
-        //Runs movement until 100 away
-        while (robot.WB_PT.getVoltage() <= 2.02 & opModeIsActive()) {
+        //Drop the 2nd wobble goal and open GRIP_S
+        Timedloop = getRuntime() + 2;
+        while (robot.WB_PT.getVoltage() <= 2.02 && opModeIsActive()) {
             Movement(Last_X_EndSetpoint, Last_Y_EndSetpoint, 0, 1, 1);
             SubSystem();
-            if (robot.WB_PT.getVoltage() > 2) {
+            if (robot.WB_PT.getVoltage() > 1.7) {
                 GRIP_POS = .1;
             }
+            if(getRuntime() >= Timedloop){
+                break;
+            }
         }
+
         stop_motors();
         Timedloop = getRuntime() + .5;
-        while(getRuntime() <= Timedloop){
-            SubSystem();
-        }
         Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
-        Distance_From = 1;
+        Distance_From = 2;
         breakout = 1;
-        targetVelocity = 45;
-        //Runs movement until 100 away
-        while (Distance_From > .5 & opModeIsActive()) {
-            Movement(-15, 60, 0, 13, 9);
+        targetVelocity = 40;
+
+        //Drive backwards to the navigation line
+        while (Distance_From > 1 && opModeIsActive()) {
+            Movement(5, 72, 0, 6, 6);
             SubSystem();
         }
         stop_motors();
@@ -534,25 +593,26 @@ public class BlueAuto extends LinearOpMode {
 
     //Uses a PID to move robot to XYZ setpoints
     public void Movement(double X_EndSetpoint, double Y_EndSetpoint, double Z_setpoint, double Slow_Down_Distance, double accelerationDistance) {
-        //Sets Multipliers
+        //Sets our PID Multipliers
         X_PM = .15;
         X_IM = .000000001;
-        X_DM = .3;
-        Y_PM = .15;
+        X_DM = .35;
+        Y_PM = .2;
         Y_IM = .000000001;
-        Y_DM = .15;
-        Z_PM = .4;
+        Y_DM = .2;
+        Z_PM = .45;
         Z_IM = .000000001;
-        Z_DM = .5;
-        VPM = .5;
+        Z_DM = .55;
+        VPM = .7;
         VIM = .00000001;
-        VDM = .7;
-        Slope_X_DM = .25;
-        Slope_Y_PM = .25;
-        Slope_X_PM = .25;
-        Slope_Y_DM = .25;
+        VDM = .9;
+        Slope_X_DM = .4;
+        Slope_Y_PM = .4;
+        Slope_X_PM = .4;
+        Slope_Y_DM = .4;
         minimumAccelerationVelocity = 12;
         minimumVelocity = 2;
+        //If we only want our robot to turn we only run the Z PID by setting all other multipliers to 0
         if(JustTurn == 1){
             X_PM = 0;
             X_IM = 0;
@@ -570,10 +630,11 @@ public class BlueAuto extends LinearOpMode {
         }
 
         //Gets encoder Positions
+        //Converts our encoder ticks to inches
         E1 = robot.LF_M.getCurrentPosition() * 0.00436111;
         E2 = -robot.LB_M.getCurrentPosition() * 0.00436111;
         E3 = robot.RF_M.getCurrentPosition() * 0.00436111;
-        //Sets encoders to 1 at begining to prevent null error
+        //Sets encoders to .001 at begining to prevent null error
         if (E1 == 0) {
             E1 = .001;
         }
@@ -584,70 +645,85 @@ public class BlueAuto extends LinearOpMode {
         if (E3 == 0) {
             E3 = .001;
         }
-        //finds the diffrence of E1 and E3
+        //Finds the diffrence of E1 and E3
         z_encoder_diffrence = E1 - E3;
-        //Z Porportional
+        //Finds the difference between our setpoint and our current position
         z_error = Z_setpoint - z_encoder_diffrence;
+        //Z Porportional
+        //Narrows down the rate of change by multiplying the error by a proportional multiplier
         z_porportional = Z_PM * z_error;
         // Z Intergral
-        //Finds the Sum of the Error
+        //Finds the Sum of the Errors
         Z_Sum_of_Errors = Z_Sum_of_Errors + z_error;
         Z_Intergral = Z_Sum_of_Errors * Z_IM;
         //Z Derivitive
+        //Finds the difference between the current error and last loop's error
         Z_Diffrence_of_Errors = z_error - Z_Last_Error;
         Z_Derivitive = Z_Diffrence_of_Errors * Z_DM;
         Z_Last_Error = z_error;
         z = z_porportional + Z_Intergral + Z_Derivitive;
-        //Finds the X error
+        //Finds the difference between our setpoint and our current position
         x_error = X_EndSetpoint - E2;
         //X Porportional
+        //Narrows down the rate of change by multiplying the error by a proportional multiplier
         x_porportional = x_error * X_PM;
         //X Intergral
-
+        //Finds the Sum of the Errors
         X_Sum_of_Errors = X_Sum_of_Errors + x_error;
         X_Intergral = X_Sum_of_Errors * X_IM;
         //X Derivitve
+        //Finds the difference between the current error and last loop's error
         X_Diffrence_of_Errors = x_error - X_Last_Error;
         X_Derivitive = X_Diffrence_of_Errors * X_DM;
         X_Last_Error = x_error;
-        x = x_porportional + X_Intergral + X_Derivitive + Slope_X_Correction;
-        //Finds Average Of E1&E3
+
+        //Finds Average Of E1 & E3
         Y_Average = (E1 + E3) / 2;
         //finds the average of E1 and E3
+        //Finds the difference between our setpoint and our current position
         y_error = Y_EndSetpoint - Y_Average;
         //Y Porportional
+        //Narrows down the rate of change by multiplying the error by a proportional multiplier
         y_porportional = Y_PM * y_error;
         // Y Intergral
-        //Finds the Sum of the Error
+        //Finds the Sum of the Errors
         Y_Sum_of_Errors = Y_Sum_of_Errors + y_error;
         Y_Intergral = Y_Sum_of_Errors * Y_IM;
         //Y Derivitive
+        //Finds the difference between the current error and last loop's error
         Y_Diffrence_of_Errors = y_error - Y_Last_Error;
         Y_Derivitive = Y_Diffrence_of_Errors * Y_DM;
         Y_Last_Error = y_error;
-        y = y_porportional + Y_Intergral + Y_Derivitive + Slope_Y_Correction;
 
-        //Uses pythagrium therom to find distance and distance from
+
+        //Uses pythagorean therom to find how far we are from the end setpoints compared to our current position on the field our starting position
         Distance = Math.sqrt((Math.pow((Y_EndSetpoint-Last_Y_EndSetpoint), 2)) + (Math.pow((X_EndSetpoint-Last_X_EndSetpoint), 2)));
-        telemetry.addData("Y_EndSetpoint", Y_EndSetpoint);
-        telemetry.addData("X_EndSetpoint", X_EndSetpoint);
+        //Calculates our Y_A2 by finding the difference between where we want to go and where we currently are
         Y_A2 = Y_EndSetpoint - Y_Average;
+        //Calculates our X_B2 by finding the difference between where we want to go and where we currently are
         X_B2 = X_EndSetpoint - E2;
+        //Calculates Distance from our end point from our current position
         Distance_From = Math.sqrt(Math.pow(Y_A2, 2) + (Math.pow(X_B2, 2)));
+        //A if that only runs once, used to not allow our code to break out of the loop immediately
         if (breakout == 1) {
             lastDistanceFrom = Distance_From;
             breakout = 0;
         }
 
-        //See if jitery or weird movement then add a back the interval sample time
+        //Gets our current run time
         time = getRuntime();
+        //Finds the time passed from this loop cycle to the last loop cycle
         time_passed = time - (previousTime);
-        //Velocity is number of ticks per second
+        //Velocity is the number of inches travled in a second
         actualVelocity = Math.abs((Distance_From - lastDistanceFrom)) / time_passed;
+        //Sets previous time to time
         previousTime = time;
+        //Sets lastDistanceFrom to our current Distance_From
         lastDistanceFrom = Distance_From;
+        //Acceleration Code
+        //Will run when our distance that we will accelerate for is greater than our our distance traveled
         if (accelerationDistance >= Distance - Distance_From) {
-
+        //Creates a line using slope that our velocity setpoint
             velocitySetpoint = ((Distance - Distance_From) * (targetVelocity / accelerationDistance));
             if(velocitySetpoint <= minimumAccelerationVelocity){
                 velocitySetpoint = minimumAccelerationVelocity;
@@ -667,7 +743,7 @@ public class BlueAuto extends LinearOpMode {
         if (velocitySetpoint >= 50) {
             velocitySetpoint = 50;
         }
-        if(actualVelocity == 0 & velocitySetpoint >.1){
+        if(actualVelocity == 0 && velocitySetpoint >.1){
             velocitySetpoint = velocitySetpoint + 4;
         }
         //Find the error between desitired velcotiy and the current robot velcoity
@@ -693,7 +769,7 @@ public class BlueAuto extends LinearOpMode {
             maximumVelocity = 40 - (10-(Math.abs(slope) * 10));
         }
         Y_intercept = Y_EndSetpoint-(X_EndSetpoint*slope);
-        if (Y_EndSetpoint - Last_Y_EndSetpoint != 0 & X_EndSetpoint - Last_X_EndSetpoint != 0) {
+        if (Y_EndSetpoint - Last_Y_EndSetpoint != 0 && X_EndSetpoint - Last_X_EndSetpoint != 0) {
             Y_Setpoint = slope * E2+Y_intercept;
             X_Setpoint = (Y_Average-Y_intercept) / slope;
             telemetry.addData("1", "1");
@@ -734,20 +810,23 @@ public class BlueAuto extends LinearOpMode {
         Slope_X_last_error = Slope_X_Error;
         //Find the sum of the  porprotional and the dervititive
         Slope_X_Correction = Slope_X_Porportional + Slope_X_Derivitive;
+
+        y = y_porportional + Y_Intergral + Y_Derivitive + Slope_Y_Correction;
+        x = x_porportional + X_Intergral + X_Derivitive + Slope_X_Correction;
         MotorEquation();
         telemetry();
     }
 
     public void MotorEquation() {
         //Motor equation from the PID output
-        LF_Distance = y+(x+z);
+        LF_Direction = y+(x+z);
         LB_Distance = y-(x-z);
         RF_Distance = y-(x+z);
         RB_Distance = y+(x-z);
         //Finds Highest power out of the drive motors
-        Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Distance), Math.abs(RB_Distance)), Math.max(Math.abs(LF_Distance), Math.abs(LB_Distance)));
+        Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Distance), Math.abs(RB_Distance)), Math.max(Math.abs(LF_Direction), Math.abs(LB_Distance)));
         //Sets motors
-        robot.LF_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (LF_Distance/Highest_Motor_Power));
+        robot.LF_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (LF_Direction/Highest_Motor_Power));
         robot.LB_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (LB_Distance/Highest_Motor_Power));
         robot.RF_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (RF_Distance/Highest_Motor_Power));
         robot.RB_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (RB_Distance/Highest_Motor_Power));
@@ -770,6 +849,10 @@ public class BlueAuto extends LinearOpMode {
             shooterError = shooterSetpoint - shooterActualVelocity;
             shooterPorportional = shooterError * shooterPM;
             shooterCorrection = shooterPorportional;
+        }
+        else if(shooterSetpoint == 0) {
+            shooterCorrection = 0;
+            shooterSetpoint = 0;
         }
         robot.WB_M.setPower(WB_error*WB_PM);
         robot.SOT_M.setPower((shooterCorrection + shooterSetpoint)/2800);
