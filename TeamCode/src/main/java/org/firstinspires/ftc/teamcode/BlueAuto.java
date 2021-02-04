@@ -369,7 +369,10 @@ public class BlueAuto extends LinearOpMode {
         }
         stop_motors();
         //Lowers wobble goal arm back down to grabbing position
-
+        Timedloop = getRuntime() + .5;
+                while(Timedloop>getRuntime()){
+                    SubSystem();
+                }
         //Gives the robot .5 seconds to drop the wobble arm
 
         //Stops our shooter
@@ -400,19 +403,19 @@ public class BlueAuto extends LinearOpMode {
         //Diffrent positions based on where our wobble goal is
         if(Detected == 0) {
             while (Distance_From > .6 && opModeIsActive()) {
-                Movement(29, 22, 0, 6, 6);
+                Movement(33, 22, 0, 6, 6);
                 SubSystem();
             }
         }
             if(Detected == 1) {
                 while (Distance_From > .6 && opModeIsActive()) {
-                    Movement(31, 22, 0, 6, 6);
+                    Movement(35, 22, 0, 6, 6);
                     SubSystem();
                 }
         }
         if(Detected == 2) {
             while (Distance_From > .6 && opModeIsActive()) {
-                Movement(34.25, 22, 0, 6, 6);
+                Movement(38.25, 22, 0, 6, 6);
                 SubSystem();
             }
         }
@@ -423,7 +426,7 @@ public class BlueAuto extends LinearOpMode {
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
         Distance_From = 1;
         breakout = 1;
-        targetVelocity = 25;
+        targetVelocity = 20;
         //Turns the robot 86 degrees umping the IMU
         while (imuZ <= 86 && opModeIsActive()) {
             angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -433,7 +436,15 @@ public class BlueAuto extends LinearOpMode {
             SubSystem();
         }
         stop_motors();
-
+        Timedloop = ((robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2)+3.4;
+        while(Timedloop >= Y_Average & opModeIsActive()){
+            Y_Average = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+            robot.LF_M.setPower(.3);
+            robot.LB_M.setPower(.3);
+            robot.RF_M.setPower(.3);
+            robot.RB_M.setPower(.3);
+        }
+        stop_motors();
         //Closes claw
         GRIP_POS = .7;
         //Gives robot .75 seconds to Grab the 2nd wobble goal
@@ -447,6 +458,15 @@ public class BlueAuto extends LinearOpMode {
         while(getRuntime() <= Timedloop){
             SubSystem();
         }
+        Timedloop = ((robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2)-3.4;
+        while(Timedloop >= Y_Average & opModeIsActive()){
+            Y_Average = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
+            robot.LF_M.setPower(-.3);
+            robot.LB_M.setPower(-.3);
+            robot.RF_M.setPower(-.3);
+            robot.RB_M.setPower(-.3);
+        }
+        stop_motors();
         JustTurn = 1;
         Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
         Last_Y_EndSetpoint = (robot.LF_M.getCurrentPosition() * 0.00436111 + robot.RF_M.getCurrentPosition() * 0.00436111)/2;
