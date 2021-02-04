@@ -118,7 +118,7 @@ public class BlueAuto extends LinearOpMode {
     public double Y_EndSetpoint;
     public double LF_Direction;
     public double velocityError;
-    public double LB_Distance;
+    public double LB_Direction;
     public double distanceWithin;
     public double actualVelocity;
     public double velocityCorrection;
@@ -127,8 +127,8 @@ public class BlueAuto extends LinearOpMode {
     public double E2;
     double time_passed;
     public double E3;
-    public double RF_Distance;
-    public double RB_Distance;
+    public double RF_Direction;
+    public double RB_Direction;
     double JustTurn;
     double leaveLoop;
     public double Speed_Setpoint;
@@ -253,7 +253,7 @@ public class BlueAuto extends LinearOpMode {
             breakout = 1;
             targetVelocity = 37;
             while (Distance_From > .6 && opModeIsActive()) {
-                Movement(-18, 48, 0, 6, 6);
+                Movement(-18, 47, 0, 6, 6);
                 SubSystem();
             }
             stop_motors();
@@ -369,12 +369,9 @@ public class BlueAuto extends LinearOpMode {
         }
         stop_motors();
         //Lowers wobble goal arm back down to grabbing position
-        WB_Setpoint = 2.04;
+
         //Gives the robot .5 seconds to drop the wobble arm
-        Timedloop = getRuntime() + .5;
-        while(getRuntime() <= Timedloop){
-            SubSystem();
-        }
+
         //Stops our shooter
         shooterSetpoint = 0;
         Last_X_EndSetpoint = -robot.LB_M.getCurrentPosition()* 0.00436111;
@@ -388,6 +385,7 @@ public class BlueAuto extends LinearOpMode {
             SubSystem();
         }
         //Stops our stagger
+        WB_Setpoint = 2.04;
         stagerPower =0;
         stop_motors();
         //Opens our claw
@@ -645,6 +643,10 @@ public class BlueAuto extends LinearOpMode {
         if (E3 == 0) {
             E3 = .001;
         }
+        //XYZ PID
+        //Gets our robot moving in the direction of the endsetpoints
+
+
         //Finds the diffrence of E1 and E3
         z_encoder_diffrence = E1 - E3;
         //Finds the difference between our setpoint and our current position
@@ -724,6 +726,7 @@ public class BlueAuto extends LinearOpMode {
         //Will run when our distance that we will accelerate for is greater than our our distance traveled
         if (accelerationDistance >= Distance - Distance_From) {
         //Creates a line using slope that our velocity setpoint
+        //The farther we are from our starting position the more
             velocitySetpoint = ((Distance - Distance_From) * (targetVelocity / accelerationDistance));
             if(velocitySetpoint <= minimumAccelerationVelocity){
                 velocitySetpoint = minimumAccelerationVelocity;
@@ -731,11 +734,13 @@ public class BlueAuto extends LinearOpMode {
         }
         //Run the deacceleration when our distance from is less then the Slow_Down_Distance
         if (Distance_From <= Slow_Down_Distance) {
-
+            //Will ramp down from our target veloicty to 0 based on our distance
             velocitySetpoint = Distance_From * (targetVelocity / Slow_Down_Distance) + minimumVelocity;
         }
+        //Allows us to call to a varible outside of the method
         storingVarible1 = Y_EndSetpoint;
         storingVarible2 = X_EndSetpoint;
+        //Velocity limits
         if (velocitySetpoint <= minimumVelocity) {
             velocitySetpoint = minimumVelocity;
         }
@@ -743,31 +748,40 @@ public class BlueAuto extends LinearOpMode {
         if (velocitySetpoint >= 50) {
             velocitySetpoint = 50;
         }
+        //If our robot has stopped moving and we want to be moving then incress the velocity setpoint to get us to move
         if(actualVelocity == 0 && velocitySetpoint >.1){
             velocitySetpoint = velocitySetpoint + 4;
         }
-        //Find the error between desitired velcotiy and the current robot velcoity
-        velocityError = velocitySetpoint - actualVelocity;
-        //Runs and PID on the velcoity of our robot
+        //Runs and PID on the velocity of our robot
+        //Allows us to maintain the speed we want
 
+        //Find the error between desired velcotiy and the current robot velocity
+        velocityError = velocitySetpoint - actualVelocity;
+        //Velocity Porportional
         velocityPorportion = velocityError * VPM;
+        //Velocity Intergral
         velocitySumOfErrors = velocitySumOfErrors + velocityError;
         velocityIntergral = velocitySumOfErrors * VIM;
+        //Velocity Derivitive
         velocityDiffrenceOfErrors = velocityError - velocityLastError;
         velocityLastError = velocityError;
         veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
-        //Finds the sum of the PID
+        //Finds the correction our robot has to do to get back to the desired setpoint
         velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
-        //Velocity Minimum
-
+        //Find our robot's slope based on our starting position to our end position
         slope = ((Y_EndSetpoint - Last_Y_EndSetpoint) / (X_EndSetpoint - Last_X_EndSetpoint));
-        //If we are going diangle
+        
+        //Equate our maximum speed by the slope that we are going
+        //Since when going sideways our robot can only go 30in/s and 50in/s when going forward
+        //If our rise is higher than our run
         if(Math.abs(slope) >= 1) {
             maximumVelocity = 40 + (10-((1/Math.abs(slope))*10));
         }
+        //If our run is higher then our rise
         else if(Math.abs(slope) < 1){
             maximumVelocity = 40 - (10-(Math.abs(slope) * 10));
         }
+        //Finds our Y intercept
         Y_intercept = Y_EndSetpoint-(X_EndSetpoint*slope);
         if (Y_EndSetpoint - Last_Y_EndSetpoint != 0 && X_EndSetpoint - Last_X_EndSetpoint != 0) {
             Y_Setpoint = slope * E2+Y_intercept;
@@ -775,6 +789,7 @@ public class BlueAuto extends LinearOpMode {
             telemetry.addData("1", "1");
         }
         //Horizonatal line
+        //Have to do this since a horizontal lines slope is 0
         else if (Y_EndSetpoint - Last_Y_EndSetpoint == 0) {
             maximumVelocity = 30;
             Y_Setpoint = Y_EndSetpoint;
@@ -782,12 +797,14 @@ public class BlueAuto extends LinearOpMode {
             telemetry.addData("2", "2");
         }
         //Vertical Line
+        //Have to do this since a vertical lines slope is undefined
         else if (X_EndSetpoint - Last_X_EndSetpoint == 0) {
             maximumVelocity = 50;
             Y_Setpoint = Y_Average;
             X_Setpoint = X_EndSetpoint;
             telemetry.addData("3", "3");
         }
+        //When we are within 4 inches of target hold at the target instead of following the line
         if (Distance_From <= 4) {
 
             Y_Setpoint = Y_EndSetpoint;
@@ -811,49 +828,68 @@ public class BlueAuto extends LinearOpMode {
         //Find the sum of the  porprotional and the dervititive
         Slope_X_Correction = Slope_X_Porportional + Slope_X_Derivitive;
 
+        //Equates our y direction correction
         y = y_porportional + Y_Intergral + Y_Derivitive + Slope_Y_Correction;
+        //Equates our x direction correction
         x = x_porportional + X_Intergral + X_Derivitive + Slope_X_Correction;
+        //Runs our motor equation method
         MotorEquation();
+        //Runs our telementry method
         telemetry();
     }
 
     public void MotorEquation() {
-        //Motor equation from the PID output
+        //Motor equation from the slope and XYZ pid
         LF_Direction = y+(x+z);
-        LB_Distance = y-(x-z);
-        RF_Distance = y-(x+z);
-        RB_Distance = y+(x-z);
+        LB_Direction = y-(x-z);
+        RF_Direction = y-(x+z);
+        RB_Direction = y+(x-z);
         //Finds Highest power out of the drive motors
-        Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Distance), Math.abs(RB_Distance)), Math.max(Math.abs(LF_Direction), Math.abs(LB_Distance)));
+        //We do this to be able to then get a -1-1 reading on our motors
+        Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Direction), Math.abs(RB_Direction)), Math.max(Math.abs(LF_Direction), Math.abs(LB_Direction)));
         //Sets motors
+        //Determines our speed of our motors by the velocity correction and setpoint
         robot.LF_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (LF_Direction/Highest_Motor_Power));
-        robot.LB_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (LB_Distance/Highest_Motor_Power));
-        robot.RF_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (RF_Distance/Highest_Motor_Power));
-        robot.RB_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (RB_Distance/Highest_Motor_Power));
+        robot.LB_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (LB_Direction/Highest_Motor_Power));
+        robot.RF_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (RF_Direction/Highest_Motor_Power));
+        robot.RB_M.setPower(((velocityCorrection+velocitySetpoint)/maximumVelocity) * (RB_Direction/Highest_Motor_Power));
     }
 
-    //Runs Encoders
+    //Method for our mechanisms other than our drivebase
     public void SubSystem() {
+        //Gets our current potentiometer reading from our shooter angle
         SOTCurrent = robot.SOT_PT.getVoltage();
+        //Sets our proportional multipliers for our sub system correctional loops
         SOTP = -20;
         WB_PM = .6;
+        shooterPM = 15;
+        //Shooter servo correectional loop
         SOTError = SOTSet - SOTCurrent;
         SOTPower = SOTError * SOTP;
+        //Gets our wobble goal error from our setpoint
         WB_error = WB_Setpoint - robot.WB_PT.getVoltage();
+        //Only runs our shooter Proportional loop when we have a setpoint greater than 1
         if (shooterSetpoint > 0){
-            shooterPM = 15;
+            //Runs a velocity correction loop on our shooter motor
+            //Get the time passed for our velocity
             timepassed = getRuntime() - lastTime;
+            //Get our shooter velocity using our distance/time, where distance is the encoder's ticks per loop cycle
             shooterActualVelocity = Math.abs(robot.SOT_M.getCurrentPosition() - shooterLastEncoder) / timepassed;
             lastTime = getRuntime();
+            //Sets our current encoder's to our last encoders
             shooterLastEncoder = robot.SOT_M.getCurrentPosition();
+            //Find the error between our velocity setpoint and our current velocity
             shooterError = shooterSetpoint - shooterActualVelocity;
             shooterPorportional = shooterError * shooterPM;
+            //Finds the correction needed to maintain velocity
             shooterCorrection = shooterPorportional;
         }
+        //IF we do not want shooter to run, don't let it run
         else if(shooterSetpoint == 0) {
             shooterCorrection = 0;
             shooterSetpoint = 0;
         }
+        //Sets our subsystem powers
         robot.WB_M.setPower(WB_error*WB_PM);
         robot.SOT_M.setPower((shooterCorrection + shooterSetpoint)/2800);
         robot.GRIP_S.setPosition(GRIP_POS);
@@ -869,6 +905,7 @@ public class BlueAuto extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
+
         parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         //  Instantiate the Vuforia engine
