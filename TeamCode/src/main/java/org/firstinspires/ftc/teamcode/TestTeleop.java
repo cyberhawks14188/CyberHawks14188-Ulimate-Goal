@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @TeleOp
 public class  TestTeleop extends LinearOpMode {
 
-    //Declares Variables
+    //Declares Variables to prevent NAN
     double shooterSetpoint;
     double intakePower;
     double stagerPower;
@@ -18,7 +18,6 @@ public class  TestTeleop extends LinearOpMode {
     double ring3Sensor;
     double stopper = .3;
     double xSpeedSetPoint = 1;
-    double yzSpeedSetPoint = 1;
     double highestMotorPower;
     double LFM;
     double speed;
@@ -56,9 +55,6 @@ public class  TestTeleop extends LinearOpMode {
     double shooterFSM = 0;
     double WB_FSM = 5;
     boolean WBControl = false;
-
-
-
     @Override
     public void runOpMode() {
         //Calling upon the HardwareMap
@@ -69,19 +65,16 @@ public class  TestTeleop extends LinearOpMode {
         waitForStart();
         //main loop
         while (opModeIsActive()) {
-
             //all sensor readings
             //Takes a reading from all of the distance sensors
             ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
             ring2Sensor = robot.Ring2_DS.getDistance(DistanceUnit.INCH);
             ring3Sensor = robot.Ring3_DS.getDistance(DistanceUnit.INCH);
-
-            //Takes potentiometer reading and writes it to varible
+            //Takes potentiometer reading and writes it to a variable for use later in program
             SOTCurrent = robot.SOT_PT.getVoltage();
             wobbleCurrent = robot.WB_PT.getVoltage();
-
-            //Intake Control and stager control
-            //Using a finite State Machine to easily control the stager and intake motors
+            //Using a finite State Machine to easily control the stager and intake.
+            //Also using custom one button on/off system where we use a boolean to see if the state has changed and then do an action
             if(gamepad1.a && stagerControl == false){
                 if(intakePower == 0){
                     shooterFSM = 1;
@@ -92,10 +85,12 @@ public class  TestTeleop extends LinearOpMode {
             }else if(!gamepad1.a){
                 stagerControl = false;
             }
+            //stage 0 shuts all motors off and this stager is starting stage
             if(shooterFSM == 0){
                 intakePower = 0;
                 stagerPower = 0;
             }
+            //stage 1 is intaking stage. Sets ring stopper to closed and intakes until sensors see that there is 3 rings in robot.
             if(shooterFSM == 1){
                 stopper = .3;
                 if(ring1Sensor < 2 && ring2Sensor < 2 && ring3Sensor < 4){
@@ -107,6 +102,7 @@ public class  TestTeleop extends LinearOpMode {
                     stagerPower = -1;
                 }
             }
+            //stage 2 is shooting stage. If button b is pressed rings shoot other wise motors are off
             if(shooterFSM == 2) {
                 if (gamepad1.b) {
                     stopper = .5;
@@ -117,35 +113,36 @@ public class  TestTeleop extends LinearOpMode {
                     intakePower = 0;
                 }
             }
-
+            //Lets us reverse the intake direction if intake gets jammed
+            if(gamepad1.back){
+                intakePower = 1;
+            }
             //Shooter Control
-            //Shooter angle
+            //Manual adjusting the setpoint to adjust last second if needed
             if(gamepad1.y){
                 SOTSet = SOTSet - .003;
             }else if(gamepad1.x){
                 SOTSet = SOTSet + .003;
             }
-            //Shooter Angle PID Loop to make sure the shooter is at the correct angle
+            //Shooter Angle PID Loop follo the setpoint set above
             SOTError = SOTSet - SOTCurrent;
             SOTPower = SOTError * SOTP;
-
-            //Flywheel Speed Control
+            //Flywheel speed setpoint control. We use our custom one button on/off system to use the left bumper to set the shooter speed.
             if (gamepad1.left_bumper && shooterControl == false) {
                 if(shooterSetpoint == 0){
-                    shooterSetpoint = 1900;
+                    shooterSetpoint = 1900;//set point is 1900 encoder ticks per second
 
                 }else{
                     shooterSetpoint = 0;
-                    shooterCorrection = 0;
+                    shooterCorrection = 0;//we set both of these variables to ensure that neither one has power
                 }
                 shooterControl = true;
             }else if(!gamepad1.left_bumper){
                 shooterControl = false;
             }
-            //Runs the PID for the shooter
-            //The PID makes sure the Shotoer RPM is the same no matter the battery power
+            //This is thhe Flywheels PID. This makes sure the Shotoer speed is the same no matter the battery power
             if(shooterSetpoint !=0){
-                shooterPM = 15;
+                shooterPM = 15;//set the proportional multiplier for the shooter speed
                 timepassed = getRuntime() - lastTime;
                 shooterActualVelocity = Math.abs(robot.SOT_M.getCurrentPosition()-shooterLastEncoder)/timepassed;
                 lastTime = getRuntime();
@@ -154,7 +151,8 @@ public class  TestTeleop extends LinearOpMode {
                 shooterPorportional = shooterError *  shooterPM;
                 shooterCorrection = shooterPorportional;
             }
-            //Wobble Goal Arm
+            //finite State machine for the wobble goal.
+            //We use the custom one button cycle to switch between each state.
             if(gamepad1.left_trigger > .05 && WBControl == false){
                 if(WB_FSM < 4){
                     WB_FSM = WB_FSM + 1;
@@ -165,29 +163,28 @@ public class  TestTeleop extends LinearOpMode {
             }else if(gamepad1.left_trigger < .05){
                 WBControl = false;
             }
-            //Down and ready to grab
+            //State 0 is claw open and in grabbing position
             if(WB_FSM == 0) {
                 wobbleEndSet = 2.324;
                 GRIP_S = .1;
-                //  WB_FSM = 3;
-            }else if(WB_FSM == 1){
+            }else if(WB_FSM == 1){//state 1 is grab wobble goal while still in down position
                 GRIP_S = .7;
-                //   WB_FSM = 3;
-            }else if(WB_FSM == 2){
-                wobbleEndSet = .6;//above wall but not all the way up
-                //  WB_FSM = 3;
-            }else if(WB_FSM == 3) {
+            }else if(WB_FSM == 2){//Brings wobble goal arm in stored position to drive to wall
+                wobbleEndSet = .6;
+            }else if(WB_FSM == 3) {//Brings wobble goal above wall, gripper still closed
                 wobbleEndSet = 1;
-            }else if(WB_FSM == 4){
+            }else if(WB_FSM == 4){// Gripper opens
                 GRIP_S = .1;
-            }else if(WB_FSM == 5){
+            }else if(WB_FSM == 5){//Closes Claw
                 GRIP_S = .7;
             }
+            //Lets up manually change set point if needed. Set EndSet to current set point + or - t o allow the arm to go to its current position + or - the setpoint.
             if (gamepad1.dpad_up) {
                 wobbleEndSet = wobbleSet - .1;
             } else if (gamepad1.dpad_down) {
                 wobbleEndSet = wobbleSet + .1;
             }
+            //This slowly brings the arm to the endsetpoint to ensure little wear from arm bannging on the wheels
             if(wobbleEndSet > .2 + wobbleSet){
                 wobbleSet = wobbleSet + .05;
             }else if(wobbleEndSet < .2 - wobbleSet){
@@ -195,28 +192,30 @@ public class  TestTeleop extends LinearOpMode {
             }else{
                 wobbleSet = wobbleEndSet;
             }
+            //PID to control the wobble arm to go to desired set point
             wobbleError = wobbleSet - robot.WB_PT.getVoltage();
             wobblePower = wobbleError * wobbleP;
-
-//this is a comment
-
             //Drivetrain Control
+            //Sets slow speed by using the right bumper
             if(gamepad1.right_bumper){
-                yzSpeedSetPoint = .4;
                 xSpeedSetPoint = .5;
             }else{
-                yzSpeedSetPoint = 1;
                 xSpeedSetPoint = 1;
             }
+            //sets calculation variables to let us calculate drivetrain direction
             double x = -gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
             double z = -gamepad1.right_stick_x;
+            //calculates motor speed and direction
             LFM = y - (x + z);
             LBM = y + (x - z);
             RFM = y + (x + z);
             RBM = y - (x - z);
+            //We use highest motor power to make sure no wheel speed ever goes over 1 and lets su strafe more accuratly
             highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
             leftG1StickPoint = Math.sqrt((gamepad1.left_stick_x*gamepad1.left_stick_x) + (gamepad1.left_stick_y*gamepad1.left_stick_y));
+            //Since we use highest motor power to make sure no motor power goes over 1, there will always be a motor going full power
+            //So we use the joysticks again to make apply a ratio and the set motor power
             if (Math.abs(gamepad1.right_stick_x) <.01){
                 speed = leftG1StickPoint;
             }else if(Math.abs(gamepad1.left_stick_x + gamepad1.left_stick_y) < .02){
@@ -224,24 +223,6 @@ public class  TestTeleop extends LinearOpMode {
             } else{
                 speed = (leftG1StickPoint + Math.abs(gamepad1.right_stick_x))/2;
             }
-            //Gamepad2 manual controls
-            //manual stager power control
-            if(gamepad2.left_trigger > .05){
-                stagerPower = 0;
-            }else if(gamepad2.left_bumper){
-                stagerPower = -1;
-            }
-            //Intake Control
-            if (gamepad2.right_trigger >=.05){
-                intakePower = 0;
-            }
-            if(gamepad2.right_bumper){
-                intakePower = -1;
-            }
-            if(gamepad1.back){
-                intakePower = 1;
-            }
-
             //Displaying Telemetry
             telemetry.addData("WB_FSM", WB_FSM);
             telemetry.addData("WBSET", wobbleSet);
@@ -272,6 +253,7 @@ public class  TestTeleop extends LinearOpMode {
             telemetry.addData("WobblePower", wobblePower);
             telemetry.addData("WBmotor", robot.WB_M.getPower());
             telemetry.update();
+
             //Setting Motor Power
             robot.LF_M.setPower(((LFM/highestMotorPower) * speed)* xSpeedSetPoint);
             robot.LB_M.setPower(((LBM/highestMotorPower) * speed)* xSpeedSetPoint);
