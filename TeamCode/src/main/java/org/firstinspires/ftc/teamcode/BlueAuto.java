@@ -772,6 +772,7 @@ public class BlueAuto extends LinearOpMode {
         if(actualVelocity == 0 && velocitySetpoint >.1){
             velocitySetpoint = velocitySetpoint + 4;
         }
+
         //Runs and PID on the velocity of our robot
         //Allows us to maintain the speed we want
 

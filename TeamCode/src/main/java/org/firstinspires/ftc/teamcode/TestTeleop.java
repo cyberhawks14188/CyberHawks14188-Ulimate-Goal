@@ -106,7 +106,7 @@ public class  TestTeleop extends LinearOpMode {
             if(shooterFSM == 2) {
                 if (gamepad1.b) {
                     stopper = .5;
-                    stagerPower = -1;
+                    stagerPower = -.9;
                     intakePower = 0;
                 } else {
                     stagerPower = 0;
@@ -116,6 +116,11 @@ public class  TestTeleop extends LinearOpMode {
             //Lets us reverse the intake direction if intake gets jammed
             if(gamepad1.back){
                 intakePower = 1;
+            }//POWERSHOT
+            if(gamepad1.dpad_left){
+                SOTSet = 1.645;
+            }else if(gamepad1.dpad_right){
+                SOTSet = 1.47;//TOP GOAL
             }
             //Shooter Control
             //Manual adjusting the setpoint to adjust last second if needed
@@ -124,6 +129,7 @@ public class  TestTeleop extends LinearOpMode {
             }else if(gamepad1.x){
                 SOTSet = SOTSet + .003;
             }
+
             //Shooter Angle PID Loop follo the setpoint set above
             SOTError = SOTSet - SOTCurrent;
             SOTPower = SOTError * SOTP;
