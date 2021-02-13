@@ -276,8 +276,9 @@ public class  TestTeleop extends LinearOpMode {
             telemetry.addData("Ring1RedValue", ring1Sensor);
             telemetry.addData("Ring2RedValue", ring2Sensor);
             telemetry.addData("Ring3RedValue", ring3Sensor);
-            }
             telemetry.update();
+            }
+
 
             //Setting Motor Power
             robot.LF_M.setPower(((LFM/highestMotorPower) * speed)* xSpeedSetPoint);
@@ -293,4 +294,3 @@ public class  TestTeleop extends LinearOpMode {
             robot.STOP_S.setPosition(stopper);
         }
     }
-}
