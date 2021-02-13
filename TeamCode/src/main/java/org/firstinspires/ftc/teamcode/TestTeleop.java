@@ -1,7 +1,12 @@
 package org.firstinspires.ftc.teamcode;
+import android.drm.DrmStore;
+import android.graphics.Color;
+import android.media.Ringtone;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -61,15 +66,25 @@ public class  TestTeleop extends LinearOpMode {
         RobotHardware robot = new RobotHardware();
         robot.init(hardwareMap);
         double wobbleEndSet = robot.WB_PT.getVersion();
+        robot.Ring1_CS.setGain(10);
+        robot.Ring2_CS.setGain(10);
+        robot.Ring3_CS.setGain(10);
+        NormalizedRGBA Ring1Color = robot.Ring1_CS.getNormalizedColors();
+        NormalizedRGBA Ring2Color = robot.Ring2_CS.getNormalizedColors();
+        NormalizedRGBA Ring3Color = robot.Ring3_CS.getNormalizedColors();
+
         //Waits for the play button to be pressed
         waitForStart();
         //main loop
         while (opModeIsActive()) {
             //all sensor readings
             //Takes a reading from all of the distance sensors
-            ring1Sensor = robot.Ring1_DS.getDistance(DistanceUnit.INCH);
-            ring2Sensor = robot.Ring2_DS.getDistance(DistanceUnit.INCH);
-            ring3Sensor = robot.Ring3_DS.getDistance(DistanceUnit.INCH);
+
+
+
+            ring1Sensor = Ring1Color.red;
+            ring2Sensor = Ring2Color.red;
+            ring3Sensor = Ring3Color.red;
             //Takes potentiometer reading and writes it to a variable for use later in program
             SOTCurrent = robot.SOT_PT.getVoltage();
             wobbleCurrent = robot.WB_PT.getVoltage();
@@ -93,7 +108,7 @@ public class  TestTeleop extends LinearOpMode {
             //stage 1 is intaking stage. Sets ring stopper to closed and intakes until sensors see that there is 3 rings in robot.
             if(shooterFSM == 1){
                 stopper = .3;
-                if(ring1Sensor < 2 && ring2Sensor < 2 && ring3Sensor < 4){
+                if(ring1Sensor > .55 && ring2Sensor > .55  && ring3Sensor > .55){
                     intakePower = 0;
                     stagerPower = 0;
                     shooterFSM = 2;
@@ -106,7 +121,7 @@ public class  TestTeleop extends LinearOpMode {
             if(shooterFSM == 2) {
                 if (gamepad1.b) {
                     stopper = .5;
-                    stagerPower = -1;
+                    stagerPower = -.9;
                     intakePower = 0;
                 } else {
                     stagerPower = 0;
@@ -116,6 +131,11 @@ public class  TestTeleop extends LinearOpMode {
             //Lets us reverse the intake direction if intake gets jammed
             if(gamepad1.back){
                 intakePower = 1;
+            }//POWERSHOT
+            if(gamepad1.dpad_left){
+                SOTSet = 1.645;
+            }else if(gamepad1.dpad_right){
+                SOTSet = 1.47;//TOP GOAL
             }
             //Shooter Control
             //Manual adjusting the setpoint to adjust last second if needed
@@ -124,6 +144,7 @@ public class  TestTeleop extends LinearOpMode {
             }else if(gamepad1.x){
                 SOTSet = SOTSet + .003;
             }
+
             //Shooter Angle PID Loop follo the setpoint set above
             SOTError = SOTSet - SOTCurrent;
             SOTPower = SOTError * SOTP;
@@ -252,7 +273,12 @@ public class  TestTeleop extends LinearOpMode {
             telemetry.addData("SOTSet", SOTSet);
             telemetry.addData("WobblePower", wobblePower);
             telemetry.addData("WBmotor", robot.WB_M.getPower());
+            telemetry.addData("Ring1RedValue", ring1Sensor);
+            telemetry.addData("Ring2RedValue", ring2Sensor);
+            telemetry.addData("Ring3RedValue", ring3Sensor);
             telemetry.update();
+            }
+
 
             //Setting Motor Power
             robot.LF_M.setPower(((LFM/highestMotorPower) * speed)* xSpeedSetPoint);
@@ -268,4 +294,3 @@ public class  TestTeleop extends LinearOpMode {
             robot.STOP_S.setPosition(stopper);
         }
     }
-}

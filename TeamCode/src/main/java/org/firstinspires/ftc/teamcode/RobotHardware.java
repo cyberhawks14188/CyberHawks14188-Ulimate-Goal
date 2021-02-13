@@ -1,6 +1,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.net.http.SslCertificate;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -8,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -29,12 +32,13 @@ public class RobotHardware{
     public CRServo SOT_S;
     public Servo STOP_S;
 
+
     public AnalogInput WB_PT;
     public Servo GRIP_S;
     public AnalogInput SOT_PT;
-    public DistanceSensor Ring1_DS;
-    public DistanceSensor Ring2_DS;
-    public DistanceSensor Ring3_DS;
+    public NormalizedColorSensor Ring1_CS;
+    public NormalizedColorSensor Ring2_CS;
+    public NormalizedColorSensor Ring3_CS;
     public BNO055IMU imu;
 
 
@@ -66,10 +70,10 @@ public class RobotHardware{
         SOT_PT = hardwareMap.get(AnalogInput.class, "SOT_PT");
         STOP_S = hardwareMap.get(Servo.class, "STOP_S");
         WB_PT = hardwareMap.get(AnalogInput.class, "WB_PT");
-        Ring1_DS = hardwareMap.get(DistanceSensor.class, "Ring1_DS");
-        Ring2_DS = hardwareMap.get(DistanceSensor.class, "Ring2_DS");
-        Ring3_DS = hardwareMap.get(DistanceSensor.class, "Ring3_DS");
-
+        Ring1_CS = hardwareMap.get(NormalizedColorSensor.class, "Ring1_CS");
+        Ring2_CS = hardwareMap.get(NormalizedColorSensor.class, "Ring2_CS");
+        Ring3_CS = hardwareMap.get(NormalizedColorSensor.class, "Ring3_CS");
+        NormalizedColorSensor colorSensor;
         imu.initialize(parameters);
         //servo = hardwareMap.get(Servo.class, "servo");
 
