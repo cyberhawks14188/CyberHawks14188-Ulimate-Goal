@@ -364,10 +364,10 @@ public class BlueAuto extends LinearOpMode {
         //Turns on our shooter setpoint
         shooterSetpoint = 1900;
         //Shoots rings until our distance sensors sees that we have no rings in our stager
-        while (robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4 && opModeIsActive()) {
-            SubSystem();
-        }
-        stop_motors();
+    //    while (robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4 && opModeIsActive()) {
+         //   SubSystem();
+       // }
+     //   stop_motors();
         //Lowers wobble goal arm back down to grabbing position
         Timedloop = getRuntime() + .5;
                 while(Timedloop>getRuntime()){

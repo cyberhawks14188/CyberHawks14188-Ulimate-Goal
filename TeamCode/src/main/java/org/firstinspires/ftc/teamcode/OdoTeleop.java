@@ -1,18 +1,12 @@
 package org.firstinspires.ftc.teamcode;
-import android.drm.DrmStore;
-import android.graphics.Color;
-import android.media.Ringtone;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import org.firstinspires.ftc.teamcode.Odometry.OdometryGlobalCoordinatePosition;
 @TeleOp
-public class  TestTeleop extends LinearOpMode {
+public class OdoTeleop extends LinearOpMode {
 
     //Declares Variables to prevent NAN
     double shooterSetpoint;
@@ -60,11 +54,34 @@ public class  TestTeleop extends LinearOpMode {
     double shooterFSM = 0;
     double WB_FSM = 5;
     boolean WBControl = false;
+    //odo variables
+    double e1current;
+    double e2current;
+    double e3current;
+    double e1Previous = 0;
+    double e2Previous = 0;
+    double e3Previous = 0;
+    double deltaE1;
+    double deltaE2;
+    double deltaE3;
+    double thetaChange;
+    double thetaInRadians;
+    double yAverage;
+    double xCoordinatePosition;
+    double yCoordinatePosition;
+    final double e2XOffSet = 1983.9474445737487;
+    final double encoderWheelDistance = 14.300650233564467;
+    double e2WithOffSet;
+    final double COUNTS_PER_INCH = 239;
+    final double encoderWheelDistanceInch = encoderWheelDistance * COUNTS_PER_INCH;
+
     @Override
     public void runOpMode() {
         //Calling upon the HardwareMap
+
         RobotHardware robot = new RobotHardware();
         robot.init(hardwareMap);
+
         double wobbleEndSet = robot.WB_PT.getVersion();
         robot.Ring1_CS.setGain(10);
         robot.Ring2_CS.setGain(10);
@@ -79,7 +96,57 @@ public class  TestTeleop extends LinearOpMode {
         while (opModeIsActive()) {
             //all sensor readings
             //Takes a reading from all of the distance sensors
+//odocalculations
 
+            e1current = robot.LF_M.getCurrentPosition();
+            e2current = robot.LB_M.getCurrentPosition();//add in multipllyer offset if needed
+            e3current = robot.RF_M.getCurrentPosition();
+
+            deltaE1 = e1current - e1Previous;
+            deltaE2 = e2current - e2Previous;
+            deltaE3 = e3current - e3Previous;
+
+            thetaChange = (deltaE1 - deltaE3)/ encoderWheelDistanceInch;
+            thetaInRadians = thetaInRadians + thetaChange;
+
+            e2WithOffSet = deltaE2 - (thetaChange * e2XOffSet);
+
+            yAverage = (deltaE1 + deltaE3)/2;
+
+            yCoordinatePosition = yCoordinatePosition + (yAverage*Math.sin(thetaInRadians)) + (e2XOffSet*Math.cos(thetaInRadians));
+            xCoordinatePosition = xCoordinatePosition + (yAverage*Math.cos(thetaInRadians)) - (e2XOffSet*Math.sin(thetaInRadians));
+
+               /*
+        verticalLeftEncoderWheelPosition = (verticalEncoderLeft.getCurrentPosition() * verticalLeftEncoderPositionMultiplier);
+        verticalRightEncoderWheelPosition = (verticalEncoderRight.getCurrentPosition() * verticalRightEncoderPositionMultiplier);
+
+        double leftChange = verticalLeftEncoderWheelPosition - previousVerticalLeftEncoderWheelPosition;
+        double rightChange = verticalRightEncoderWheelPosition - previousVerticalRightEncoderWheelPosition;
+
+        //Calculate Angle
+        changeInRobotOrientation = (leftChange - rightChange) / (robotEncoderWheelDistance);
+        robotOrientationRadians = ((robotOrientationRadians + changeInRobotOrientation));
+
+        //Get the components of the motion
+        normalEncoderWheelPosition = (horizontalEncoder.getCurrentPosition()*normalEncoderPositionMultiplier);
+        double rawHorizontalChange = normalEncoderWheelPosition - prevNormalEncoderWheelPosition;
+        double horizontalChange = rawHorizontalChange - (changeInRobotOrientation*horizontalEncoderTickPerDegreeOffset);
+
+        double p = ((rightChange + leftChange) / 2);
+        double n = horizontalChange;
+
+        //Calculate and update the position values
+        robotGlobalXCoordinatePosition = robotGlobalXCoordinatePosition + (p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians));
+        robotGlobalYCoordinatePosition = robotGlobalYCoordinatePosition + (p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
+
+        previousVerticalLeftEncoderWheelPosition = verticalLeftEncoderWheelPosition;
+        previousVerticalRightEncoderWheelPosition = verticalRightEncoderWheelPosition;
+        prevNormalEncoderWheelPosition = normalEncoderWheelPosition;
+
+         */
+            e1Previous = robot.LF_M.getCurrentPosition();
+            e2Previous = robot.LB_M.getCurrentPosition();
+            e3Previous = robot.RF_M.getCurrentPosition();
 
             ring1Sensor = Ring1Color.red;
             ring2Sensor = Ring2Color.red;
@@ -244,6 +311,9 @@ public class  TestTeleop extends LinearOpMode {
                 speed = (leftG1StickPoint + Math.abs(gamepad1.right_stick_x)) / 2;
             }
             //Displaying Telemetry
+            telemetry.addData("X Position", xCoordinatePosition / COUNTS_PER_INCH);
+            telemetry.addData("Y Position", yCoordinatePosition / COUNTS_PER_INCH);
+            telemetry.addData("Orientation (Degrees)", Math.toDegrees(thetaInRadians));
             telemetry.addData("WB_FSM", WB_FSM);
             telemetry.addData("WBSET", wobbleSet);
             telemetry.addData("WBerror", wobbleError);
@@ -277,7 +347,6 @@ public class  TestTeleop extends LinearOpMode {
             telemetry.addData("Ring3RedValue", ring3Sensor);
             telemetry.update();
 
-
             //Setting Motor Power
             robot.LF_M.setPower(((LFM / highestMotorPower) * speed) * xSpeedSetPoint);
             robot.LB_M.setPower(((LBM / highestMotorPower) * speed) * xSpeedSetPoint);
@@ -292,4 +361,10 @@ public class  TestTeleop extends LinearOpMode {
             robot.STOP_S.setPosition(stopper);
         }
         }
+    public void OdoCalculations(){
+
+
+
     }
+
+}
