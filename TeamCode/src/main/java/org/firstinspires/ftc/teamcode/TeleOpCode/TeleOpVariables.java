@@ -6,9 +6,11 @@ public class TeleOpVariables {
         public boolean gamepadBState;
         public boolean gamepadDpadLeftState;
         public boolean gamepadDpadRightState;
+        public boolean gamepadRightBumperState;
         public boolean gamepadYState;
         public boolean gamepadXState;
         public boolean gamepadLeftBumperState;
+        public boolean gamepadBackState;
         public double gamepadLeftTrigger;
         public boolean gamepadDpadUpState;
         public boolean gamepadDpadDownState;

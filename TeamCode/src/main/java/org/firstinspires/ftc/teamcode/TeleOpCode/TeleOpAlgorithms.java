@@ -2,8 +2,17 @@ package org.firstinspires.ftc.teamcode.TeleOpCode;
 
 public class TeleOpAlgorithms {
     TeleOpVariables TV = new TeleOpVariables();
-    public void DriveBase(){
-
+    public double DriveBase(double x, double y, double z, boolean gpadRightBumper){
+        TV.x = x;
+        TV.y = y;
+        TV.z = z;
+        TV.gamepadRightBumperState = gpadRightBumper;
+        //DriveBase Slowdown
+        if (TV.gamepadRightBumperState) {
+            TV.xSpeedSetPoint = .5;
+        } else {
+            TV.xSpeedSetPoint = 1;
+        }
         //sets calculation variables to let us calculate drivetrain direction
         //calculates motor speed and direction
         TV.LFM = (-TV.y) - ((-TV.x) + (-TV.z));
@@ -22,8 +31,20 @@ public class TeleOpAlgorithms {
         } else {
             TV.speed = (TV.leftG1StickPoint + Math.abs(TV.z)) / 2;
         }
-    }
-    public void OdometryCalc(){
+        TV.LFM = ((TV.LFM / TV.highestMotorPower) * TV.speed) * TV.xSpeedSetPoint;
+        TV.LBM = ((TV.LBM / TV.highestMotorPower) * TV.speed) * TV.xSpeedSetPoint;
+        TV.RFM = ((TV.RFM / TV.highestMotorPower) * TV.speed) * TV.xSpeedSetPoint;
+        TV.RBM = ((TV.RBM / TV.highestMotorPower) * TV.speed) * TV.xSpeedSetPoint;
+        return TV.LFM;
+        }
+        public double LBMset(){return TV.LBM;}
+        public double RFMset(){return TV.RFM;}
+        public double RBMset(){return TV.RBM;}
+
+    public double OdometryCalc(double e1, double e2, double e3){
+        TV.e1current = e1;
+        TV.e2current = e2;
+        TV.e3current = e3;
         TV.deltaE1 = TV.e1current - TV.e1Previous;
         TV.deltaE2 = TV.e2current - TV.e2Previous;
         TV.deltaE3 = TV.e3current - TV.e3Previous;
@@ -41,8 +62,17 @@ public class TeleOpAlgorithms {
         TV.e1Previous = TV.e1current;
         TV.e2Previous = TV.e2current;
         TV.e3Previous = TV.e3current;
+        return TV.xCoordinatePosition/TV.COUNTS_PER_INCH;
     }
-    public void RingSystem(){
+    public double odoy(){return TV.yCoordinatePosition/TV.COUNTS_PER_INCH;}
+    public double thetaINRadians(){return TV.thetaInRadians;}
+    public double RingSystem(boolean Astate, boolean Bstate, double cs1, double cs2, double cs3, boolean gpadback){
+        TV.gamepadAState = Astate;
+        TV.gamepadBState = Bstate;
+        TV.ring1Sensor = cs1;
+        TV.ring2Sensor = cs2;
+        TV.ring3Sensor = cs3;
+        TV.gamepadBackState = gpadback;
         if (TV.gamepadAState && !TV.stagerControl) {
             if (TV.intakePower == 0) {
                 TV.shooterFSM = 1;
@@ -80,9 +110,22 @@ public class TeleOpAlgorithms {
             }
             TV.intakePower = 0;
         }
-
+        if (TV.gamepadBackState) {
+            TV.intakePower = 1;
+        }
+        return TV.intakePower;
     }
-    public void shooterControl(){
+    public double stagerP(){return TV.stagerPower;}
+    public double stopperSet(){return TV.stopper;}
+    public double shooterControl(boolean dpadleft, boolean dpadright, boolean gpady, boolean gpadx, boolean leftbutton, double sotmcurrent, double timePassed, double sotacurrent){
+        TV.gamepadDpadLeftState = dpadleft;
+        TV.gamepadDpadRightState = dpadright;
+        TV.gamepadYState = gpady;
+        TV.gamepadXState = gpadx;
+        TV.gamepadLeftBumperState = leftbutton;
+        TV.SOTCurrentEncoder = sotmcurrent;
+        TV.timepassed = timePassed;
+        TV.SOTCurrent = sotacurrent;
         if (TV.gamepadDpadLeftState) {
             TV.SOTSet = 1.645;
         } else if (TV.gamepadDpadRightState) {
@@ -98,9 +141,9 @@ public class TeleOpAlgorithms {
 
         //Shooter Angle PID Loop follo the setpoint set above
         TV.SOTError = TV.SOTSet - TV.SOTCurrent;
-        TV.SOTPower = TV.SOTError * TV.SOTP;
+        TV.SOTPower = (TV.SOTError * TV.SOTP);
         //Flywheel speed setpoint control. We use our custom one button on/off system to use the left bumper to set the shooter speed.
-        if (TV.gamepadDpadLeftState && !TV.shooterControl) {
+        if (TV.gamepadLeftBumperState && !TV.shooterControl) {
             if (TV.shooterSetpoint == 0) {
                 TV.shooterSetpoint = 1900;//set point is 1900 encoder ticks per second
 
@@ -123,8 +166,14 @@ public class TeleOpAlgorithms {
             TV.shooterPorportional = TV.shooterError * TV.shooterPM;
             TV.shooterCorrection = TV.shooterPorportional;
         }
+        return -((TV.shooterSetpoint+TV.shooterCorrection)/2800);
     }
-    public void WobbleControl(){
+    public double sotaset(){ return TV.SOTPower; }
+    public double WobbleControl(double gpadlefttrigger, boolean dpadup, boolean dpaddown, double wbpt){
+        TV.gamepadLeftTrigger = gpadlefttrigger;
+        TV.gamepadDpadUpState = dpadup;
+        TV.gamepadDpadDownState = dpaddown;
+        TV.wobbleCurrent = wbpt;
         //finite State machine for the wobble goal.
         //We use the custom one button cycle to switch between each state.
         if (TV.gamepadLeftTrigger > .05 && !TV.WBControl) {
@@ -169,5 +218,7 @@ public class TeleOpAlgorithms {
         //PID to control the wobble arm to go to desired set point
         TV.wobbleError = TV.wobbleSet - TV.wobbleCurrent;
         TV.wobblePower = TV.wobbleError * TV.wobbleP;
+        return TV.wobblePower;
     }
+    public double grip(){return TV.GRIP_S;}
 }
