@@ -1,10 +1,12 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TestPrograms;
 
 import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
+
+import org.firstinspires.ftc.teamcode.ControlHub.JustMotorRobotHardware;
 
 @TeleOp
 public class ColorSensor extends LinearOpMode {
