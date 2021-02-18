@@ -51,7 +51,7 @@ public class TeleOpVariables {
         public double GRIP_S = .6;
         public double shooterLastEncoder;
         public double SOTCurrent;
-        public double SOTSet = 1.47;
+        public double SOTSet = 1.27;
         public double lastTime;
         public double SOTError;
         public double SOTPower;

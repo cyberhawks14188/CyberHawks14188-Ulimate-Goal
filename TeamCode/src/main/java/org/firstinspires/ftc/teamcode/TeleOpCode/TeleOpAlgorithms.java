@@ -1,29 +1,31 @@
 package org.firstinspires.ftc.teamcode.TeleOpCode;
 
 public class TeleOpAlgorithms {
+    //Calls the variable method to use all variables
     TeleOpVariables TV = new TeleOpVariables();
-    public double DriveBase(double x, double y, double z, boolean gpadRightBumper){
+    //Method to calculate the motor powers to go in what direction we want at the correct speed we want
+    public double DriveBase(double x, double y, double z, boolean gpadRightBumper){//parameters to get gamepad buttons to figure out where we want to go
+        //sets Varibales to parameters so we can output values to diffecent classes easily
         TV.x = x;
         TV.y = y;
         TV.z = z;
         TV.gamepadRightBumperState = gpadRightBumper;
-        //DriveBase Slowdown
+        //Slows down drivebase if the right bumper is pressed for accurate movements if needed
         if (TV.gamepadRightBumperState) {
             TV.xSpeedSetPoint = .5;
         } else {
             TV.xSpeedSetPoint = 1;
         }
-        //sets calculation variables to let us calculate drivetrain direction
-        //calculates motor speed and direction
+        //Calculates variables to let us drive in the correct direction
         TV.LFM = (-TV.y) - ((-TV.x) + (-TV.z));
         TV.LBM = (-TV.y) + ((-TV.x) - (-TV.z));
         TV.RFM = (-TV.y) + ((-TV.x) + (-TV.z));
         TV.RBM = (-TV.y) - ((-TV.x) - (-TV.z));
-        //We use highest motor power to make sure no wheel speed ever goes over 1 and lets su strafe more accuratly
+        //We use highest motor power to make sure no wheel speed ever goes over 1 and lets us strafe accuratly
         TV.highestMotorPower = Math.max(Math.max(Math.abs(TV.LFM), Math.abs(TV.LBM)), Math.max(Math.abs(TV.RFM), Math.abs(TV.RBM)));
-        TV.leftG1StickPoint = Math.sqrt((TV.x * TV.x) + (TV.y * TV.y));
         //Since we use highest motor power to make sure no motor power goes over 1, there will always be a motor going full power
-        //So we use the joysticks again to make apply a ratio and the set motor power
+        //We use the joysticks again to make apply a ratio and the set motor power
+        TV.leftG1StickPoint = Math.sqrt((TV.x * TV.x) + (TV.y * TV.y));
         if (Math.abs(TV.z) < .01) {
             TV.speed = TV.leftG1StickPoint;
         } else if (Math.abs(TV.x + TV.y) < .02) {
@@ -31,48 +33,57 @@ public class TeleOpAlgorithms {
         } else {
             TV.speed = (TV.leftG1StickPoint + Math.abs(TV.z)) / 2;
         }
+        //Uses the calculations above to calculate the desired motor power
         TV.LFM = ((TV.LFM / TV.highestMotorPower) * TV.speed) * TV.xSpeedSetPoint;
         TV.LBM = ((TV.LBM / TV.highestMotorPower) * TV.speed) * TV.xSpeedSetPoint;
         TV.RFM = ((TV.RFM / TV.highestMotorPower) * TV.speed) * TV.xSpeedSetPoint;
         TV.RBM = ((TV.RBM / TV.highestMotorPower) * TV.speed) * TV.xSpeedSetPoint;
-        return TV.LFM;
+        return TV.LFM;//returns motor power variables
         }
         public double LBMset(){return TV.LBM;}
         public double RFMset(){return TV.RFM;}
         public double RBMset(){return TV.RBM;}
-
+//calculates odometry to let us know where we are in the feild at all times
     public double OdometryCalc(double e1, double e2, double e3){
+        //sets paramters to variables for easy use
         TV.e1current = e1;
         TV.e2current = e2;
         TV.e3current = e3;
+        //finds the change in the encoders from the last loop cycle
         TV.deltaE1 = TV.e1current - TV.e1Previous;
         TV.deltaE2 = TV.e2current - TV.e2Previous;
         TV.deltaE3 = TV.e3current - TV.e3Previous;
-
+        //calculates the angle in radians
         TV.thetaChange = (TV.deltaE1 - TV.deltaE3)/ TV.encoderWheelDistanceInch;
         TV.thetaInRadians = TV.thetaInRadians + TV.thetaChange;
-
+        //calculates the e2 reading without the angle values affecting in it
         TV.e2WithOffSet = TV.deltaE2 - (TV.thetaChange * TV.e2XOffSet);
-
+        //finds the average between the forward facing encoders to find the center of the robot
         TV.yAverage = (TV.deltaE1 + TV.deltaE3)/2;
 
         TV.yCoordinatePosition = TV.yCoordinatePosition + (TV.yAverage*Math.sin(TV.thetaInRadians)) + (TV.e2WithOffSet*Math.cos(TV.thetaInRadians));
         TV.xCoordinatePosition = TV.xCoordinatePosition + (TV.yAverage*Math.cos(TV.thetaInRadians)) - (TV.e2WithOffSet*Math.sin(TV.thetaInRadians));
-
+        //sets varibles to the current encoder reading to set Delta varibles in the next loop cycle
         TV.e1Previous = TV.e1current;
         TV.e2Previous = TV.e2current;
         TV.e3Previous = TV.e3current;
+        //returns the values to use in other classes
         return TV.xCoordinatePosition/TV.COUNTS_PER_INCH;
     }
     public double odoy(){return TV.yCoordinatePosition/TV.COUNTS_PER_INCH;}
     public double thetaINRadians(){return TV.thetaInRadians;}
+    //Method uses sensores and gamepad to decide wether the intake or stager motor should be on and what position to set the stopper servo to
     public double RingSystem(boolean Astate, boolean Bstate, double cs1, double cs2, double cs3, boolean gpadback){
+        //sets variables to the parameters for easy use in the method
         TV.gamepadAState = Astate;
         TV.gamepadBState = Bstate;
         TV.ring1Sensor = cs1;
         TV.ring2Sensor = cs2;
         TV.ring3Sensor = cs3;
         TV.gamepadBackState = gpadback;
+        //uses a Finite State Machine to turn the intake and stager motors on or off and set the position of the stopper servo
+        //to set what state the FSM is in, we use our 1 button function, The function uses a boolean to tell us if the button was pressed last loop cycle
+        //if the button was't and it is now: change the state we are in, Then reapeat until the program shuts off
         if (TV.gamepadAState && !TV.stagerControl) {
             if (TV.intakePower == 0) {
                 TV.shooterFSM = 1;
@@ -112,12 +123,14 @@ public class TeleOpAlgorithms {
         }
         if (TV.gamepadBackState) {
             TV.intakePower = 1;
-        }
+        }//returns the variables for the the intake and stager power and the stopper position
         return TV.intakePower;
     }
     public double stagerP(){return TV.stagerPower;}
     public double stopperSet(){return TV.stopper;}
+    // Shooter control method sets the shooter flywheel speed, runs the PID to make sure the flywheel is at the correct speed and adjusts the angle of the shooter
     public double shooterControl(boolean dpadleft, boolean dpadright, boolean gpady, boolean gpadx, boolean leftbutton, double sotmcurrent, double timePassed, double sotacurrent){
+        //sets variables to the parameters for easy use in the method
         TV.gamepadDpadLeftState = dpadleft;
         TV.gamepadDpadRightState = dpadright;
         TV.gamepadYState = gpady;
@@ -126,10 +139,11 @@ public class TeleOpAlgorithms {
         TV.SOTCurrentEncoder = sotmcurrent;
         TV.timepassed = timePassed;
         TV.SOTCurrent = sotacurrent;
+        //uses Dpad left and right to be able to set the
         if (TV.gamepadDpadLeftState) {
             TV.SOTSet = 1.645;
         } else if (TV.gamepadDpadRightState) {
-            TV.SOTSet = 1.47;//TOP GOAL
+            TV.SOTSet = 1.27;//TOP GOAL
         }
         //Shooter Control
         //Manual adjusting the setpoint to adjust last second if needed

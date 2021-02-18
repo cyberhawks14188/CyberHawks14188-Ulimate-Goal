@@ -12,8 +12,10 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -109,6 +111,9 @@ public class RobotHardware{
         LB_M.getCurrentPosition();
         RF_M.getCurrentPosition();
 
+        Ring1_CS.setGain(10);
+        Ring2_CS.setGain(10);
+        Ring3_CS.setGain(10);
         // Define and initialize ALL installed servos.
         //servo.setPosition(0);
     }
