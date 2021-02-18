@@ -199,7 +199,7 @@ public class Movement_Program extends LinearOpMode {
         robot.LF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.LB_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.RF_M.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //If we see no rings it will still be 0
+        //If we see no rings it will still be 0s
         //Waits for start
         waitForStart();
         //Our First move
