@@ -209,9 +209,9 @@ public class Movement_Program extends LinearOpMode {
         Distance_From = 1;
         WB_Setpoint = .32;
         breakout = 1;
-        targetVelocity = 37;
+        targetVelocity = 15;
         while (Distance_From > .6 && opModeIsActive()) {
-            Movement(-18, 47, 0, 6, 6);
+            Movement(-50, 50, 0, 6, 6);
             SubSystem();
         }
         stop_motors();
@@ -363,7 +363,6 @@ public class Movement_Program extends LinearOpMode {
         Y_Diffrence_of_Errors = y_error - Y_Last_Error;
         Y_Derivitive = Y_Diffrence_of_Errors * Y_DM;
         Y_Last_Error = y_error;
-
 
         //Uses pythagorean therom to find how far we are from the end setpoints compared to our current position on the field our starting position
         Distance = Math.sqrt((Math.pow((Y_EndSetpoint - Last_Y_EndSetpoint), 2)) + (Math.pow((X_EndSetpoint - Last_X_EndSetpoint), 2)));
