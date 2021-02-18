@@ -14,7 +14,7 @@ public class WobbleGoalArm {
     double wobbleProportionalMulitplier = 2;
     double wobblePower;
 
-    public void WobbleControl(double gpadlefttrigger, boolean dpadup, boolean dpaddown, double wbpt,){
+    public void WobbleControl(double gpadlefttrigger, boolean dpadup, boolean dpaddown, double wbpt){
         //finite State machine for the wobble goal.
         //We use the custom one button cycle to switch between each state.
         if (gpadlefttrigger > .05 && !WBControl) {

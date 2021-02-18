@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 //Imports RobotCore
 import android.graphics.ImageDecoder;
 
@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.RobotHardware;
 import com.qualcomm.robotcore.util.Range;
 //Creates program Class
 @Autonomous
@@ -364,9 +365,10 @@ public class BlueAuto extends LinearOpMode {
         //Turns on our shooter setpoint
         shooterSetpoint = 1900;
         //Shoots rings until our distance sensors sees that we have no rings in our stager
-        while (robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4 && opModeIsActive()) {
+        /*while (robot.Ring1_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring2_DS.getDistance(DistanceUnit.INCH) < 2 || robot.Ring3_DS.getDistance(DistanceUnit.INCH) < 4 && opModeIsActive()) {
             SubSystem();
         }
+        */
         stop_motors();
         //Lowers wobble goal arm back down to grabbing position
         Timedloop = getRuntime() + .5;
