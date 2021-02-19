@@ -9,7 +9,7 @@ public class WobbleGoalArm {
     //Position Varibles
     double wobbleEndSet = 0.4;
     double wobbleSet = .4;
-    double gripperSet;
+    double gripperSet = .65;
     double wobbleError;
     double wobbleProportionalMulitplier = 2;
     double wobblePower;
@@ -30,17 +30,17 @@ public class WobbleGoalArm {
         //State 0 is claw open and in grabbing position
         if (WB_FSM == 0) {
             wobbleEndSet = 2.1;
-            gripperSet = .1;
-        } else if (WB_FSM == 1) {//state 1 is grab wobble goal while still in down position
             gripperSet = .65;
+        } else if (WB_FSM == 1) {//state 1 is grab wobble goal while still in down position
+            gripperSet = .1;
         } else if (WB_FSM == 2) {//Brings wobble goal arm in stored position to drive to wall
             wobbleEndSet = .6;
         } else if (WB_FSM == 3) {//Brings wobble goal above wall, gripper still closed
             wobbleEndSet = 1;
         } else if (WB_FSM == 4) {// Gripper opens
-            gripperSet = .1;
-        } else if (WB_FSM == 5) {//Closes Claw
             gripperSet = .65;
+        } else if (WB_FSM == 5) {//Closes Claw
+            gripperSet = .1;
         }
         //Lets up manually change set point if needed. Set EndSet to current set point + or - t o allow the arm to go to its current position + or - the setpoint.
         if (dpadup) {
