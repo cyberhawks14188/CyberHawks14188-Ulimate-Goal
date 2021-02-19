@@ -63,6 +63,7 @@ public class Movement_Program extends LinearOpMode {
     public double targetVelocity;
     double setVelocity;
     public double Y_Sum_of_Errors;
+    double VelcocityAddition;
     public double Z_Last_Error;
     public double X_Last_Error;
     public double Y_Last_Error;
@@ -171,6 +172,7 @@ public class Movement_Program extends LinearOpMode {
     double test;
     double SOTError;
     double shooterPower;
+    double DesiredVelcoity;
     double lastDistance;
     double SOTPower;
     double SOTP;
@@ -209,10 +211,10 @@ public class Movement_Program extends LinearOpMode {
         Distance_From = 1;
         WB_Setpoint = .32;
         breakout = 1;
-        targetVelocity = 15;
+        targetVelocity = 3;
         while (Distance_From > .6 && opModeIsActive()) {
             Movement(-50, 50, 0, 6, 6);
-            SubSystem();
+            //SubSystem();
         }
         stop_motors();
     }
@@ -398,11 +400,13 @@ public class Movement_Program extends LinearOpMode {
                 velocitySetpoint = minimumAccelerationVelocity;
             }
         }
+
         //Run the deacceleration when our distance from is less then the Slow_Down_Distance
         if (Distance_From <= Slow_Down_Distance) {
             //Will ramp down from our target veloicty to 0 based on our distance
             velocitySetpoint = Distance_From * (targetVelocity / Slow_Down_Distance) + minimumVelocity;
         }
+
         //Allows us to call to a varible outside of the method
         storingVarible1 = Y_EndSetpoint;
         storingVarible2 = X_EndSetpoint;
@@ -415,15 +419,14 @@ public class Movement_Program extends LinearOpMode {
             velocitySetpoint = 50;
         }
         //If our robot has stopped moving and we want to be moving then incress the velocity setpoint to get us to move
-        if (actualVelocity == 0 && velocitySetpoint > .1) {
-            velocitySetpoint = velocitySetpoint + 4;
-        }
+
 
         //Runs and PID on the velocity of our robot
         //Allows us to maintain the speed we want
 
         //Find the error between desired velcotiy and the current robot velocity
         velocityError = velocitySetpoint - actualVelocity;
+
         //Velocity Porportional
         velocityPorportion = velocityError * VPM;
         //Velocity Intergral
@@ -434,7 +437,11 @@ public class Movement_Program extends LinearOpMode {
         velocityLastError = velocityError;
         veloictyDerivitive = velocityDiffrenceOfErrors * VDM;
         //Finds the correction our robot has to do to get back to the desired setpoint
-        velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive);
+        velocityCorrection = (velocityPorportion + velocityIntergral + veloictyDerivitive) + velocitySetpoint;
+        if (actualVelocity == 0 && velocitySetpoint > .01) {
+            VelcocityAddition = VelcocityAddition + velocityError;
+        }
+        DesiredVelcoity = velocityCorrection + VelcocityAddition;
         //Find our robot's slope based on our starting position to our end position
         slope = ((Y_EndSetpoint - Last_Y_EndSetpoint) / (X_EndSetpoint - Last_X_EndSetpoint));
 
@@ -494,7 +501,6 @@ public class Movement_Program extends LinearOpMode {
         Slope_X_last_error = Slope_X_Error;
         //Find the sum of the  porprotional and the dervititive
         Slope_X_Correction = Slope_X_Porportional + Slope_X_Derivitive;
-
         //Equates our y direction correction
         y = y_porportional + Y_Intergral + Y_Derivitive + Slope_Y_Correction;
         //Equates our x direction correction
@@ -516,10 +522,10 @@ public class Movement_Program extends LinearOpMode {
         Highest_Motor_Power = Math.max(Math.max(Math.abs(RF_Direction), Math.abs(RB_Direction)), Math.max(Math.abs(LF_Direction), Math.abs(LB_Direction)));
         //Sets motors
         //Determines our speed of our motors by the velocity correction and setpoint
-        robot.LF_M.setPower(((velocityCorrection + velocitySetpoint) / maximumVelocity) * (LF_Direction / Highest_Motor_Power));
-        robot.LB_M.setPower(((velocityCorrection + velocitySetpoint) / maximumVelocity) * (LB_Direction / Highest_Motor_Power));
-        robot.RF_M.setPower(((velocityCorrection + velocitySetpoint) / maximumVelocity) * (RF_Direction / Highest_Motor_Power));
-        robot.RB_M.setPower(((velocityCorrection + velocitySetpoint) / maximumVelocity) * (RB_Direction / Highest_Motor_Power));
+        robot.LF_M.setPower(((DesiredVelcoity) / maximumVelocity) * (LF_Direction / Highest_Motor_Power));
+        robot.LB_M.setPower(((DesiredVelcoity) / maximumVelocity) * (LB_Direction / Highest_Motor_Power));
+        robot.RF_M.setPower(((DesiredVelcoity) / maximumVelocity) * (RF_Direction / Highest_Motor_Power));
+        robot.RB_M.setPower(((DesiredVelcoity) / maximumVelocity) * (RB_Direction / Highest_Motor_Power));
     }
 
     //Method for our mechanisms other than our drivebase
