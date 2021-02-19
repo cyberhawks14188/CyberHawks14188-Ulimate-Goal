@@ -3,12 +3,12 @@ package org.firstinspires.ftc.teamcode.TeleOpCode.SeperateClasses;
 public class Odometry {
     double deltaE1, deltaE2, deltaE3;
     double e1Previous, e2Previous, e3Previous;
-    final double encoderWheelDistance = 14.300650233564467;
+    final double encoderWheelDistance = 14.42206;
     final double COUNTS_PER_INCH = 236.5;
     final double encoderWheelDistanceInch = encoderWheelDistance * COUNTS_PER_INCH;
     double thetaChange, thetaInRadians;
     double e2WithOffSet;
-    final double e2XOffSet = 1983.9474445737487;
+    final double e2XOffSet = 1815.7032;
     double yAverage;
     double yCoordinatePosition, xCoordinatePosition;
     double e1Current, e2Current, e3Current;
@@ -40,4 +40,5 @@ public class Odometry {
     public double odoXReturn(){return xCoordinatePosition/COUNTS_PER_INCH;}
     public double odoYReturn(){return yCoordinatePosition/COUNTS_PER_INCH;}
     public double thetaINRadiansReturn(){return thetaInRadians;}
+    public double thetaInDegreesReturn(){return Math.toDegrees(thetaInRadians % 360);}
 }

@@ -56,7 +56,7 @@ public class MultiClassTeleop extends LinearOpMode {
             //Displaying Telemetry
             telemetry.addData("X Position", OdoClass.odoXReturn());
             telemetry.addData("Y Position", OdoClass.odoYReturn());
-            telemetry.addData("Orientation (Degrees)", Math.toDegrees(OdoClass.thetaINRadiansReturn()));
+            telemetry.addData("Orientation (Degrees)", OdoClass.thetaInDegreesReturn());
             telemetry.addData("theta in Radians", OdoClass.thetaINRadiansReturn());
             telemetry.addData("E1", robot.LF_M.getCurrentPosition());
             telemetry.addData("E2", robot.LB_M.getCurrentPosition());
