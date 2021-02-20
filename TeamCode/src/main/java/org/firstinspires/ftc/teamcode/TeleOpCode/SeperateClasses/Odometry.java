@@ -42,3 +42,23 @@ public class Odometry {
     public double thetaINRadiansReturn(){return thetaInRadians;}
     public double thetaInDegreesReturn(){return Math.toDegrees(thetaInRadians % 360);}
 }
+//        LFM = (-y) - ((-x) + (-z));
+//        LBM = (-y) + ((-x) - (-z));
+//        RFM = (-y) + ((-x) + (-z));
+//        RBM = (-y) - ((-x) - (-z));
+//        //We use highest motor power to make sure no wheel speed ever goes over 1 and lets us strafe accuratly
+//        highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
+// speed = ((setspeed - actualspeed)*Proportionalmultiplier) + speed;
+//       LFMtoMotor = LFM * speed;
+
+//if(Farther than 1 in away){
+//        setpointX = ____;
+//        setpointY = ____;
+//        slope = setpointY/setpointX;
+//        currentXSet = Math.sin(slope);
+//        CurrentYSet = Math.cos(slope);
+//}else{
+//currentXSet = setpointX;
+//currentXSet = setpointY;
+//}
+
