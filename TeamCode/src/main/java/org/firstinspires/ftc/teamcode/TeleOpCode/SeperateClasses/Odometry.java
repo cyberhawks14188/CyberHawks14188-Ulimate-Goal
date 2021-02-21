@@ -49,6 +49,9 @@ public class Odometry {
 //        //We use highest motor power to make sure no wheel speed ever goes over 1 and lets us strafe accuratly
 //        highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
 // speed = ((setspeed - actualspeed)*Proportionalmultiplier) + speed;
+//if speed>1{
+//speed =1;
+//}
 //       LFMtoMotor = LFM * speed;
 
 //if(Farther than 1 in away){
