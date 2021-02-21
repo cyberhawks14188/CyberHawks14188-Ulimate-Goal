@@ -213,7 +213,7 @@ public class Movement_Program extends LinearOpMode {
         breakout = 1;
         targetVelocity = 3;
         while (Distance_From > .6 && opModeIsActive()) {
-            Movement(-50, 50, 0, 6, 6);
+            Movement(50, 50, 0, 6, 6);
             //SubSystem();
         }
         stop_motors();
@@ -277,8 +277,8 @@ public class Movement_Program extends LinearOpMode {
         Slope_Y_PM = .4;
         Slope_X_PM = .4;
         Slope_Y_DM = .4;
-        minimumAccelerationVelocity = 12;
-        minimumVelocity = 2;
+        minimumAccelerationVelocity = .001;
+        minimumVelocity = .001;
         //If we only want our robot to turn we only run the Z PID by setting all other multipliers to 0
         if (JustTurn == 1) {
             X_PM = 0;
@@ -385,7 +385,7 @@ public class Movement_Program extends LinearOpMode {
         //Finds the time passed from this loop cycle to the last loop cycle
         time_passed = time - (previousTime);
         //Velocity is the number of inches travled in a second
-        actualVelocity = Math.abs((Distance_From - lastDistanceFrom)) / time_passed;
+        actualVelocity = Math.abs(Distance_From - lastDistanceFrom) / time_passed;
         //Sets previous time to time
         previousTime = time;
         //Sets lastDistanceFrom to our current Distance_From
@@ -400,7 +400,6 @@ public class Movement_Program extends LinearOpMode {
                 velocitySetpoint = minimumAccelerationVelocity;
             }
         }
-
         //Run the deacceleration when our distance from is less then the Slow_Down_Distance
         if (Distance_From <= Slow_Down_Distance) {
             //Will ramp down from our target veloicty to 0 based on our distance
