@@ -40,7 +40,7 @@ public class Odometry {
     public double odoXReturn(){return xCoordinatePosition/COUNTS_PER_INCH;}
     public double odoYReturn(){return yCoordinatePosition/COUNTS_PER_INCH;}
     public double thetaINRadiansReturn(){return thetaInRadians;}
-    public double thetaInDegreesReturn(){return Math.toDegrees(thetaInRadians % 360);}
+    public double thetaInDegreesReturn(){return Math.toDegrees(thetaInRadians) % 360;}
 }
 //        LFM = (-y) - ((-x) + (-z));
 //        LBM = (-y) + ((-x) - (-z));
