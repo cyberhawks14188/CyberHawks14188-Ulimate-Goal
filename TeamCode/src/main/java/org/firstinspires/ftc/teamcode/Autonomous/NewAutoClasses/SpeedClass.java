@@ -15,8 +15,8 @@ public class SpeedClass {
     double speedPM;
     double speedDerivative;
     double speedDM;
-    double speed;
-    double speedSetpoint;
+    public double speed;
+    public double speedSetpoint;
     double speedMinimum = .001;
 
     public double SpeedCalc(double odoX, double odoY, double time, double speedsetpoint) {
@@ -38,10 +38,13 @@ public class SpeedClass {
         speedLastError = speedError;
         //Speed at which the motor %'s will be going
         speed = speed + (speedDerivative + speedPorportional);
+        if (speed <= .001){
+            speed = .001;
+        }
         return speed;
     }
 
-    public double MotionProfile(double endpoint, double startpointX, double startpointY, double speedtarget, double accelerationdistance, double deccelerationdistance) {
+    public double MotionProfile(double startpointX, double startpointY, double speedtarget, double accelerationdistance, double deccelerationdistance) {
         if (accelerationdistance <= DirectionClass.distance - DirectionClass.distanceFrom) {
             speedSetpoint = (DirectionClass.distance - DirectionClass.distanceFrom) * (speedtarget / accelerationdistance);
         }
