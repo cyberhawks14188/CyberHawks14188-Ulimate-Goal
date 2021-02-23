@@ -8,33 +8,59 @@ public class Odometry {
     final double encoderWheelDistanceInch = encoderWheelDistance * COUNTS_PER_INCH;
     double thetaChange, thetaInRadians;
     double e2WithOffSet;
-    final double e2XOffSet = 1815.7032;
+    double e2XOffSet = 1815;
     double yAverage;
     double yCoordinatePosition, xCoordinatePosition;
     double e1Current, e2Current, e3Current;
+    double previousruntime = 0;
 
-    public void OdometryCalc(double e1current, double e2current, double e3current){
+    public void OdometryCalc(double e1current, double e2current, double e3current, double runtime){
         //finds the change in the encoders from the last loop cycle
-        e1Current = e1current;
-        e2Current = e2current;
-        e3Current = e3current;
-        deltaE1 = e1Current - e1Previous;
-        deltaE2 = e2Current - e2Previous;
-        deltaE3 = e3Current - e3Previous;
-        //calculates the angle in radians
-        thetaChange = (deltaE1 - deltaE3)/ encoderWheelDistanceInch;
-        thetaInRadians = thetaInRadians + thetaChange;
-        //calculates the e2 reading without the angle values affecting in it
-        e2WithOffSet = deltaE2 - (thetaChange * e2XOffSet);
-        //finds the average between the forward facing encoders to find the center of the robot
-        yAverage = (deltaE1 + deltaE3)/2;
+        if (runtime > previousruntime + .75){
+            e1Current = e1current;
+            e2Current = e2current * -1;
+            e3Current = e3current;
+            deltaE1 = e1Current - e1Previous;
+            deltaE2 = e2Current - e2Previous;
+            deltaE3 = e3Current - e3Previous;
+            //calculates the angle in radians
+            thetaChange = (deltaE1 - deltaE3) / encoderWheelDistanceInch;
+            thetaInRadians = thetaInRadians + thetaChange;
+            //calculates the e2 reading without the angle values affecting in it
+            e2WithOffSet = deltaE2 - (thetaChange * e2XOffSet);
+            //finds the average between the forward facing encoders to find the center of the robot
+            yAverage = (deltaE1 + deltaE3) / 2;
 
-        yCoordinatePosition = yCoordinatePosition + (yAverage*Math.sin(thetaInRadians)) + (e2WithOffSet*Math.cos(thetaInRadians));
-        xCoordinatePosition = xCoordinatePosition + (yAverage*Math.cos(thetaInRadians)) - (e2WithOffSet*Math.sin(thetaInRadians));
-        //sets varibles to the current encoder reading to set Delta variables in the next loop cycle
-        e1Previous = e1Current;
-        e2Previous = e2Current;
-        e3Previous = e3Current;
+            yCoordinatePosition = yCoordinatePosition + (yAverage * Math.sin(thetaInRadians)) + (e2WithOffSet * Math.cos(thetaInRadians));
+            xCoordinatePosition = xCoordinatePosition + (yAverage * Math.cos(thetaInRadians)) - (e2WithOffSet * Math.sin(thetaInRadians));
+            //sets varibles to the current encoder reading to set Delta variables in the next loop cycle
+            e1Previous = e1Current;
+            e2Previous = e2Current;
+            e3Previous = e3Current;
+            previousruntime = runtime;
+        }
+    }
+    double e2CenterOffSet;//TODO set this
+    double e2VertOffSet;//TODO set this
+    double vertHeadingPivotPoint;
+    double HorisontalHeadingPivotPoint;
+    public void RadiusOdometry(double e1current, double e2current, double e3current){
+        deltaE1 = e1current - e1Previous;//ΔL
+        deltaE2 = (-e2current) - e2Previous;//ΔB
+        deltaE3 = e3current - e3Previous;//ΔR
+        thetaChange = (deltaE3 - deltaE1) / (2 * e2CenterOffSet);//Δ0
+        if (thetaChange == 0){
+            yCoordinatePosition = yCoordinatePosition + deltaE2;//Δx
+            xCoordinatePosition = xCoordinatePosition + ((deltaE1 + deltaE3) / 2);//Δy
+        }else{
+            vertHeadingPivotPoint = e2CenterOffSet*(deltaE1 + deltaE3) / (deltaE3 - deltaE1);//rt
+            HorisontalHeadingPivotPoint = (deltaE2 / thetaChange) - e2VertOffSet;//rs
+            yCoordinatePosition = vertHeadingPivotPoint * (Math.cos(thetaChange) - 1) + HorisontalHeadingPivotPoint * Math.sin(thetaChange);//Δx
+            xCoordinatePosition = vertHeadingPivotPoint * Math.sin(thetaChange) + HorisontalHeadingPivotPoint + (1 - Math.cos(thetaChange));//Δy
+        }
+        e1Previous = e1current;
+        e2Previous = -e2current;
+        e3Previous = e3current;
     }
     //returns the values to use in other classes
     public double odoXReturn(){return xCoordinatePosition/COUNTS_PER_INCH;}
@@ -42,26 +68,3 @@ public class Odometry {
     public double thetaINRadiansReturn(){return thetaInRadians;}
     public double thetaInDegreesReturn(){return Math.toDegrees(thetaInRadians) % 360;}
 }
-//        LFM = (-y) - ((-x) + (-z));
-//        LBM = (-y) + ((-x) - (-z));
-//        RFM = (-y) + ((-x) + (-z));
-//        RBM = (-y) - ((-x) - (-z));
-//        //We use highest motor power to make sure no wheel speed ever goes over 1 and lets us strafe accuratly
-//        highestMotorPower = Math.max(Math.max(Math.abs(LFM), Math.abs(LBM)), Math.max(Math.abs(RFM), Math.abs(RBM)));
-// speed = ((setspeed - actualspeed)*Proportionalmultiplier) + speed;
-//if speed>1{
-//speed =1;
-//}
-//       LFMtoMotor = LFM * speed;
-
-//if(Farther than 1 in away){
-//        setpointX = ____;
-//        setpointY = ____;
-//        slope = setpointY/setpointX;
-//        currentXSet = Math.sin(slope);
-//        CurrentYSet = Math.cos(slope);
-//}else{
-//currentXSet = setpointX;
-//currentXSet = setpointY;
-//}
-
