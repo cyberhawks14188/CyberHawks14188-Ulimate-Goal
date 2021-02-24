@@ -56,8 +56,8 @@ public class Odometry {
         }else{
             vertHeadingPivotPoint = e2CenterOffSet*(deltaE1 + deltaE3) / (deltaE3 - deltaE1);//rt
             HorisontalHeadingPivotPoint = (deltaE2 / thetaChange) - e2VertOffSet;//rs
-            yCoordinatePosition = vertHeadingPivotPoint * (Math.cos(thetaChange) - 1) + HorisontalHeadingPivotPoint * Math.sin(thetaChange);//Δx
-            xCoordinatePosition = vertHeadingPivotPoint * Math.sin(thetaChange) + HorisontalHeadingPivotPoint + (1 - Math.cos(thetaChange));//Δy
+            yCoordinatePosition = yCoordinatePosition + (vertHeadingPivotPoint * (Math.cos(thetaChange) - 1) + HorisontalHeadingPivotPoint * Math.sin(thetaChange));//Δx
+            xCoordinatePosition = xCoordinatePosition + (vertHeadingPivotPoint * Math.sin(thetaChange) + HorisontalHeadingPivotPoint + (1 - Math.cos(thetaChange)));//Δy
         }
         e1Previous = e1current;
         e2Previous = -e2current;
