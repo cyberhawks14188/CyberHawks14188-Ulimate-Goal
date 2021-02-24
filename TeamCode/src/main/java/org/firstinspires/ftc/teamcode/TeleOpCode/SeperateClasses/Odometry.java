@@ -40,8 +40,8 @@ public class Odometry {
             previousruntime = runtime;
         }
     }
-    double e2CenterOffSet;//TODO set this
-    double e2VertOffSet;//TODO set this
+    double e2CenterOffSet = 8.5;//TODO set this
+    double e2VertOffSet = 7.125;//TODO set this
     double vertHeadingPivotPoint;
     double HorisontalHeadingPivotPoint;
     public void RadiusOdometry(double e1current, double e2current, double e3current){
