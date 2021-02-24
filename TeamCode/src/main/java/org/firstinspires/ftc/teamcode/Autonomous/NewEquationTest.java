@@ -35,10 +35,12 @@ public class NewEquationTest extends LinearOpMode {
         telemetry.addData("Distance", DirectionClass.distanceReturn());
         telemetry.addData("Distance From", DirectionClass.distanceFromReturn());
         telemetry.addData("Speed", SpeedClass.speed);
+        telemetry.addData("Current Speed", SpeedClass.CurrentSpeed());
+        telemetry.addData("time", getRuntime());
         telemetry.update();
     }
     public void Movement(double endpointx, double endpointy, double thetasetpoint, double targetspeed, double accelerationdistance, double deccelerationdistance){
-        OdoClass.OdometryCalc(robot.LF_M.getCurrentPosition(), robot.LB_M.getCurrentPosition(), robot.RF_M.getCurrentPosition());
+        OdoClass.OdometryCalc(robot.LF_M.getCurrentPosition(), robot.LB_M.getCurrentPosition(), robot.RF_M.getCurrentPosition(), getRuntime());
         SpeedClass.MotionProfile(targetspeed, accelerationdistance, deccelerationdistance);
         SpeedClass.SpeedCalc(OdoClass.odoXReturn(), OdoClass.odoYReturn(), getRuntime(), SpeedClass.speedSetpoint);
         TurnControl.turnControl(thetasetpoint, OdoClass.thetaInDegreesReturn(),1);

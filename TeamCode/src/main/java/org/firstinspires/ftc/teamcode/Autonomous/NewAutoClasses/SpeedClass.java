@@ -12,9 +12,9 @@ public class SpeedClass {
     double speedLastError;
     double speedError;
     double speedPorportional;
-    double speedPM = .01;
-    double speedDerivative = .01;
-    double speedDM;
+    double speedPM = .0001;
+    double speedDerivative;
+    double speedDM = .0001;
     public double speed;
     public double speedSetpoint;
     double speedMinimum = 0;
@@ -37,15 +37,17 @@ public class SpeedClass {
         speedDerivative = (speedError - speedLastError) * speedDM;
         speedLastError = speedError;
         //Speed at which the motor %'s will be going
-        speed = (speed + (speedDerivative + speedPorportional));
-        if (speed <= .00000000000001){
-            speed = .0000000000000001;
+        speed = Math.abs(speed + (speedDerivative + speedPorportional));
+        if (speed <= .00001){
+            speed = .00001;
         }
+
         if(speed >= 1){
             speed = 1;
         }
         return speed;
     }
+    public double CurrentSpeed(){return speedCurrent;}
 
     public double MotionProfile(double speedtarget, double accelerationdistance, double deccelerationdistance) {
         if (accelerationdistance <= DirectionClass.distance - DirectionClass.distanceFrom) {
