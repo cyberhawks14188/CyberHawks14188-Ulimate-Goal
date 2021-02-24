@@ -16,9 +16,9 @@ public class TurnControl {
             thetaSetPoint = thetaSetPoint - turnincrements;
         }
         thetaError = thetaSetPoint - thetaindegrees;
+        thetaProportional = thetaError * thetaProportionalMultiplier;
         thetaDerivative = (thetaError - thetaLastError)* thetaDerivativeMultiplier;
         thetaLastError = thetaError;
-        thetaProportional = thetaError * thetaProportionalMultiplier;
         theta = thetaProportional + thetaDerivative;
         return theta;
     }

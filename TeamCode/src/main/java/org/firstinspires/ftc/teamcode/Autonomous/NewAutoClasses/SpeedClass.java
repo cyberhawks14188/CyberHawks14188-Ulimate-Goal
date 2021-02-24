@@ -12,12 +12,12 @@ public class SpeedClass {
     double speedLastError;
     double speedError;
     double speedPorportional;
-    double speedPM;
-    double speedDerivative;
+    double speedPM = .01;
+    double speedDerivative = .01;
     double speedDM;
     public double speed;
     public double speedSetpoint;
-    double speedMinimum = .001;
+    double speedMinimum = 0;
 
     public double SpeedCalc(double odoX, double odoY, double time, double speedsetpoint) {
         //Finds the difference between loop cycles in position
@@ -32,19 +32,22 @@ public class SpeedClass {
         lastOdoX = odoX;
         lastOdoY = odoY;
         //Speed PD
-        speedError = speedCurrent - speedsetpoint;
+        speedError = speedsetpoint - speedCurrent;
         speedPorportional = speedError * speedPM;
-        speedDerivative = (speedError = speedLastError) * speedDM;
+        speedDerivative = (speedError - speedLastError) * speedDM;
         speedLastError = speedError;
         //Speed at which the motor %'s will be going
-        speed = speed + (speedDerivative + speedPorportional);
-        if (speed <= .001){
-            speed = .001;
+        speed = (speed + (speedDerivative + speedPorportional));
+        if (speed <= .00000000000001){
+            speed = .0000000000000001;
+        }
+        if(speed >= 1){
+            speed = 1;
         }
         return speed;
     }
 
-    public double MotionProfile(double startpointX, double startpointY, double speedtarget, double accelerationdistance, double deccelerationdistance) {
+    public double MotionProfile(double speedtarget, double accelerationdistance, double deccelerationdistance) {
         if (accelerationdistance <= DirectionClass.distance - DirectionClass.distanceFrom) {
             speedSetpoint = (DirectionClass.distance - DirectionClass.distanceFrom) * (speedtarget / accelerationdistance);
         }
