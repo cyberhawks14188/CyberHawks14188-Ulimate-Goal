@@ -49,6 +49,7 @@ public class Odometry {
         deltaE2 = (-e2current) - e2Previous;//ΔB
         deltaE3 = e3current - e3Previous;//ΔR
         thetaChange = (deltaE3 - deltaE1) / (2 * e2CenterOffSet);//Δ0
+        thetaInRadians = thetaInRadians + thetaChange;
         if (thetaChange == 0){
             yCoordinatePosition = yCoordinatePosition + deltaE2;//Δx
             xCoordinatePosition = xCoordinatePosition + ((deltaE1 + deltaE3) / 2);//Δy
