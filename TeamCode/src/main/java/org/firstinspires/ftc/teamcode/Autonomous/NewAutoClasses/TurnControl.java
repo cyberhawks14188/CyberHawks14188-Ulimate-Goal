@@ -10,10 +10,13 @@ public class TurnControl {
     double thetaDerivativeMultiplier = 1;
     double thetaDerivative;
     public double turnControl(double thetaendsetpoint, double thetaindegrees, double turnincrements){
-        if (thetaendsetpoint > thetaSetPoint + 1){
+        if (thetaendsetpoint > thetaSetPoint + turnincrements){
             thetaSetPoint = thetaSetPoint + turnincrements;
-        }else if(thetaendsetpoint < thetaSetPoint - 1){
+        }else if(thetaendsetpoint < thetaSetPoint - turnincrements){
             thetaSetPoint = thetaSetPoint - turnincrements;
+        }
+        else{
+            thetaSetPoint = thetaendsetpoint;
         }
         thetaError = thetaSetPoint - thetaindegrees;
         thetaProportional = thetaError * thetaProportionalMultiplier;

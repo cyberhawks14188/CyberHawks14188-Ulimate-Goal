@@ -32,9 +32,9 @@ public class DirectionCalcClass {
         distanceYLeg = (startpointx - endpointx);
         distanceXLeg = (startpointy - endpointy);
         distance = Math.hypot(distanceXLeg, distanceYLeg);
-        distanceFromEndY = odoY - endpointx;
-        distanceFromEndX = odoX - endpointy;
-        distanceFrom = Math.hypot(distanceXLeg, distanceFromEndY);
+        distanceFromEndY = odoY - endpointy;
+        distanceFromEndX = odoX - endpointx;
+        distanceFrom = Math.hypot(distanceFromEndX, distanceFromEndY);
         //Y PD
 
         yError = ysetpoint - odoY;
