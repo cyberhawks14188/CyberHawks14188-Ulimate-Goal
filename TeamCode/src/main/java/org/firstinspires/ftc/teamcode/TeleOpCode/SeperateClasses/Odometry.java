@@ -40,24 +40,24 @@ public class Odometry {
             previousruntime = runtime;
         }
     }
-    double e2CenterOffSet = 8.5;//TODO set this
-    double e2VertOffSet = 7.125;//TODO set this
+    double e2CenterOffSet = 7.21 * COUNTS_PER_INCH;//r
+    double e2VertOffSet = 1815;//rb
     double vertHeadingPivotPoint;
     double HorisontalHeadingPivotPoint;
     public void RadiusOdometry(double e1current, double e2current, double e3current){
         deltaE1 = e1current - e1Previous;//ΔL
         deltaE2 = (-e2current) - e2Previous;//ΔB
         deltaE3 = e3current - e3Previous;//ΔR
-        thetaChange = (deltaE3 - deltaE1) / (2 * e2CenterOffSet);//Δ0
+        thetaChange = (deltaE1 - deltaE3) / (2 * e2CenterOffSet);//Δ0
         thetaInRadians = thetaInRadians + thetaChange;
         if (thetaChange == 0){
             yCoordinatePosition = yCoordinatePosition + deltaE2;//Δx
             xCoordinatePosition = xCoordinatePosition + ((deltaE1 + deltaE3) / 2);//Δy
         }else{
-            vertHeadingPivotPoint = e2CenterOffSet*(deltaE1 + deltaE3) / (deltaE3 - deltaE1);//rt
+            vertHeadingPivotPoint = (e2CenterOffSet*(deltaE1 + deltaE3)) / (deltaE3 - deltaE1);//rt
             HorisontalHeadingPivotPoint = (deltaE2 / thetaChange) - e2VertOffSet;//rs
-            yCoordinatePosition = yCoordinatePosition + (vertHeadingPivotPoint * (Math.cos(thetaChange) - 1) + HorisontalHeadingPivotPoint * Math.sin(thetaChange));//Δx
-            xCoordinatePosition = xCoordinatePosition + (vertHeadingPivotPoint * Math.sin(thetaChange) + HorisontalHeadingPivotPoint + (1 - Math.cos(thetaChange)));//Δy
+            yCoordinatePosition = yCoordinatePosition + ((vertHeadingPivotPoint * (Math.cos(thetaChange) - 1)) + (HorisontalHeadingPivotPoint * Math.sin(thetaChange)));//Δx
+            xCoordinatePosition = xCoordinatePosition + ((vertHeadingPivotPoint * Math.sin(thetaChange)) + (HorisontalHeadingPivotPoint * (1 - Math.cos(thetaChange))));//Δy
         }
         e1Previous = e1current;
         e2Previous = -e2current;
