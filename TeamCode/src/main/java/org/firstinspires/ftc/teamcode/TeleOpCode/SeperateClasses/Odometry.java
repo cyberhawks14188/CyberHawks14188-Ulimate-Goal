@@ -45,9 +45,9 @@ public class Odometry {
     double vertHeadingPivotPoint;
     double HorisontalHeadingPivotPoint;
     public void RadiusOdometry(double e1current, double e2current, double e3current){
-        deltaE1 = e1current - e1Previous;//ΔL
+        deltaE1 = (-e1current) - e1Previous;//ΔL
         deltaE2 = e2current - e2Previous;//ΔB
-        deltaE3 = e3current - e3Previous;//ΔR
+        deltaE3 = (-e3current) - e3Previous;//ΔR
         thetaChange = (deltaE1 - deltaE3) / (2 * e2CenterOffSet);//Δ0
         thetaInRadians = thetaInRadians + thetaChange;
         if (thetaChange == 0){
