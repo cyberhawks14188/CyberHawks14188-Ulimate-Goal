@@ -24,7 +24,7 @@ public class NewEquationTest extends LinearOpMode {
         startPointX = 0;
         startPointY = 0;
         while(opModeIsActive()){
-            Movement(0, 20, 0, 5, 5, 5);
+            Movement(50, 0, 0, 5, 3, 3);
             Telemetry();
             PowerSetting();
         }
@@ -32,6 +32,7 @@ public class NewEquationTest extends LinearOpMode {
     public void Telemetry(){
         telemetry.addData("Odo X",OdoClass.odoXReturn());
         telemetry.addData("Odo Y",OdoClass.odoYReturn());
+        telemetry.addData("Theta Angle", OdoClass.thetaInDegreesReturn());
         telemetry.addData("Distance", DirectionClass.distanceReturn());
         telemetry.addData("Distance From", DirectionClass.distanceFromReturn());
         telemetry.addData("Speed",  SpeedClass.SpeedReturn());
@@ -43,7 +44,7 @@ public class NewEquationTest extends LinearOpMode {
     }
     public void Movement(double endpointx, double endpointy, double thetasetpoint, double targetspeed, double accelerationdistance, double deccelerationdistance){
         OdoClass.OdometryCalc(robot.LF_M.getCurrentPosition(), robot.LB_M.getCurrentPosition(), robot.RF_M.getCurrentPosition(), getRuntime());
-        DirectionClass.DirectionCalc(startPointX, startPointY, endpointx, endpointy, OdoClass.odoXReturn(), OdoClass.odoYReturn(), 0, 20);
+        DirectionClass.DirectionCalc(startPointX, startPointY, endpointx, endpointy, OdoClass.odoXReturn(), OdoClass.odoYReturn(), TurnControl.theta);
         SpeedClass.MotionProfile(targetspeed, accelerationdistance, deccelerationdistance, DirectionClass.distanceReturn(), DirectionClass.distanceFromReturn());
         SpeedClass.SpeedCalc(OdoClass.odoXReturn(), OdoClass.odoYReturn(), getRuntime(), SpeedClass.speedSetpoint);
         TurnControl.turnControl(thetasetpoint, OdoClass.thetaInDegreesReturn(),1);

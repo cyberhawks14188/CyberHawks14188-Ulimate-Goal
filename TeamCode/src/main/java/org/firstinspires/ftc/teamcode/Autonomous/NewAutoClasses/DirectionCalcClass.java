@@ -23,11 +23,13 @@ public class DirectionCalcClass {
     double xLastError;
     double x;
     double y;
-    double yPM = .2;
-    double yDM = .2;
-    double xPM = .2;
-    double xDM = .2;
-    public void DirectionCalc(double startpointx, double startpointy, double endpointx, double endpointy, double odoX, double odoY, double xsetpoint, double ysetpoint){
+    double xsetpoint;
+    double ysetpoint;
+    double yPM = .005;
+    double yDM = .005;
+    double xPM = .005;
+    double xDM = .005;
+    public void DirectionCalc(double startpointx, double startpointy, double endpointx, double endpointy, double odoX, double odoY, double theta){
 
         distanceYLeg = (startpointx - endpointx);
         distanceXLeg = (startpointy - endpointy);
@@ -36,6 +38,9 @@ public class DirectionCalcClass {
         distanceFromEndX = odoX - endpointx;
         distanceFrom = Math.hypot(distanceFromEndX, distanceFromEndY);
         //Y PD
+
+        xsetpoint = endpointx - (((distanceFrom-1)*(endpointx-startpointx))/distance);
+        ysetpoint = endpointy - (((distanceFrom-1)*(endpointy-startpointy))/distance);
 
         yError = ysetpoint - odoY;
         yPorportional = yPM * yError;
@@ -50,10 +55,12 @@ public class DirectionCalcClass {
         xLastError = xError;
         x = xPorportional + xDerivitive;
 
-        LF_M_Direction = x + (-y + TurnClass.theta);
-        LB_M_Direction = x - (-y - TurnClass.theta);
-        RF_M_Direction = x - (-y + TurnClass.theta);
-        RB_M_Direction = x + (-y - TurnClass.theta);
+
+
+        LF_M_Direction = x + (-y + theta);
+        LB_M_Direction = x - (-y - theta);
+        RF_M_Direction = x - (-y + theta);
+        RB_M_Direction = x + (-y - theta);
         motorPowerRatio = Math.max(Math.max(Math.abs(RF_M_Direction), Math.abs(RB_M_Direction)), Math.max(Math.abs(LF_M_Direction), Math.abs(LB_M_Direction)));
         LF_M_Direction = LF_M_Direction/motorPowerRatio;
         LB_M_Direction = LB_M_Direction/motorPowerRatio;
