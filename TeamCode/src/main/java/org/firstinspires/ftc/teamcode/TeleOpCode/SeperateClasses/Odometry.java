@@ -18,7 +18,7 @@ public class Odometry {
         //finds the change in the encoders from the last loop cycle
         if (runtime > previousruntime + .75){
             e1Current = e1current;
-            e2Current = e2current * -1;
+            e2Current = e2current;
             e3Current = e3current;
             deltaE1 = e1Current - e1Previous;
             deltaE2 = e2Current - e2Previous;
@@ -46,7 +46,7 @@ public class Odometry {
     double HorisontalHeadingPivotPoint;
     public void RadiusOdometry(double e1current, double e2current, double e3current){
         deltaE1 = e1current - e1Previous;//ΔL
-        deltaE2 = (-e2current) - e2Previous;//ΔB
+        deltaE2 = e2current - e2Previous;//ΔB
         deltaE3 = e3current - e3Previous;//ΔR
         thetaChange = (deltaE1 - deltaE3) / (2 * e2CenterOffSet);//Δ0
         thetaInRadians = thetaInRadians + thetaChange;
@@ -60,7 +60,7 @@ public class Odometry {
             xCoordinatePosition = xCoordinatePosition + ((vertHeadingPivotPoint * Math.sin(thetaChange)) + (HorisontalHeadingPivotPoint * (1 - Math.cos(thetaChange))));//Δy
         }
         e1Previous = e1current;
-        e2Previous = -e2current;
+        e2Previous = e2current;
         e3Previous = e3current;
     }
     //returns the values to use in other classes
