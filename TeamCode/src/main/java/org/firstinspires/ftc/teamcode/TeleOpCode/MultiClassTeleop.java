@@ -25,7 +25,9 @@ public class MultiClassTeleop extends LinearOpMode {
         RobotHardware robot = new RobotHardware();
         robot.init(hardwareMap);
 //assigning stating types for sensors
-
+        robot.Ring1_CS.setGain(10);
+        robot.Ring2_CS.setGain(10);
+        robot.Ring3_CS.setGain(10);
 
         //Waits for the play button to be pressed
         waitForStart();
