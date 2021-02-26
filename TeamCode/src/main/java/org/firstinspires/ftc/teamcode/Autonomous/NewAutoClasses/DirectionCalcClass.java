@@ -27,10 +27,10 @@ public class DirectionCalcClass {
     double lastxsetpoint;
     double lastysetpoint;
     double ysetpoint;
-    double yPM = .002;
-    double yDM = .007;
-    double xPM = .004;
-    double xDM = .009;
+    double yPM = .001;
+    double yDM = .006;
+    double xPM = .001;
+    double xDM = .006;
     public void DirectionCalc(double startpointx, double startpointy, double endpointx, double endpointy, double odoX, double odoY, double theta){
 
         distanceYLeg = (startpointx - endpointx);
@@ -41,22 +41,10 @@ public class DirectionCalcClass {
         distanceFrom = Math.hypot(distanceFromEndX, distanceFromEndY);
         //Y PD
 
-        //xsetpoint = endpointx - (((distanceFrom-1)*(endpointx-startpointx))/distance);
-        //ysetpoint = endpointy - (((distanceFrom-1)*(endpointy-startpointy))/distance);
-        xsetpoint = endpointx;
-        ysetpoint = endpointy;
+        xsetpoint = endpointx - (((distanceFrom-1)*(endpointx-startpointx))/distance);
+        ysetpoint = endpointy - (((distanceFrom-1)*(endpointy-startpointy))/distance);
         lastxsetpoint = xsetpoint;
         lastysetpoint = ysetpoint;
-        if(xsetpoint <= lastxsetpoint){
-            xsetpoint = lastxsetpoint;
-        }
-        if(ysetpoint <= lastysetpoint){
-            ysetpoint = lastysetpoint;
-        }
-        if(distanceFrom <= 1.5){
-            xsetpoint = endpointx;
-            ysetpoint = endpointy;
-        }
         yError = ysetpoint - odoY;
         yPorportional = yPM * yError;
         yDerivitive = (yError - yLastError)*yDM;
@@ -86,6 +74,8 @@ public class DirectionCalcClass {
         RF_M_Direction = RF_M_Direction/motorPowerRatio;
         RB_M_Direction = RB_M_Direction/motorPowerRatio;
     }
+    public double XSetpointReturn(){return xsetpoint;}
+    public double YSetpointReturn(){return ysetpoint;}
     public double distanceReturn(){return distance;}
     public double distanceFromReturn(){return distanceFrom;}
     public double LF_M_DirectionReturn(){return LF_M_Direction;}

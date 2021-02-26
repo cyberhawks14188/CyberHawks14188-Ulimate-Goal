@@ -16,7 +16,6 @@ public class Odometry {
 
     public void OdometryCalc(double e1current, double e2current, double e3current, double runtime){
         //finds the change in the encoders from the last loop cycle
-        if (runtime > previousruntime + .75){
             e1Current = e1current;
             e2Current = e2current;
             e3Current = e3current;
@@ -38,7 +37,7 @@ public class Odometry {
             e2Previous = e2Current;
             e3Previous = e3Current;
             previousruntime = runtime;
-        }
+
     }
     double e2CenterOffSet = 7.21 * COUNTS_PER_INCH;//r
     double e2VertOffSet = 1815;//rb
