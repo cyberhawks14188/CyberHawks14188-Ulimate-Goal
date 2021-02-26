@@ -12,15 +12,16 @@ public class SpeedClass {
     double speedLastError;
     double speedError;
     double speedPorportional;
-    double speedPM = .0001;
+    double speedPM = .005;
+    double speedDM = .019;
     double speedDerivative;
-    double speedDM = 0;
+
     public double speed;
     public double speedSetpoint;
     double speedMinimum = 0;
 
     public void SpeedCalc(double odoX, double odoY, double time, double speedsetpoint) {
-        if (time >= timePrevious + .25) {
+
             //Finds the difference between loop cycles in position
             positionErrorX = Math.abs(odoX - lastOdoX);
             positionErrorY = Math.abs(odoY - lastOdoY);
@@ -31,7 +32,7 @@ public class SpeedClass {
             //Find the robots in/s
             speedCurrent = distanceDelta / (time - timePrevious);
             timePrevious = time;
-        }
+
 
         //Finds all of the next loop cycles values
 

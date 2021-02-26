@@ -24,11 +24,13 @@ public class DirectionCalcClass {
     double x;
     double y;
     double xsetpoint;
+    double lastxsetpoint;
+    double lastysetpoint;
     double ysetpoint;
-    double yPM = .005;
-    double yDM = .005;
-    double xPM = .005;
-    double xDM = .005;
+    double yPM = .002;
+    double yDM = .007;
+    double xPM = .004;
+    double xDM = .009;
     public void DirectionCalc(double startpointx, double startpointy, double endpointx, double endpointy, double odoX, double odoY, double theta){
 
         distanceYLeg = (startpointx - endpointx);
@@ -39,9 +41,22 @@ public class DirectionCalcClass {
         distanceFrom = Math.hypot(distanceFromEndX, distanceFromEndY);
         //Y PD
 
-        xsetpoint = endpointx - (((distanceFrom-1)*(endpointx-startpointx))/distance);
-        ysetpoint = endpointy - (((distanceFrom-1)*(endpointy-startpointy))/distance);
-
+        //xsetpoint = endpointx - (((distanceFrom-1)*(endpointx-startpointx))/distance);
+        //ysetpoint = endpointy - (((distanceFrom-1)*(endpointy-startpointy))/distance);
+        xsetpoint = endpointx;
+        ysetpoint = endpointy;
+        lastxsetpoint = xsetpoint;
+        lastysetpoint = ysetpoint;
+        if(xsetpoint <= lastxsetpoint){
+            xsetpoint = lastxsetpoint;
+        }
+        if(ysetpoint <= lastysetpoint){
+            ysetpoint = lastysetpoint;
+        }
+        if(distanceFrom <= 1.5){
+            xsetpoint = endpointx;
+            ysetpoint = endpointy;
+        }
         yError = ysetpoint - odoY;
         yPorportional = yPM * yError;
         yDerivitive = (yError - yLastError)*yDM;
@@ -54,7 +69,11 @@ public class DirectionCalcClass {
         xDerivitive = (xError - xLastError) * xDM;
         xLastError = xError;
         x = xPorportional + xDerivitive;
-
+        if(distanceFrom <= .15){
+            x = 0;
+            y = 0;
+            theta = 0;
+        }
 
 
         LF_M_Direction = x + (-y + theta);
