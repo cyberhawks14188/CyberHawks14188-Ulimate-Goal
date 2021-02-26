@@ -5,7 +5,9 @@ public class ShooterSystem {
     boolean shooterControl;
     double SOTAngleSet = 1.15;
     double SOTAngleError;
-    double SOTAnglePropotionalMultiplier = -20;
+    double SOTAngleLastError;
+    double SOTAngleDerivitveMultiplier = 0;
+    double SOTAnglePropotionalMultiplier = -5;
     double SOTAnglePower;
     double shooterMotorSetpoint = 0;
     double shooterMotorCorrection = 0;
@@ -33,7 +35,8 @@ public class ShooterSystem {
 
         //Shooter Angle PID Loop follo the setpoint set above
         SOTAngleError = SOTAngleSet - sotanglecurrent;
-        SOTAnglePower = (SOTAngleError * SOTAnglePropotionalMultiplier);
+        SOTAnglePower = ((SOTAngleError * SOTAnglePropotionalMultiplier) + ((SOTAngleError - SOTAngleLastError)*SOTAngleDerivitveMultiplier));
+        SOTAngleLastError = SOTAngleError;
         //Flywheel speed setpoint control. We use our custom one button on/off system to use the left bumper to set the shooter speed.
         if (leftbumper && !shooterControl) {
             if (shooterMotorSetpoint == 0) {
