@@ -7,6 +7,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -102,6 +103,7 @@ public class RobotHardware{
 
         LF_M.setDirection(DcMotor.Direction.REVERSE);
         LB_M.setDirection(DcMotor.Direction.REVERSE);
+        STG_M.setDirection(DcMotorSimple.Direction.REVERSE);
 
         LF_M.getCurrentPosition();
         LB_M.getCurrentPosition();
