@@ -2,12 +2,12 @@ package org.firstinspires.ftc.teamcode.Autonomous.NewAutoClasses;
 
 public class TurnControl {
     double thetaError;
-    double thetaProportionalMultiplier = .0001;
+    double thetaProportionalMultiplier = .00015;
     double thetaProportional;
     public double theta;
     double thetaSetPoint = 0;
     double thetaLastError = 0;
-    double thetaDerivativeMultiplier = .0001;
+    double thetaDerivativeMultiplier = .0002;
     double thetaDerivative;
     public double turnControl(double thetaendsetpoint, double thetaindegrees, double turnincrements){
         if (thetaendsetpoint > thetaSetPoint + turnincrements){

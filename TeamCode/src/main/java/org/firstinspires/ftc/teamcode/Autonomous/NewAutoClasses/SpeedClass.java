@@ -12,8 +12,8 @@ public class SpeedClass {
     double speedLastError;
     double speedError;
     double speedPorportional;
-    double speedPM = .005;
-    double speedDM = .019;
+    double speedPM = .0045;
+    double speedDM = .045;
     double speedDerivative;
 
     public double speed;

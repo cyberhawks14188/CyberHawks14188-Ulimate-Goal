@@ -29,21 +29,85 @@ public class NewEquationTest extends LinearOpMode {
         startPointX = 0;
         startPointY = 0;
         breakout = 1;
-        while((DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
-            Movement(50, 0, 0, 10, 2, 8);
+        //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
+        while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
+            Movement(20, 20, 0, 20, 6, 9);
             Telemetry();
             PowerSetting();
             breakout = 0;
         }
-        /*startPointX = OdoClass.odoXReturn();
-        startPointY = OdoClass.odoYReturn();
-        while(opModeIsActive()){
-            Movement(0, 0, 0, 10, 3, 3);
-            Telemetry();
-            PowerSetting();
-        }
-        \
-        */
+        StopMotors();
+        sleep(250);
+    startPointX = OdoClass.odoXReturn();
+    startPointY = OdoClass.odoYReturn();
+    breakout = 1;
+    //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
+    while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
+        Movement(40, 0, 0, 20, 6, 9);
+        Telemetry();
+        PowerSetting();
+        breakout = 0;
+    }
+    StopMotors();
+    sleep(250);
+    startPointX = OdoClass.odoXReturn();
+    startPointY = OdoClass.odoYReturn();
+    breakout = 1;
+    //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
+    while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
+        Movement(20, -20, 0, 20, 6, 9);
+        Telemetry();
+        PowerSetting();
+        breakout = 0;
+    }
+    StopMotors();
+    sleep(250);
+    startPointX = OdoClass.odoXReturn();
+    startPointY = OdoClass.odoYReturn();
+    breakout = 1;
+    //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
+    while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
+        Movement(-20, 20, 0, 20, 6, 9);
+        Telemetry();
+        PowerSetting();
+        breakout = 0;
+    }
+    StopMotors();
+    sleep(250);
+    startPointX = OdoClass.odoXReturn();
+    startPointY = OdoClass.odoYReturn();
+    breakout = 1;
+    //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
+    while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
+        Movement(-40, 0, 0, 20, 6, 9);
+        Telemetry();
+        PowerSetting();
+        breakout = 0;
+    }
+    StopMotors();
+    sleep(250);
+    startPointX = OdoClass.odoXReturn();
+    startPointY = OdoClass.odoYReturn();
+    breakout = 1;
+    //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
+    while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
+        Movement(-20, -20, 0, 20, 6, 9);
+        Telemetry();
+        PowerSetting();
+        breakout = 0;
+    }
+    StopMotors();
+    sleep(250);
+    startPointX = OdoClass.odoXReturn();
+    startPointY = OdoClass.odoYReturn();
+    breakout = 1;
+    //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
+    while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
+        Movement(0, 0, 0, 20, 6, 9);
+        Telemetry();
+        PowerSetting();
+        breakout = 0;
+    }
 
     }
     public void Telemetry(){
@@ -56,9 +120,8 @@ public class NewEquationTest extends LinearOpMode {
         telemetry.addData("Current Speed", SpeedClass.CurrentSpeed());
         telemetry.addData("time", getRuntime());
         telemetry.addData("Distance Delta", SpeedClass.DistanceDelta());
-        loopcount = loopcount + 1;
-        telemetry.addData("Cycle count", loopcount);
-
+        telemetry.addData("XSetpoint", DirectionClass.XSetpointReturn());
+        telemetry.addData("YSetpoint", DirectionClass.YSetpointReturn());
         telemetry.update();
     }
     public void Movement(double endpointx, double endpointy, double thetasetpoint, double targetspeed, double accelerationdistance, double deccelerationdistance){
@@ -70,9 +133,15 @@ public class NewEquationTest extends LinearOpMode {
         telemetry.addData("Speed Setpoint", SpeedClass.MotionProfile(targetspeed, accelerationdistance, deccelerationdistance, DirectionClass.distanceReturn(), DirectionClass.distanceFromReturn()));
     }
     public void PowerSetting(){
-        robot.LF_M.setPower(DirectionClass.LF_M_DirectionReturn() * (SpeedClass.speed + .1));
-        robot.LB_M.setPower(DirectionClass.LB_M_DirectionReturn() * (SpeedClass.speed+ .1));
-        robot.RF_M.setPower(DirectionClass.RF_M_DirectionReturn() * (SpeedClass.speed+ .1));
-        robot.RB_M.setPower(DirectionClass.RB_M_DirectionReturn() * (SpeedClass.speed+ .1));
+        robot.LF_M.setPower(DirectionClass.LF_M_DirectionReturn() * (SpeedClass.speed + .15));
+        robot.LB_M.setPower(DirectionClass.LB_M_DirectionReturn() * (SpeedClass.speed+ .15));
+        robot.RF_M.setPower(DirectionClass.RF_M_DirectionReturn() * (SpeedClass.speed+ .15));
+        robot.RB_M.setPower(DirectionClass.RB_M_DirectionReturn() * (SpeedClass.speed+ .15));
+    }
+    public void StopMotors(){
+    robot.LF_M.setPower(0);
+    robot.LB_M.setPower(0);
+    robot.RF_M.setPower(0);
+    robot.RB_M.setPower(0);
     }
 }
