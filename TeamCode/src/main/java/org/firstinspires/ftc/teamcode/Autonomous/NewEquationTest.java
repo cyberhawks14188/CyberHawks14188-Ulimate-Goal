@@ -29,9 +29,18 @@ public class NewEquationTest extends LinearOpMode {
         startPointX = 0;
         startPointY = 0;
         breakout = 1;
+    while(opModeIsActive()){
+        Movement(0, 0, 0, 30, 6, 9);
+        Telemetry();
+        PowerSetting();
+        breakout = 0;
+    }
+    StopMotors();
+    sleep(250);
+        /*
         //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
         while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
-            Movement(20, 20, 0, 20, 6, 9);
+            Movement(20, 20, 180, 30, 6, 9);
             Telemetry();
             PowerSetting();
             breakout = 0;
@@ -43,7 +52,7 @@ public class NewEquationTest extends LinearOpMode {
     breakout = 1;
     //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
     while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
-        Movement(40, 0, 0, 20, 6, 9);
+        Movement(40, 0, 0, 30, 6, 9);
         Telemetry();
         PowerSetting();
         breakout = 0;
@@ -55,7 +64,7 @@ public class NewEquationTest extends LinearOpMode {
     breakout = 1;
     //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
     while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
-        Movement(20, -20, 0, 20, 6, 9);
+        Movement(20, -20, -180, 30, 6, 9);
         Telemetry();
         PowerSetting();
         breakout = 0;
@@ -67,7 +76,7 @@ public class NewEquationTest extends LinearOpMode {
     breakout = 1;
     //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
     while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
-        Movement(-20, 20, 0, 20, 6, 9);
+        Movement(-20, 20, 0, 30, 6, 9);
         Telemetry();
         PowerSetting();
         breakout = 0;
@@ -79,7 +88,7 @@ public class NewEquationTest extends LinearOpMode {
     breakout = 1;
     //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
     while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
-        Movement(-40, 0, 0, 20, 6, 9);
+        Movement(-40, 0, 180, 30, 6, 9);
         Telemetry();
         PowerSetting();
         breakout = 0;
@@ -91,7 +100,7 @@ public class NewEquationTest extends LinearOpMode {
     breakout = 1;
     //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
     while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
-        Movement(-20, -20, 0, 20, 6, 9);
+        Movement(-20, -20, 0, 30, 6, 9);
         Telemetry();
         PowerSetting();
         breakout = 0;
@@ -103,11 +112,12 @@ public class NewEquationTest extends LinearOpMode {
     breakout = 1;
     //(DirectionClass.distanceFromReturn() >= .4 && opModeIsActive()) || (breakout == 1 && opModeIsActive())
     while((DirectionClass.distanceFromReturn() >= 1 && opModeIsActive()) || (breakout == 1 && opModeIsActive())){
-        Movement(0, 0, 0, 20, 6, 9);
+        Movement(0, 0, -180, 30, 6, 9);
         Telemetry();
         PowerSetting();
         breakout = 0;
     }
+    */
 
     }
     public void Telemetry(){
