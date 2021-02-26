@@ -44,23 +44,26 @@ public class Odometry {
     double vertHeadingPivotPoint;
     double HorisontalHeadingPivotPoint;
     public void RadiusOdometry(double e1current, double e2current, double e3current){
-        deltaE1 = (-e1current) - e1Previous;//ΔL
-        deltaE2 = e2current - e2Previous;//ΔB
-        deltaE3 = (-e3current) - e3Previous;//ΔR
+        e1Current = -e1current;
+        e2Current = e2current;
+        e3Current = -e3current;
+        deltaE1 = e1Current - e1Previous;//ΔL
+        deltaE2 = e2Current - e2Previous;//ΔB
+        deltaE3 = e3Current - e3Previous;//ΔR
         thetaChange = (deltaE1 - deltaE3) / (2 * e2CenterOffSet);//Δ0
         thetaInRadians = thetaInRadians + thetaChange;
         if (thetaChange == 0){
             yCoordinatePosition = yCoordinatePosition + deltaE2;//Δx
             xCoordinatePosition = xCoordinatePosition + ((deltaE1 + deltaE3) / 2);//Δy
         }else{
-            vertHeadingPivotPoint = (e2CenterOffSet*(deltaE1 + deltaE3)) / (deltaE3 - deltaE1);//rt
+            vertHeadingPivotPoint = (e2CenterOffSet*(deltaE1 + deltaE3)) / (deltaE1 - deltaE3);//rt
             HorisontalHeadingPivotPoint = (deltaE2 / thetaChange) - e2VertOffSet;//rs
             yCoordinatePosition = yCoordinatePosition + ((vertHeadingPivotPoint * (Math.cos(thetaChange) - 1)) + (HorisontalHeadingPivotPoint * Math.sin(thetaChange)));//Δx
             xCoordinatePosition = xCoordinatePosition + ((vertHeadingPivotPoint * Math.sin(thetaChange)) + (HorisontalHeadingPivotPoint * (1 - Math.cos(thetaChange))));//Δy
         }
-        e1Previous = (-e1current);
-        e2Previous = e2current;
-        e3Previous = (-e3current);
+        e1Previous = e1Current;
+        e2Previous = e2Current;
+        e3Previous = e3Current;
     }
     //returns the values to use in other classes
     public double odoXReturn(){return xCoordinatePosition/COUNTS_PER_INCH;}
