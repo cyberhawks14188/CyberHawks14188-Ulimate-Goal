@@ -5,7 +5,7 @@ public class ShooterSystem {
     boolean shooterControl;
     double SOTAngleSet = 1.15;
     double SOTAngleError;
-    double SOTAngleLastError;
+    double SOTAngleLastError = 0;
     double SOTAngleDerivitveMultiplier = 0;
     double SOTAnglePropotionalMultiplier = -5;
     double SOTAnglePower;
