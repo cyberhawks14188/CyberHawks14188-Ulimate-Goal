@@ -58,9 +58,9 @@ public class Odometry {
             yCoordinatePosition = yCoordinatePosition + ((vertHeadingPivotPoint * (Math.cos(thetaChange) - 1)) + (HorisontalHeadingPivotPoint * Math.sin(thetaChange)));//Δx
             xCoordinatePosition = xCoordinatePosition + ((vertHeadingPivotPoint * Math.sin(thetaChange)) + (HorisontalHeadingPivotPoint * (1 - Math.cos(thetaChange))));//Δy
         }
-        e1Previous = e1current;
+        e1Previous = (-e1current);
         e2Previous = e2current;
-        e3Previous = e3current;
+        e3Previous = (-e3current);
     }
     //returns the values to use in other classes
     public double odoXReturn(){return xCoordinatePosition/COUNTS_PER_INCH;}
