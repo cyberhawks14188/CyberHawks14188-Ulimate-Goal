@@ -50,13 +50,13 @@ public class Odometry {
         deltaE1 = e1Current - e1Previous;//ΔL
         deltaE2 = e2Current - e2Previous;//ΔB
         deltaE3 = e3Current - e3Previous;//ΔR
-        thetaChange = (deltaE1 - deltaE3) / (2 * e2CenterOffSet);//Δ0
+        thetaChange = (deltaE3 - deltaE1) / (2 * e2CenterOffSet);//Δ0
         thetaInRadians = thetaInRadians + thetaChange;
         if (thetaChange == 0){
             yCoordinatePosition = yCoordinatePosition + deltaE2;//Δx
             xCoordinatePosition = xCoordinatePosition + ((deltaE1 + deltaE3) / 2);//Δy
         }else{
-            vertHeadingPivotPoint = (e2CenterOffSet*(deltaE1 + deltaE3)) / (deltaE1 - deltaE3);//rt
+            vertHeadingPivotPoint = (e2CenterOffSet*(deltaE1 + deltaE3)) / (deltaE3 - deltaE1);//rt
             HorisontalHeadingPivotPoint = (deltaE2 / thetaChange) - e2VertOffSet;//rs
             yCoordinatePosition = yCoordinatePosition + ((vertHeadingPivotPoint * (Math.cos(thetaChange) - 1)) + (HorisontalHeadingPivotPoint * Math.sin(thetaChange)));//Δx
             xCoordinatePosition = xCoordinatePosition + ((vertHeadingPivotPoint * Math.sin(thetaChange)) + (HorisontalHeadingPivotPoint * (1 - Math.cos(thetaChange))));//Δy
@@ -66,7 +66,7 @@ public class Odometry {
         e3Previous = e3Current;
     }
     //returns the values to use in other classes
-    public double odoXReturn(){return xCoordinatePosition/COUNTS_PER_INCH;}
+    public double odoXReturn(){return (-xCoordinatePosition/COUNTS_PER_INCH);}
     public double odoYReturn(){return yCoordinatePosition/COUNTS_PER_INCH;}
     public double thetaINRadiansReturn(){return thetaInRadians;}
     public double thetaInDegreesReturn(){return Math.toDegrees(thetaInRadians) % 360;}
