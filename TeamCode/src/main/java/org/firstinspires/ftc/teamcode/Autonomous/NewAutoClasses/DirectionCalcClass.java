@@ -43,6 +43,12 @@ public class DirectionCalcClass {
 
         xsetpoint = endpointx - (((distanceFrom-1)*(endpointx-startpointx))/distance);
         ysetpoint = endpointy - (((distanceFrom-1)*(endpointy-startpointy))/distance);
+        if(startpointx == endpointx){
+            xsetpoint = endpointx;
+        }
+        if(startpointy == endpointy){
+            ysetpoint = endpointy;
+        }
         lastxsetpoint = xsetpoint;
         lastysetpoint = ysetpoint;
         yError = ysetpoint - odoY;
